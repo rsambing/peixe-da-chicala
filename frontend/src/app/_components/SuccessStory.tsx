@@ -9,7 +9,7 @@ export function SuccessStory() {
   const videoId = "KT9z36ad7SQ";
 
   return (
-    <section className="py-20 px-6 bg-linear-to-b from-background via-primary/3 to-background">
+    <section id="historia" className="py-20 px-6 bg-linear-to-b from-background via-primary/3 to-background">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="text-center mb-10">

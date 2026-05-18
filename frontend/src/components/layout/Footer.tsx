@@ -2,29 +2,26 @@ import Link from "next/link";
 import Image from "next/image";
 
 const FOOTER_LINKS = {
-  Produto: [
-    { label: "Como funciona", href: "/como-funciona" },
-    { label: "Taxas e custos", href: "#" },
-    { label: "Categorias", href: "/categorias" },
-    { label: "Histórias de sucesso", href: "#" },
+  Restaurante: [
+    { label: "Cardápio", href: "/menu" },
+    { label: "Mais pedidos", href: "/#mais-pedidos" },
+    { label: "Como funciona", href: "/#como-funciona" },
+    { label: "Contactos", href: "/contactos" },
   ],
-  Empresa: [
-    { label: "Sobre nós", href: "#" },
-    { label: "Equipa", href: "#" },
-    { label: "Imprensa", href: "#" },
-    { label: "Contactos", href: "#" },
+  Pedidos: [
+    { label: "Carrinho", href: "/carrinho" },
+    { label: "Finalizar", href: "/checkout" },
+    { label: "Acompanhar pedido", href: "/acompanhar" },
   ],
-  Suporte: [
-    { label: "Centro de Ajuda", href: "#" },
-    { label: "Perguntas Frequentes", href: "#" },
-    { label: "Política de Privacidade", href: "#" },
-    { label: "Termos de Serviço", href: "#" },
+  Ajuda: [
+    { label: "Perguntas frequentes", href: "/#faq" },
+    { label: "WhatsApp", href: "#" },
   ],
 };
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground">
+    <footer className="bg-card text-card-foreground border-t">
       <div className="mx-auto max-w-7xl px-6 pt-16 pb-8">
         {/* Top */}
         <div className="grid grid-cols-1 gap-12 md:grid-cols-4 mb-12">
@@ -33,15 +30,14 @@ export function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <Image
                 src="/images/logo.png"
-                alt="Levanta Angola"
+                alt="Peixe da Chicala"
                 className="size-18 rounded-xl"
                 width={72}
                 height={72}
               />
             </div>
             <p className="text-sm leading-relaxed opacity-80 max-w-xs">
-              Plataforma de financiamento coletivo para causas sociais, educativas, 
-              tecnológicas e comunitárias em Angola.
+              Peixe grelhado na brasa, sabores de Luanda e entrega rápida.
             </p>
           </div>
 
@@ -68,9 +64,9 @@ export function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm opacity-60">
-            © {new Date().getFullYear()} Levanta Angola. Todos os direitos reservados.
+            © {new Date().getFullYear()} Peixe da Chicala. Todos os direitos reservados.
           </p>
           <div className="flex gap-4">
             {/* Facebook */}

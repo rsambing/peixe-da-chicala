@@ -16,7 +16,7 @@ function SparkleIcon() {
 
 export function CategoriesSection() {
   return (
-    <section className="relative py-20 overflow-hidden bg-background">
+    <section id="categorias" className="relative py-20 overflow-hidden bg-background">
       {/* Gradient Fades */}
       <div className="absolute inset-y-0 left-0 w-32 bg-linear-to-r from-background to-transparent z-20 pointer-events-none" />
       <div className="absolute inset-y-0 right-0 w-32 bg-linear-to-l from-background to-transparent z-20 pointer-events-none" />
@@ -74,7 +74,7 @@ export function CategoriesSection() {
 
       {/* Explore Link */}
       <div className="mt-12 text-center">
-        <Link href="/explorar">
+        <Link href="/#explorar">
           <button className="group relative px-8 py-3.5 font-display font-black uppercase tracking-widest text-xs overflow-hidden border-2 border-primary rounded-full transition-all hover:text-white">
             <span className="relative z-10">Explorar Todas as Causas →</span>
             <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300" />

@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export function CTASection() {
   return (
-    <section className="relative pt-40 pb-32 px-6 bg-primary overflow-hidden">
+    <section id="cta" className="relative pt-40 pb-32 px-6 bg-primary overflow-hidden">
       {/* Background Decorative Pattern */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -69,12 +69,12 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-5 justify-start">
-            <Link href="/campanhas/criar" className="w-full sm:w-auto">
+            <Link href="/#cta" className="w-full sm:w-auto">
               <Button variant="accent" size="xl" className="w-full sm:w-auto text-lg px-12 shadow-2xl shadow-accent/40 bg-[#FFC53D] hover:bg-[#FFD470] text-primary">
                 Começar agora gratuitamente
               </Button>
             </Link>
-            <Link href="/explorar" className="w-full sm:w-auto">
+            <Link href="/#explorar" className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="xl"

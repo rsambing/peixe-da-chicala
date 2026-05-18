@@ -6,25 +6,14 @@ import {
   CATEGORY_LABELS,
 } from "@/lib/types";
 import Image from "next/image";
-import { formatCurrency, progressPercent, daysRemaining } from "@/lib/mock/helpers";
+import { progressPercent, daysRemaining } from "@/lib/mock/helpers";
 import { CategoryIcon } from "./CategoryIcon";
-import { FiCheck, FiHeart, FiClock, FiTarget } from "react-icons/fi";
+import { FiHeart } from "react-icons/fi";
 
 interface CampaignCardProps {
   campaign: Campaign;
   compact?: boolean;
 }
-
-const STATUS_VARIANT: Record<
-  string,
-  "active" | "funded" | "pending" | "expired" | "draft" | "default"
-> = {
-  [CampaignStatus.ACTIVE]: "active",
-  [CampaignStatus.FUNDED]: "funded",
-  [CampaignStatus.PENDING_REVIEW]: "pending",
-  [CampaignStatus.EXPIRED]: "expired",
-  [CampaignStatus.DRAFT]: "draft",
-};
 
 export function CampaignCard({ campaign, compact = false }: CampaignCardProps) {
   const featured = campaign.media?.find((m) => m.isFeatured) ?? campaign.media?.[0];
@@ -33,7 +22,7 @@ export function CampaignCard({ campaign, compact = false }: CampaignCardProps) {
   const isFunded = campaign.status === CampaignStatus.FUNDED;
 
   return (
-    <Link href={`/campanhas/${campaign.id}`} className="group block h-full">
+    <Link href="/#cta" className="group block h-full">
       <article className={cn(
         "relative overflow-hidden rounded-4xl bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 group/card flex flex-col shadow-sm hover:shadow-xl",
         compact ? "aspect-3/4" : "aspect-4/5"
@@ -63,7 +52,14 @@ export function CampaignCard({ campaign, compact = false }: CampaignCardProps) {
         </div>
 
         {/* Favorite/Action button - Glassmorphism */}
-        <button className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/30 transition-colors shadow-lg">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/30 transition-colors shadow-lg"
+        >
           <FiHeart className="size-4" />
         </button>
 

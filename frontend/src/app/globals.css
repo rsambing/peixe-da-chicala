@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 /* ================================================================
-   LEVANTA ANGOLA — Design Tokens
-   ================================================================ */
+  PEIXE DA CHICALA — Design Tokens
+  Dark base + fire accents (grelha/chamas)
+  ================================================================ */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -63,72 +64,75 @@
    Light Mode
    ================================================================ */
 :root {
-  --background: #faf8f5;
-  --foreground: #1a1a1a;
+  /* Light base */
+  --background: #fff7ed;
+  --foreground: #0f172a;
 
   --card: #ffffff;
-  --card-foreground: #1a1a1a;
+  --card-foreground: #0f172a;
 
-  --primary: #1f4d3a;
+  /* Grelha / brasa */
+  --primary: #ff4400;
   --primary-foreground: #ffffff;
 
-  --secondary: #f0e9df;
-  --secondary-foreground: #1f4d3a;
+  --secondary: #ffe4d5;
+  --secondary-foreground: #0f172a;
 
-  --muted: #f5f1eb;
-  --muted-foreground: #6b7280;
+  --muted: #fff1e7;
+  --muted-foreground: #475569;
 
-  --accent: #f59e0b;
-  --accent-foreground: #1a1a1a;
+  /* Chamas */
+  --accent: #ffaa00;
+  --accent-foreground: #111827;
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
   --success: #22c55e;
-  --success-foreground: #ffffff;
+  --success-foreground: #052e16;
 
-  --warning: #f59e0b;
-  --warning-foreground: #1a1a1a;
+  --warning: #ffaa00;
+  --warning-foreground: #111827;
 
-  --border: #e5e0d8;
-  --input: #e5e0d8;
-  --ring: #1f4d3a;
+  --border: #fed7aa;
+  --input: #fed7aa;
+  --ring: #ff5500;
 }
 
 /* ================================================================
    Dark Mode
    ================================================================ */
 .dark {
-  --background: #0f1410;
-  --foreground: #f0ede8;
+  --background: #000000;
+  --foreground: #ffffff;
 
-  --card: #1a211c;
-  --card-foreground: #f0ede8;
+  --card: #0b0b0b;
+  --card-foreground: #ffffff;
 
-  --primary: #4ade80;
-  --primary-foreground: #0f1410;
+  --primary: #ff4400;
+  --primary-foreground: #0b0b0b;
 
-  --secondary: #2a332c;
-  --secondary-foreground: #f0ede8;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ffffff;
 
-  --muted: #2a332c;
-  --muted-foreground: #9ca3af;
+  --muted: #111111;
+  --muted-foreground: #a1a1aa;
 
-  --accent: #fbbf24;
-  --accent-foreground: #0f1410;
+  --accent: #ffaa00;
+  --accent-foreground: #0b0b0b;
 
-  --destructive: #f87171;
-  --destructive-foreground: #0f1410;
+  --destructive: #ef4444;
+  --destructive-foreground: #0b0b0b;
 
-  --success: #4ade80;
-  --success-foreground: #0f1410;
+  --success: #22c55e;
+  --success-foreground: #0b0b0b;
 
-  --warning: #fbbf24;
-  --warning-foreground: #0f1410;
+  --warning: #ffaa00;
+  --warning-foreground: #0b0b0b;
 
-  --border: #2a332c;
-  --input: #2a332c;
-  --ring: #4ade80;
+  --border: #1f1f1f;
+  --input: #2a2a2a;
+  --ring: #ffaa00;
 }
 
 /* ================================================================

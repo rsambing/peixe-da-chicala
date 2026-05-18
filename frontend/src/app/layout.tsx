@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui";
-import { AuthProvider } from "@/lib/auth-context";
 import CleanupBody from "@/components/CleanupBody";
 import "./globals.css";
+import { Providers } from "./providers";
 
 import { Inter, Lexend, Instrument_Serif } from "next/font/google";
 
@@ -18,9 +18,9 @@ const instrument = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Levanta Angola — Onde os sonhos angolanos ganham vida",
+  title: "Peixe da Chicala — Peixe grelhado na brasa, pronto para pedir",
   description:
-    "Plataforma de financiamento coletivo para causas sociais, educativas, tecnológicas e comunitárias em Angola.",
+    "Cardápio digital do Peixe da Chicala. Escolha os pratos, adicione ao carrinho e acompanhe o seu pedido em tempo real.",
   icons: {
     icon: [
       { url: "/images/logo.png", type: "image/png", sizes: "192x192" },
@@ -42,8 +42,7 @@ export default function RootLayout({
         {/* Limpa atributos injetados por extensões para evitar hydration mismatch */}
         <CleanupBody />
 
-        {/* Provedor de autenticação */}
-        <AuthProvider>{children}</AuthProvider>
+        <Providers>{children}</Providers>
 
         {/* Toasts globais */}
         <Toaster />

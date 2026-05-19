@@ -5,7 +5,6 @@ const FOOTER_LINKS = {
   Restaurante: [
     { label: "Cardápio", href: "/menu" },
     { label: "Mais pedidos", href: "/#mais-pedidos" },
-    { label: "Como funciona", href: "/#como-funciona" },
     { label: "Contactos", href: "/contactos" },
   ],
   Pedidos: [
@@ -14,7 +13,7 @@ const FOOTER_LINKS = {
     { label: "Acompanhar pedido", href: "/acompanhar" },
   ],
   Ajuda: [
-    { label: "Perguntas frequentes", href: "/#faq" },
+    { label: "Contactos", href: "/contactos" },
     { label: "WhatsApp", href: "#" },
   ],
 };

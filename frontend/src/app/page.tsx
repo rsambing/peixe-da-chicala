@@ -16,7 +16,7 @@ export default function Home() {
         {/* Hero */}
         <section
           id="inicio"
-          className="relative min-h-[92vh] flex items-center justify-center overflow-hidden"
+          className="relative min-h-[100svh] flex items-center justify-center overflow-hidden"
         >
           <div className="absolute inset-0">
             <Image
@@ -27,21 +27,22 @@ export default function Home() {
               priority
               sizes="100vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-foreground/55 via-background/70 to-background" />
+            {/* Película escura para melhorar contraste (sem gradiente) */}
+            <div className="absolute inset-0 bg-black/55" />
           </div>
 
           <div className="relative z-10 mx-auto max-w-5xl px-6 pt-28 pb-20 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full bg-card/70 backdrop-blur px-4 py-2 border border-border text-sm text-foreground mb-8">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-4 py-2 border border-white/20 text-sm text-white mb-8">
               <span className="inline-block size-2 rounded-full bg-accent animate-pulse" />
               Peixe grelhado · sabor de Luanda
             </div>
 
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-black text-foreground leading-[1.05] tracking-tight">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.05] tracking-tight">
               Peixe na brasa,
               <span className="text-accent"> pronto para pedir</span>
             </h1>
 
-            <p className="mt-5 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="mt-5 text-lg sm:text-xl text-white/85 max-w-2xl mx-auto">
               Explore o cardápio, adicione ao carrinho e acompanhe o seu pedido com um código.
             </p>
 
@@ -52,7 +53,11 @@ export default function Home() {
                 </Button>
               </Link>
               <Link href="/#mais-pedidos">
-                <Button variant="outline" size="xl" className="px-10">
+                <Button
+                  variant="outline"
+                  size="xl"
+                  className="px-10 border-white/40 text-white hover:bg-white hover:text-foreground"
+                >
                   Ver Mais Pedidos
                 </Button>
               </Link>
@@ -195,117 +200,6 @@ export default function Home() {
                   </Link>
                 </CardContent>
               </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Como funciona */}
-        <section id="como-funciona" className="py-16 px-6">
-          <div className="mx-auto max-w-7xl space-y-8">
-            <div>
-              <h2 className="text-3xl font-display font-black text-foreground">Como funciona</h2>
-              <p className="text-muted-foreground">Poucos passos, pedido rápido.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {[
-                {
-                  title: "Escolha no cardápio",
-                  desc: "Filtre por categoria, veja preços e fotos.",
-                },
-                {
-                  title: "Revise no carrinho",
-                  desc: "Ajuste quantidades, veja subtotal e total.",
-                },
-                {
-                  title: "Acompanhe com o código",
-                  desc: "Receba o ID e veja o estado do pedido.",
-                },
-              ].map((step, idx) => (
-                <Card key={step.title}>
-                  <CardContent className="p-6 space-y-2">
-                    <Badge variant="default">Passo {idx + 1}</Badge>
-                    <p className="text-lg font-display font-black text-foreground">
-                      {step.title}
-                    </p>
-                    <p className="text-muted-foreground">{step.desc}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Testemunhos */}
-        <section className="py-16 px-6">
-          <div className="mx-auto max-w-7xl space-y-6">
-            <div>
-              <h2 className="text-3xl font-display font-black text-foreground">
-                O que dizem os clientes
-              </h2>
-              <p className="text-muted-foreground">Experiência simples e sabor memorável.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {[
-                {
-                  name: "Ana",
-                  quote: "Tilápia no ponto e entrega rápida. Vou repetir!",
-                },
-                {
-                  name: "João",
-                  quote: "O piri-piri da casa é sério. Muito bom.",
-                },
-                {
-                  name: "Marta",
-                  quote: "Gostei do acompanhamento por código. Muito prático.",
-                },
-              ].map((t) => (
-                <Card key={t.name}>
-                  <CardContent className="p-6 space-y-3">
-                    <p className="text-muted-foreground">“{t.quote}”</p>
-                    <p className="font-display font-black text-foreground">{t.name}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section id="faq" className="py-16 px-6">
-          <div className="mx-auto max-w-7xl space-y-6">
-            <div>
-              <h2 className="text-3xl font-display font-black text-foreground">FAQ</h2>
-              <p className="text-muted-foreground">Dúvidas rápidas.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {[
-                {
-                  q: "Como faço o pedido?",
-                  a: "Abra o cardápio, adicione ao carrinho e finalize no checkout.",
-                },
-                {
-                  q: "Como acompanho o pedido?",
-                  a: "Após confirmar, receba um código e use em “Acompanhar”.",
-                },
-                {
-                  q: "Posso deixar observações?",
-                  a: "Sim. No detalhe do prato e no checkout pode escrever observações.",
-                },
-                {
-                  q: "Tem WhatsApp?",
-                  a: "Sim, a integração pode ser ativada na próxima etapa do projeto.",
-                },
-              ].map((item) => (
-                <Card key={item.q}>
-                  <CardContent className="p-6 space-y-2">
-                    <p className="font-display font-black text-foreground">{item.q}</p>
-                    <p className="text-muted-foreground">{item.a}</p>
-                  </CardContent>
-                </Card>
-              ))}
             </div>
           </div>
         </section>

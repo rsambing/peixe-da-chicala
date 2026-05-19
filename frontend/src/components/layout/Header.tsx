@@ -11,9 +11,8 @@ import { useCart } from "@/lib/cart-context";
 const NAV_LINKS = [
   { label: "Início", href: "/#inicio" },
   { label: "Mais Pedidos", href: "/#mais-pedidos" },
-  { label: "Categorias", href: "/#categorias" },
-  { label: "Como funciona", href: "/#como-funciona" },
-  { label: "Contactos", href: "/#contactos" },
+  { label: "Cardápio", href: "/menu" },
+  { label: "Contactos", href: "/contactos" },
 ];
 
 export function Header() {
@@ -91,7 +90,11 @@ export function Header() {
           </Link>
 
           <Link href="/acompanhar" className="hidden sm:inline-flex">
-            <Button variant={useSolidStyle ? "outline" : "ghost"} size="sm">
+            <Button
+              variant={useSolidStyle ? "outline" : "ghost"}
+              size="sm"
+              className={useSolidStyle ? undefined : "text-white hover:bg-white/10"}
+            >
               Acompanhar
             </Button>
           </Link>

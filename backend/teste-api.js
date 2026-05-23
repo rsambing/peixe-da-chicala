@@ -1,61 +1,98 @@
+import fs from 'fs';
+
+// ========================
+// CONFIG
+// ========================
 const BASE_URL = 'http://localhost:3000';
 
 // ========================
-// HTTP CLIENT
+// HTTP CLIENT (JSON)
 // ========================
 async function request(method, endpoint, body = null) {
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: body ? JSON.stringify(body) : null
   });
 
-  let data = null;
+  let data;
   try {
     data = await res.json();
-  } catch {}
+  } catch {
+    data = null;
+  }
 
-  return { status: res.status, ok: res.ok, data };
+  return {
+    status: res.status,
+    data
+  };
 }
 
 // ========================
-// HELPERS
+// HTTP CLIENT (FORM DATA)
 // ========================
-function unwrap(res) {
+async function requestFormData(endpoint, formData) {
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
+    method: 'POST',
+    body: formData
+  });
+
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
+
+  return {
+    status: res.status,
+    data
+  };
+}
+
+// ========================
+// HELPERS (ROBUSTOS)
+// ========================
+function getData(res) {
   return res.data?.data ?? res.data;
 }
 
-function id(res) {
-  return Number(unwrap(res)?.id);
+function getId(res) {
+  const data = getData(res);
+  return Number(data?.id);
 }
 
 function assert(cond, msg) {
-  if (!cond) throw new Error(msg);
+  if (!cond) {
+    throw new Error(msg);
+  }
 }
 
 const log = {
-  title: (m) => console.log(`\n===== ${m} =====`),
-  ok: (m) => console.log(`✔ ${m}`),
+  title: (t) => console.log(`\n===== ${t} =====`),
+  ok: (t) => console.log(`✔ ${t}`)
 };
 
 const ids = {};
 
 // ========================
-// RUN WRAPPER
+// TEST WRAPPER
 // ========================
 async function test(name, fn) {
   try {
     await fn();
     log.ok(name);
-  } catch (e) {
+  } catch (err) {
     console.error(`❌ ${name}`);
-    console.error('   →', e.message);
+    console.error('   →', err.message);
     process.exit(1);
   }
 }
 
 // ========================
-// 1. USERS
+// USERS
 // ========================
 async function testUsers() {
   log.title('USERS');
@@ -68,22 +105,21 @@ async function testUsers() {
       role: 'customer'
     });
 
-    assert(res.status === 201, 'User not created');
-    ids.user = id(res);
+    assert(res.status === 201, `Expected 201, got ${res.status}`);
+
+    ids.user = getId(res);
     assert(ids.user, 'User ID missing');
   });
 
   await test('GET USERS', async () => {
     const res = await request('GET', '/users');
-    assert(res.status === 200);
-    assert(Array.isArray(unwrap(res)));
+    assert(Array.isArray(getData(res)));
   });
 
   await test('GET USER BY ID', async () => {
     const res = await request('GET', `/users/${ids.user}`);
-    const u = unwrap(res);
+    const u = getData(res);
 
-    assert(res.status === 200);
     assert(Number(u.id) === ids.user);
   });
 
@@ -97,7 +133,7 @@ async function testUsers() {
 }
 
 // ========================
-// 2. CATEGORIES
+// CATEGORIES
 // ========================
 async function testCategories() {
   log.title('CATEGORIES');
@@ -107,19 +143,20 @@ async function testCategories() {
       name: `Category ${Date.now()}`
     });
 
-    assert(res.status === 201);
-    ids.category = id(res);
+    assert(res.status === 201, `Expected 201, got ${res.status}`);
+
+    ids.category = getId(res);
+    assert(ids.category, 'Category ID missing');
   });
 
   await test('GET CATEGORIES', async () => {
     const res = await request('GET', '/categories');
-    assert(res.status === 200);
-    assert(Array.isArray(unwrap(res)));
+    assert(Array.isArray(getData(res)));
   });
 
   await test('GET CATEGORY BY ID', async () => {
     const res = await request('GET', `/categories/${ids.category}`);
-    const c = unwrap(res);
+    const c = getData(res);
 
     assert(Number(c.id) === ids.category);
   });
@@ -129,44 +166,50 @@ async function testCategories() {
       name: 'Updated Category'
     });
 
-    assert(res.status === 200);
+    assert(res.status === 200, `Expected 200, got ${res.status}`);
   });
 }
 
 // ========================
-// 3. PRODUCTS
+// PRODUCTS (IMGBB READY)
 // ========================
 async function testProducts() {
   log.title('PRODUCTS');
 
-  await test('CREATE PRODUCT', async () => {
-    const res = await request('POST', '/products', {
-      name: 'Product Test',
-      description: 'Test',
-      price: 10,
-      image: 'img.jpg',
-      available: true,
-      categoryId: ids.category
-    });
+  await test('CREATE PRODUCT (WITH IMAGE)', async () => {
+    const formData = new FormData();
 
-    assert(res.status === 201);
-    ids.product = id(res);
+    formData.append('name', 'Product Test');
+    formData.append('description', 'Product description test');
+    formData.append('price', '10');
+    formData.append('categoryId', String(ids.category));
+
+    const buffer = fs.readFileSync('./test-image.jpg');
+    formData.append('image', new Blob([buffer]), 'test.jpg');
+
+    const res = await requestFormData('/products', formData);
+
+    assert(res.status === 201, `Expected 201, got ${res.status}`);
+
+    ids.product = getId(res);
+    assert(ids.product, 'Product ID missing');
   });
 
   await test('GET PRODUCTS', async () => {
     const res = await request('GET', '/products');
-    assert(Array.isArray(unwrap(res)));
+    assert(Array.isArray(getData(res)));
   });
 
   await test('GET PRODUCT BY ID', async () => {
     const res = await request('GET', `/products/${ids.product}`);
-    const p = unwrap(res);
+    const p = getData(res);
 
     assert(Number(p.id) === ids.product);
   });
 
   await test('UPDATE PRODUCT', async () => {
     const res = await request('PUT', `/products/${ids.product}`, {
+      name: 'Updated Product',
       price: 99.99
     });
 
@@ -175,7 +218,7 @@ async function testProducts() {
 }
 
 // ========================
-// 4. ORDERS
+// ORDERS
 // ========================
 async function testOrders() {
   log.title('ORDERS');
@@ -191,17 +234,19 @@ async function testOrders() {
     });
 
     assert(res.status === 201);
-    ids.order = id(res);
+
+    ids.order = getId(res);
+    assert(ids.order, 'Order ID missing');
   });
 
   await test('GET ORDERS', async () => {
     const res = await request('GET', '/orders');
-    assert(Array.isArray(unwrap(res)));
+    assert(Array.isArray(getData(res)));
   });
 
   await test('GET ORDER BY ID', async () => {
     const res = await request('GET', `/orders/${ids.order}`);
-    const o = unwrap(res);
+    const o = getData(res);
 
     assert(Number(o.id) === ids.order);
   });
@@ -216,7 +261,7 @@ async function testOrders() {
 }
 
 // ========================
-// 5. ORDER ITEMS
+// ORDER ITEMS
 // ========================
 async function testOrderItems() {
   log.title('ORDER ITEMS');
@@ -226,21 +271,23 @@ async function testOrderItems() {
       orderId: ids.order,
       productId: ids.product,
       quantity: 2,
-      price: 200
+      price: 10
     });
 
     assert(res.status === 201);
-    ids.orderItem = id(res);
+
+    ids.orderItem = getId(res);
+    assert(ids.orderItem, 'OrderItem ID missing');
   });
 
   await test('GET ORDER ITEMS', async () => {
     const res = await request('GET', '/order-items');
-    assert(Array.isArray(unwrap(res)));
+    assert(Array.isArray(getData(res)));
   });
 
   await test('GET ORDER ITEM BY ID', async () => {
     const res = await request('GET', `/order-items/${ids.orderItem}`);
-    const oi = unwrap(res);
+    const oi = getData(res);
 
     assert(Number(oi.id) === ids.orderItem);
   });
@@ -255,42 +302,42 @@ async function testOrderItems() {
 }
 
 // ========================
-// CLEANUP (ORDER SAFE FK)
+// CLEANUP
 // ========================
 async function cleanup() {
   log.title('CLEANUP');
 
   await test('DELETE ORDER ITEM', async () => {
     const res = await request('DELETE', `/order-items/${ids.orderItem}`);
-    assert(res.status === 200 || res.status === 204);
+    assert([200, 204].includes(res.status));
   });
 
   await test('DELETE ORDER', async () => {
     const res = await request('DELETE', `/orders/${ids.order}`);
-    assert(res.status === 200 || res.status === 204);
+    assert([200, 204].includes(res.status));
   });
 
   await test('DELETE PRODUCT', async () => {
     const res = await request('DELETE', `/products/${ids.product}`);
-    assert(res.status === 200 || res.status === 204);
+    assert([200, 204].includes(res.status));
   });
 
   await test('DELETE CATEGORY', async () => {
     const res = await request('DELETE', `/categories/${ids.category}`);
-    assert(res.status === 200 || res.status === 204);
+    assert([200, 204].includes(res.status));
   });
 
   await test('DELETE USER', async () => {
     const res = await request('DELETE', `/users/${ids.user}`);
-    assert(res.status === 200 || res.status === 204);
+    assert([200, 204].includes(res.status));
   });
 }
 
 // ========================
-// RUN ALL
+// RUN
 // ========================
 async function run() {
-  log.title('STARTING API TESTS');
+  console.log('🚀 STARTING API TESTS...\n');
 
   await testUsers();
   await testCategories();
@@ -300,10 +347,11 @@ async function run() {
 
   await cleanup();
 
-  log.title('ALL TESTS PASSED ✔');
+  console.log('\n✅ ALL TESTS PASSED');
 }
 
 run().catch(err => {
-  console.error(err);
+  console.error('\n❌ TEST FAILED');
+  console.error(err.message);
   process.exit(1);
 });

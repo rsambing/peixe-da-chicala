@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.controller.js';
+import { validateRequest } from '../middlewares/validate.middleware.js';
+import { createUserSchema, updateUserSchema } from '../schemas/validation.schemas.js';
+
 const userRouter = Router();
 const userController = new UserController();
 
@@ -27,7 +30,7 @@ const userController = new UserController();
  *       201:
  *         description: Utilizador criado com sucesso
  */
-userRouter.post('/users',userController.createUser);
+userRouter.post('/users', validateRequest(createUserSchema), userController.createUser);
 
 /**
  * @openapi
@@ -89,7 +92,7 @@ userRouter.get('/users',userController.getAllUsers);
  *       200:
  *         description: Utilizador atualizado
  */
-userRouter.put('/users/:id',userController.updateUser);
+userRouter.put('/users/:id', validateRequest(updateUserSchema), userController.updateUser);
 
 /**
  * @openapi

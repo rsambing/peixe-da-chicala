@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { OrderItemController } from "../controllers/orderItem.controller.js";
+import { validateRequest } from "../middlewares/validate.middleware.js";
+import { createOrderItemSchema, updateOrderItemSchema } from "../schemas/validation.schemas.js";
 
 const orderItemRouter = Router();
 const orderItemController = new OrderItemController();
@@ -30,7 +32,7 @@ const orderItemController = new OrderItemController();
  *       201:
  *         description: Item de encomenda criado com sucesso
  */
-orderItemRouter.post('/order-items', (req, res) => orderItemController.createOrderItem(req, res));
+orderItemRouter.post('/order-items', validateRequest(createOrderItemSchema), (req, res) => orderItemController.createOrderItem(req, res));
 
 /**
  * @openapi
@@ -89,7 +91,7 @@ orderItemRouter.get('/order-items', (req, res) => orderItemController.getAllOrde
  *       200:
  *         description: Item de encomenda atualizado com sucesso
  */
-orderItemRouter.put('/order-items/:id', (req, res) => orderItemController.updateOrderItem(req, res));
+orderItemRouter.put('/order-items/:id', validateRequest(updateOrderItemSchema), (req, res) => orderItemController.updateOrderItem(req, res));
 
 /**
  * @openapi

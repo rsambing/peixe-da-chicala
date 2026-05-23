@@ -7,17 +7,21 @@ export class UserService {
     }
     return await prisma.user.create({ data });
   }
+
   async getUserById(id) {
     return await prisma.user.findUnique({ where: { id } });
   }
+
   async getAllUsers() {
     return await prisma.user.findMany();
   }
+
   async updateUser(id, data) {
     return await prisma.user.update({ where: { id }, data });
   }
-  async deleteUser(id){
-    return await prisma.user.delete({where:{id}});
+
+  async deleteUser(id) {
+    return await prisma.user.delete({ where: { id } });
   }
 
   async getUserByEmail(email) {

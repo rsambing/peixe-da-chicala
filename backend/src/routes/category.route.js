@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { CategoryController } from "../controllers/category.controller.js";
+import { validateRequest } from "../middlewares/validate.middleware.js";
+import { createCategorySchema, updateCategorySchema } from "../schemas/validation.schemas.js";
 
 const categoryRouter = Router();
 const categoryController = new CategoryController();
@@ -24,7 +26,7 @@ const categoryController = new CategoryController();
  *       201:
  *         description: Categoria criada com sucesso
  */
-categoryRouter.post('/categories', categoryController.createCategory);
+categoryRouter.post('/categories', validateRequest(createCategorySchema), categoryController.createCategory);
 
 /**
  * @openapi
@@ -84,7 +86,7 @@ categoryRouter.get('/categories', categoryController.getAllCategories);
  *       200:
  *         description: Categoria atualizada
  */
-categoryRouter.put('/categories/:id', categoryController.updateCategory);
+categoryRouter.put('/categories/:id', validateRequest(updateCategorySchema), categoryController.updateCategory);
 
 /**
  * @openapi

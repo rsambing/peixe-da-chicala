@@ -1,5 +1,9 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import { ProductController } from '../controllers/product.controller.js';
+import { upload } from '../middlewares/upload-multer.js';
+import { validateRequest } from '../middlewares/validate.middleware.js';
+import { createProductSchema, updateProductSchema } from '../schemas/validation.schemas.js';
+
 const productRouter = Router();
 const productController = new ProductController();
 
@@ -13,7 +17,7 @@ const productController = new ProductController();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -23,15 +27,21 @@ const productController = new ProductController();
  *                 type: string
  *               price:
  *                 type: number
- *               image:
- *                 type: string
  *               categoryId:
  *                 type: integer
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Produto criado com sucesso
  */
-productRouter.post('/products',productController.createProduct);
+productRouter.post(
+  '/products',
+  upload.single('image'),
+  validateRequest(createProductSchema),
+  productController.createProduct
+);
 
 /**
  * @openapi
@@ -50,7 +60,10 @@ productRouter.post('/products',productController.createProduct);
  *       200:
  *         description: Produto encontrado
  */
-productRouter.get('/products/:id',productController.getProductById);
+productRouter.get(
+  '/products/:id',
+  productController.getProductById
+);
 
 /**
  * @openapi
@@ -63,7 +76,10 @@ productRouter.get('/products/:id',productController.getProductById);
  *       200:
  *         description: Lista de produtos
  */
-productRouter.get('/products',productController.getAllProducts);
+productRouter.get(
+  '/products',
+  productController.getAllProducts
+);
 
 /**
  * @openapi
@@ -72,16 +88,10 @@ productRouter.get('/products',productController.getAllProducts);
  *     summary: Atualizar produto
  *     tags:
  *       - Produtos
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -91,13 +101,27 @@ productRouter.get('/products',productController.getAllProducts);
  *                 type: string
  *               price:
  *                 type: number
+ *               categoryId:
+ *                 type: integer
  *               image:
  *                 type: string
+ *                 format: binary
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
  *         description: Produto atualizado
  */
-productRouter.put('/products/:id',productController.updateProduct);
+productRouter.put(
+  '/products/:id',
+  upload.single('image'),
+  validateRequest(updateProductSchema),
+  productController.updateProduct
+);
 
 /**
  * @openapi
@@ -116,6 +140,9 @@ productRouter.put('/products/:id',productController.updateProduct);
  *       204:
  *         description: Produto eliminado
  */
-productRouter.delete('/products/:id',productController.deleteProduct);
+productRouter.delete(
+  '/products/:id',
+  productController.deleteProduct
+);
 
 export default productRouter;

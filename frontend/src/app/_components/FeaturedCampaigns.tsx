@@ -69,7 +69,7 @@ export function FeaturedCampaigns() {
   }, [isPaused]);
 
   return (
-    <section className="py-20 px-6 bg-gray-50 dark:bg-gray-900/40 overflow-hidden">
+    <section id="explorar" className="py-20 px-6 bg-gray-50 dark:bg-gray-900/40 overflow-hidden">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
@@ -81,7 +81,7 @@ export function FeaturedCampaigns() {
               Projectos que estão a transformar comunidades em Angola
             </p>
           </div>
-          <Link href="/explorar">
+          <Link href="/#explorar">
             <Button variant="outline" size="sm">
               Ver Todas →
             </Button>

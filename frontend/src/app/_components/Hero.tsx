@@ -48,6 +48,7 @@ export function Hero() {
   return (
     <section
       ref={heroRef}
+      id="inicio"
       className="relative w-full min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Background Image */}
@@ -95,12 +96,12 @@ export function Hero() {
         </p>
 
         <div data-hero-cta className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/campanhas/criar">
+          <Link href="/#cta">
             <Button variant="accent" size="xl" className="text-base px-10">
               Começar Campanha
             </Button>
           </Link>
-          <Link href="/explorar">
+          <Link href="/#explorar">
             <Button
               variant="outline"
               size="xl"

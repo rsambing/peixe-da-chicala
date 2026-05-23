@@ -17,7 +17,7 @@ export default function NotFound() {
       <div className="max-w-3xl w-full text-center relative z-10">
         {/* Animated Illustration Placeholder / Icon */}
         <div className="relative inline-block mb-12">
-          <div className="size-32 sm:size-40 bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-2xl border border-black/5 dark:border-white/5 flex items-center justify-center mx-auto rotate-12 transition-transform hover:rotate-0 duration-500">
+          <div className="size-32 sm:size-40 bg-card rounded-[2.5rem] shadow-2xl border border-border flex items-center justify-center mx-auto rotate-12 transition-transform hover:rotate-0 duration-500">
             <span className="text-6xl sm:text-7xl">🔍</span>
           </div>
           {/* Floating Sparkles */}
@@ -34,8 +34,7 @@ export default function NotFound() {
         </h1>
         
         <p className="text-xl sm:text-2xl text-muted-foreground mb-12 leading-relaxed max-w-2xl mx-auto">
-          Parece que a causa que procura mudou de lugar ou o link expirou. 
-          Não se preocupe, ainda pode fazer a diferença por outro caminho.
+          Parece que este link não existe (ou mudou). Volte ao início ou abra o cardápio.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -45,10 +44,10 @@ export default function NotFound() {
               Voltar ao Início
             </Button>
           </Link>
-          <Link href="/explorar" className="w-full sm:w-auto">
-            <Button variant="outline" size="xl" className="w-full sm:w-auto px-10 gap-3 border-black/10 dark:border-white/10">
+          <Link href="/menu" className="w-full sm:w-auto">
+            <Button variant="outline" size="xl" className="w-full sm:w-auto px-10 gap-3 border-border">
               <FiSearch className="size-5" />
-              Explorar Projetos
+              Abrir Cardápio
             </Button>
           </Link>
         </div>

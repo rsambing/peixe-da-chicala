@@ -30,7 +30,7 @@ export function HowItWorks() {
   ];
 
   return (
-    <section className="py-24 px-6 bg-white dark:bg-transparent">
+    <section id="como-funciona" className="py-24 px-6 bg-white dark:bg-transparent">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="max-w-3xl mb-16">
@@ -90,7 +90,7 @@ export function HowItWorks() {
               <p className="text-muted-foreground">O nosso suporte local está disponível para o ajudar em cada etapa.</p>
             </div>
           </div>
-          <Link href="/como-funciona">
+          <Link href="/#faq">
             <button className="px-8 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full font-display font-bold text-foreground hover:bg-gray-50 transition-colors shadow-sm cursor-pointer">
               Ler Guia Completo
             </button>

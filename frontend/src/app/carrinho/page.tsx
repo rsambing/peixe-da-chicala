@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -11,7 +12,6 @@ const DELIVERY_FEE_KZ = 1000;
 
 export default function CartPage() {
   const { detailedLines, subtotalKz, setQuantity, removeItem, itemsCount } = useCart();
-
   const totalKz = subtotalKz + (detailedLines.length ? DELIVERY_FEE_KZ : 0);
 
   return (
@@ -40,8 +40,20 @@ export default function CartPage() {
               <div className="space-y-3">
                 {detailedLines.map((line) => (
                   <Card key={line.itemId}>
-                    <CardContent className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-                      <div className="flex-1 min-w-0">
+                    <CardContent className="p-4 flex gap-4 items-center">
+                      {/* Imagem do prato */}
+                      <div className="relative size-20 shrink-0 rounded-xl overflow-hidden bg-muted">
+                        <Image
+                          src={line.item.imageUrl}
+                          alt={line.item.name}
+                          fill
+                          className="object-cover"
+                          sizes="80px"
+                        />
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0 space-y-1">
                         <p className="font-display font-black text-foreground truncate">
                           {line.item.name}
                         </p>
@@ -49,24 +61,41 @@ export default function CartPage() {
                           {formatCurrency(line.item.priceKz)} · {line.item.shortDesc}
                         </p>
                         {line.note && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Observações: {line.note}
+                          <p className="text-xs text-muted-foreground">
+                            Obs: {line.note}
                           </p>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          min={1}
-                          value={String(line.quantity)}
-                          onChange={(e) => setQuantity(line.itemId, parseInt(e.target.value || "1"))}
-                          className="w-24"
-                        />
+                      {/* Quantidade + total + remover */}
+                      <div className="flex flex-col items-end gap-2 shrink-0">
                         <Badge variant="default">{formatCurrency(line.lineTotalKz)}</Badge>
-                        <Button variant="ghost" size="sm" onClick={() => removeItem(line.itemId)}>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setQuantity(line.itemId, line.quantity - 1)}
+                            className="size-7 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-sm font-bold transition-colors"
+                          >
+                            −
+                          </button>
+                          <span className="w-6 text-center font-display font-black text-sm">
+                            {line.quantity}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setQuantity(line.itemId, line.quantity + 1)}
+                            className="size-7 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-sm font-bold transition-colors"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(line.itemId)}
+                          className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                        >
                           Remover
-                        </Button>
+                        </button>
                       </div>
                     </CardContent>
                   </Card>
@@ -101,7 +130,12 @@ export default function CartPage() {
                 </div>
 
                 <Link href="/checkout">
-                  <Button variant="accent" size="lg" className="w-full" disabled={!detailedLines.length}>
+                  <Button
+                    variant="accent"
+                    size="lg"
+                    className="w-full"
+                    disabled={!detailedLines.length}
+                  >
                     Finalizar Pedido
                   </Button>
                 </Link>

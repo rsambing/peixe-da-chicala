@@ -1,7 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import gsap from "gsap";
 import { Button, Badge, Card, CardContent } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import type { MenuItem } from "@/lib/menu";
@@ -10,9 +12,21 @@ import { useCart } from "@/lib/cart-context";
 
 export function MenuItemCard({ item }: { item: MenuItem }) {
   const { addItem } = useCart();
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  function handleAdd() {
+    addItem(item.id, 1);
+    if (btnRef.current) {
+      gsap.fromTo(
+        btnRef.current,
+        { scale: 0.88 },
+        { scale: 1, duration: 0.55, ease: "elastic.out(1, 0.4)" }
+      );
+    }
+  }
 
   return (
-    <Card className={cn(!item.isAvailable && "opacity-60")}> 
+    <Card className={cn(!item.isAvailable && "opacity-60")}>
       <CardContent className="p-0">
         <Link href={`/menu/${item.id}`} className="block">
           <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-muted">
@@ -20,7 +34,7 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
               src={item.imageUrl}
               alt={item.name}
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-500 hover:scale-105"
               sizes="(max-width: 768px) 100vw, 33vw"
             />
             {!item.isAvailable && (
@@ -58,16 +72,19 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
             </div>
           </div>
 
-          <Button
+          <button
+            ref={btnRef}
             type="button"
-            variant="accent"
-            size="sm"
-            className="w-full"
             disabled={!item.isAvailable}
-            onClick={() => addItem(item.id, 1)}
+            onClick={handleAdd}
+            className={cn(
+              "w-full rounded-full font-display font-bold text-sm h-9 px-4 transition-colors",
+              "bg-accent text-accent-foreground hover:bg-accent/90",
+              "disabled:pointer-events-none disabled:opacity-50"
+            )}
           >
             Adicionar ao Carrinho
-          </Button>
+          </button>
         </div>
       </CardContent>
     </Card>

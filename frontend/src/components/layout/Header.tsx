@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import gsap from "gsap";
 import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart-context";
@@ -20,8 +21,9 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const { itemsCount } = useCart();
+  const cartBtnRef = useRef<HTMLAnchorElement>(null);
+  const prevCountRef = useRef(itemsCount);
 
-  /* On non-hero pages, always use solid style */
   const isHomePage = pathname === "/";
   const useSolidStyle = !isHomePage || scrolled;
 
@@ -30,6 +32,18 @@ export function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Bounce cart button when item is added
+  useEffect(() => {
+    if (itemsCount > prevCountRef.current && cartBtnRef.current) {
+      gsap.fromTo(
+        cartBtnRef.current,
+        { scale: 1 },
+        { scale: 1.28, yoyo: true, repeat: 1, duration: 0.14, ease: "power2.out" }
+      );
+    }
+    prevCountRef.current = itemsCount;
+  }, [itemsCount]);
 
   return (
     <header
@@ -55,36 +69,30 @@ export function Header() {
           />
         </Link>
 
-        {/* Desktop Nav (centered to match Hero width) */}
+        {/* Desktop Nav */}
         <div className="absolute left-0 right-0 mx-auto max-w-5xl flex items-center justify-center pointer-events-none">
           <nav className="hidden md:flex items-center gap-1 pointer-events-auto">
-            {NAV_LINKS.map((link) => {
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "px-4 py-2 text-sm font-display font-semibold rounded-full transition-all flex items-center gap-1.5",
-                    useSolidStyle
-                      ? "text-foreground hover:bg-muted"
-                      : "text-white/90 hover:text-white hover:bg-white/10"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "px-4 py-2 text-sm font-display font-semibold rounded-full transition-all flex items-center gap-1.5",
+                  useSolidStyle
+                    ? "text-foreground hover:bg-muted"
+                    : "text-white/90 hover:text-white hover:bg-white/10"
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <Link href="/carrinho">
-            <Button
-              variant={useSolidStyle ? "primary" : "accent"}
-              size="sm"
-              className="hidden sm:inline-flex"
-            >
+          <Link ref={cartBtnRef} href="/carrinho" className="hidden sm:inline-flex">
+            <Button variant={useSolidStyle ? "primary" : "accent"} size="sm">
               Carrinho{itemsCount ? ` (${itemsCount})` : ""}
             </Button>
           </Link>
@@ -125,25 +133,18 @@ export function Header() {
       {mobileOpen && (
         <div className="md:hidden border-t bg-card/95 backdrop-blur-md">
           <nav className="flex flex-col p-4 gap-1">
-            {NAV_LINKS.map((link) => {
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={cn(
-                    "px-4 py-3 text-sm font-display font-bold rounded-xl transition-all flex items-center gap-3",
-                    "text-foreground hover:bg-muted"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="px-4 py-3 text-sm font-display font-bold rounded-xl transition-all flex items-center gap-3 text-foreground hover:bg-muted"
+              >
+                {link.label}
+              </Link>
+            ))}
             <Link href="/menu" onClick={() => setMobileOpen(false)}>
-              <Button variant="primary" className="w-full mt-2">
-                Fazer Pedido
-              </Button>
+              <Button variant="primary" className="w-full mt-2">Fazer Pedido</Button>
             </Link>
             <Link href="/carrinho" onClick={() => setMobileOpen(false)}>
               <Button variant="outline" className="w-full mt-2">
@@ -151,9 +152,7 @@ export function Header() {
               </Button>
             </Link>
             <Link href="/acompanhar" onClick={() => setMobileOpen(false)}>
-              <Button variant="ghost" className="w-full mt-2">
-                Acompanhar Pedido
-              </Button>
+              <Button variant="ghost" className="w-full mt-2">Acompanhar Pedido</Button>
             </Link>
           </nav>
         </div>

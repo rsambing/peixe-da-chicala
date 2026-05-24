@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Button, Card, CardContent, Input, Badge, ProgressBar } from "@/components/ui";
+import gsap from "gsap";
+import { Clock, Flame, Truck, CheckCircle2 } from "lucide-react";
+import { Button, Card, CardContent, Input, Badge } from "@/components/ui";
 import { ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/menu";
 
 const ORDER_FLOW: OrderStatus[] = [
@@ -13,25 +15,34 @@ const ORDER_FLOW: OrderStatus[] = [
   "ENTREGUE",
 ];
 
+const STEP_ICONS: Record<OrderStatus, React.ElementType> = {
+  RECEBIDO: Clock,
+  EM_PREPARACAO: Flame,
+  SAIU_PARA_ENTREGA: Truck,
+  ENTREGUE: CheckCircle2,
+};
+
+const STEP_COLORS: Record<OrderStatus, string> = {
+  RECEBIDO: "text-muted-foreground",
+  EM_PREPARACAO: "text-accent",
+  SAIU_PARA_ENTREGA: "text-primary",
+  ENTREGUE: "text-success",
+};
+
 function statusFromCode(code: string): OrderStatus {
   const cleaned = code.trim();
   if (!cleaned) return "RECEBIDO";
   let sum = 0;
   for (const ch of cleaned) sum += ch.charCodeAt(0);
-  const idx = sum % ORDER_FLOW.length;
-  return ORDER_FLOW[idx];
+  return ORDER_FLOW[sum % ORDER_FLOW.length];
 }
 
 function estimateFromStatus(status: OrderStatus) {
   switch (status) {
-    case "RECEBIDO":
-      return "45–60 min";
-    case "EM_PREPARACAO":
-      return "30–45 min";
-    case "SAIU_PARA_ENTREGA":
-      return "10–20 min";
-    case "ENTREGUE":
-      return "Concluído";
+    case "RECEBIDO": return "45–60 min";
+    case "EM_PREPARACAO": return "30–45 min";
+    case "SAIU_PARA_ENTREGA": return "10–20 min";
+    case "ENTREGUE": return "Concluído";
   }
 }
 
@@ -44,8 +55,57 @@ export function TrackOrderClient() {
 
   const status = useMemo(() => statusFromCode(submitted), [submitted]);
   const stepIndex = ORDER_FLOW.indexOf(status);
-  const progress = ((stepIndex + 1) / ORDER_FLOW.length) * 100;
   const estimate = estimateFromStatus(status);
+
+  const resultRef = useRef<HTMLDivElement>(null);
+  const stepsRef = useRef<HTMLDivElement>(null);
+  const progressFillRef = useRef<HTMLDivElement>(null);
+  const activeIconRef = useRef<gsap.core.Tween | null>(null);
+
+  useEffect(() => {
+    if (!submitted.trim()) return;
+    const result = resultRef.current;
+    const stepsEl = stepsRef.current;
+    const fill = progressFillRef.current;
+    if (!result || !stepsEl || !fill) return;
+
+    // Card entrance
+    gsap.fromTo(result,
+      { autoAlpha: 0, y: 24, scale: 0.97 },
+      { autoAlpha: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" }
+    );
+
+    // Progress bar animate from 0
+    const targetPct = ((stepIndex + 1) / ORDER_FLOW.length) * 100;
+    gsap.fromTo(fill,
+      { width: "0%" },
+      { width: `${targetPct}%`, duration: 1.1, ease: "power2.out", delay: 0.35 }
+    );
+
+    // Steps stagger entrance
+    const steps = Array.from(stepsEl.children);
+    gsap.fromTo(steps,
+      { autoAlpha: 0, x: -20 },
+      { autoAlpha: 1, x: 0, duration: 0.45, stagger: 0.1, ease: "power2.out", delay: 0.3 }
+    );
+
+    // Pulse on the active step icon
+    activeIconRef.current?.kill();
+    const activeIcon = stepsEl.children[stepIndex]?.querySelector("[data-active-icon]");
+    if (activeIcon) {
+      activeIconRef.current = gsap.to(activeIcon, {
+        scale: 1.25,
+        yoyo: true,
+        repeat: -1,
+        duration: 0.75,
+        ease: "sine.inOut",
+      });
+    }
+
+    return () => {
+      activeIconRef.current?.kill();
+    };
+  }, [submitted, stepIndex]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -84,49 +144,83 @@ export function TrackOrderClient() {
       </Card>
 
       {submitted.trim() && (
-        <Card>
-          <CardContent className="p-6 space-y-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm text-muted-foreground">Código</p>
-                <p className="font-display font-black text-foreground text-xl">
-                  {submitted}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Tempo estimado: <span className="text-foreground">{estimate}</span>
-                </p>
+        <div ref={resultRef} style={{ visibility: "hidden" }}>
+          <Card>
+            <CardContent className="p-6 space-y-6">
+              {/* Header */}
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">Código</p>
+                  <p className="font-display font-black text-foreground text-xl tracking-wide">
+                    {submitted}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Tempo estimado:{" "}
+                    <span className="text-foreground font-medium">{estimate}</span>
+                  </p>
+                </div>
+                <Badge variant="primary">{ORDER_STATUS_LABELS[status]}</Badge>
               </div>
-              <Badge variant="primary">{ORDER_STATUS_LABELS[status]}</Badge>
-            </div>
 
-            <ProgressBar value={progress} size="md" showLabel />
+              {/* Custom animated progress bar */}
+              <div className="relative h-2.5 w-full bg-muted rounded-full overflow-hidden">
+                <div
+                  ref={progressFillRef}
+                  className="absolute left-0 top-0 h-full bg-primary rounded-full"
+                  style={{ width: "0%" }}
+                />
+              </div>
 
-            <div className="space-y-2">
-              {ORDER_FLOW.map((s, idx) => {
-                const done = idx <= stepIndex;
-                return (
-                  <div key={s} className="flex items-center gap-3">
-                    <div
-                      className={
-                        done
-                          ? "size-3 rounded-full bg-accent"
-                          : "size-3 rounded-full bg-muted"
-                      }
-                    />
-                    <p className={done ? "text-foreground" : "text-muted-foreground"}>
-                      {ORDER_STATUS_LABELS[s]}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+              {/* Steps with icons */}
+              <div ref={stepsRef} className="space-y-3">
+                {ORDER_FLOW.map((s, idx) => {
+                  const done = idx <= stepIndex;
+                  const isActive = idx === stepIndex;
+                  const Icon = STEP_ICONS[s];
 
-            <p className="text-sm text-muted-foreground">
-              Nota: nesta versão inicial, o estado é uma simulação (sem backend).
-            </p>
-          </CardContent>
-        </Card>
+                  return (
+                    <div key={s} className="flex items-center gap-3">
+                      <div
+                        className={cn(
+                          "flex items-center justify-center size-9 rounded-full transition-colors",
+                          done ? "bg-primary/15" : "bg-muted"
+                        )}
+                      >
+                        <Icon
+                          data-active-icon={isActive ? "true" : undefined}
+                          className={cn(
+                            "size-4 transition-colors",
+                            done ? STEP_COLORS[s] : "text-muted-foreground/40"
+                          )}
+                        />
+                      </div>
+                      <p className={cn(
+                        "font-display font-semibold transition-colors",
+                        done ? "text-foreground" : "text-muted-foreground/50"
+                      )}>
+                        {ORDER_STATUS_LABELS[s]}
+                      </p>
+                      {isActive && (
+                        <span className="ml-auto text-xs text-muted-foreground animate-pulse">
+                          agora
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-xs text-muted-foreground">
+                Versão inicial — estado simulado sem backend.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );
+}
+
+function cn(...classes: (string | undefined | false)[]) {
+  return classes.filter(Boolean).join(" ");
 }

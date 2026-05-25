@@ -46,9 +46,10 @@ export default function Home() {
             </RevealOnScroll>
           </div>
 
-          {/* Marquee — full bleed, sem padding lateral */}
+          {/* Marquee — full bleed. w-max é obrigatório para translateX(-50%) ser calculado
+              em relação ao conteúdo e não ao viewport */}
           <div className="mt-6 overflow-hidden">
-            <div className="flex gap-4 animate-marquee pl-6 hover:[animation-play-state:paused]">
+            <div className="flex gap-4 w-max animate-marquee pl-6 hover:[animation-play-state:paused]">
               {[...popular, ...popular].map((item, i) => (
                 <PopularCard key={`${item.id}-${i}`} item={item} />
               ))}

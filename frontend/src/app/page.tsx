@@ -7,6 +7,7 @@ import { Button, Card, CardContent, Badge, RevealOnScroll } from "@/components/u
 import { MENU_CATEGORIES, MENU_ITEMS } from "@/lib/menu";
 import { HeroSection } from "./_components/HeroSection";
 import { PopularCard } from "./_components/PopularCard";
+import { SobreSection } from "./_components/SobreSection";
 import type { MenuCategoryId } from "@/lib/menu";
 
 const CATEGORY_ICONS: Record<MenuCategoryId, React.ElementType> = {
@@ -56,53 +57,7 @@ export default function Home() {
         </section>
 
         {/* ── Sobre ───────────────────────────────────────────────── */}
-        <section className="py-16 px-6">
-          <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-            <RevealOnScroll className="h-full">
-              <Card className="h-full">
-                <CardContent className="p-8 space-y-4">
-                  <Badge variant="primary">Sobre o restaurante</Badge>
-                  <h2 className="text-3xl font-display font-black text-foreground">
-                    O sabor da brasa, com tempero da casa
-                  </h2>
-                  <p className="text-muted-foreground">
-                    No Peixe da Chicala, trabalhamos com ingredientes frescos e grelha no ponto.
-                    O nosso objetivo é simples: servir bem e entregar rápido.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Link href="/menu" className="flex-1">
-                      <Button variant="accent" size="lg" className="w-full">
-                        Abrir Cardápio
-                      </Button>
-                    </Link>
-                    <Link href="/acompanhar" className="flex-1">
-                      <Button variant="outline" size="lg" className="w-full">
-                        Acompanhar Pedido
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            </RevealOnScroll>
-
-            {/* overflow-hidden no Card garante que a imagem respeita o border-radius */}
-            <RevealOnScroll delay={0.15} className="h-full">
-              <Card className="h-full overflow-hidden">
-                <CardContent className="p-0 h-full">
-                  <div className="relative h-full min-h-[260px]">
-                    <Image
-                      src="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=1200&q=80"
-                      alt="Grelha e carvão"
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </RevealOnScroll>
-          </div>
-        </section>
+        <SobreSection />
 
         {/* ── Categorias ──────────────────────────────────────────── */}
         <section id="categorias" className="py-16 px-6">

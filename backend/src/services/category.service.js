@@ -2,7 +2,11 @@ import prisma from "../lib/prisma.js";
 
 export class CategoryService {
   async createCategory(data) {
-    return await prisma.category.create({ data });
+    return await prisma.category.create({
+      data: {
+        name: data.name
+      }
+    });
   }
 
   async getCategoryById(id) {
@@ -14,7 +18,11 @@ export class CategoryService {
   }
 
   async updateCategory(id, data) {
-    return await prisma.category.update({ where: { id }, data });
+    const updateData = {};
+
+    if (data.name !== undefined) updateData.name = data.name;
+
+    return await prisma.category.update({ where: { id }, data: updateData });
   }
 
   async deleteCategory(id) {

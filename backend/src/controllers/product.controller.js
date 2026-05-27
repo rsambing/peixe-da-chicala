@@ -6,33 +6,44 @@ const imgBBService = new ImgBBService();
 
 export class ProductController
 {
-    async createProduct(req, res)
+  async createProduct(req, res)
+{
+    try
     {
-        try
+        if(!req.file)
         {
-            let imageUrl = null;
-
-            if(req.file)
-            {
-                imageUrl = await imgBBService.uploadImage(req.file);
-            }
-
-            const productData = {
-                ...req.body,
-                image: imageUrl
-            };
-
-            const product = await productService.createProduct(productData);
-
-            res.status(201).json(product);
-        }
-        catch (error)
-        {
-            res.status(400).json({
-                error: error.message
+            return res.status(400).json({
+                error: 'Imagem obrigatória'
             });
         }
+
+        const uploadResult =
+            await imgBBService.uploadImage(req.file);
+
+        const productData = {
+            name: req.body.name,
+            description: req.body.description,
+            price: Number(req.body.price),
+            categoryId: Number(req.body.categoryId),
+
+            imageUrl: uploadResult.imageUrl,
+            imageDeleteUrl: uploadResult.deleteUrl
+        };
+
+        const product =
+            await productService.createProduct(productData);
+
+        return res.status(201).json(product);
     }
+    catch(error)
+    {
+        console.error(error);
+
+        return res.status(400).json({
+            error: error.message
+        });
+    }
+}
 
     async getProductById(req, res)
     {
@@ -119,28 +130,40 @@ export class ProductController
         }
     }
 
-    async deleteProduct(req, res)
+async deleteProduct(req, res)
+{
+    try
     {
-        try
+        const id = Number(req.params.id);
+
+        if(isNaN(id))
         {
-            const id = Number(req.params.id);
-
-            if (isNaN(id))
-            {
-                return res.status(400).json({
-                    error: 'ID inválido'
-                });
-            }
-
-            await productService.deleteProduct(id);
-
-            res.status(204).send();
-        }
-        catch (error)
-        {
-            res.status(400).json({
-                error: error.message
+            return res.status(400).json({
+                error: 'ID inválido'
             });
         }
+
+        const product =
+            await productService.getProductById(id);
+
+        if(product.imageDeleteUrl)
+        {
+            await imgBBService.deleteImage(
+                product.imageDeleteUrl
+            );
+        }
+
+        await productService.deleteProduct(id);
+
+        res.status(204).send();
     }
+    catch(error)
+    {
+        console.error(error);
+
+        res.status(400).json({
+            error: error.message
+        });
+    }
+}
 }

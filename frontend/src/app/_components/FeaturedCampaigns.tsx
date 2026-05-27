@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { CampaignCard } from "@/components/features/campaigns";
 import { Button } from "@/components/ui";
@@ -13,60 +13,72 @@ const featured = mockCampaigns
   .slice(0, 8);
 
 export function FeaturedCampaigns() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [current, setCurrent] = useState(0);
+  const [transition, setTransition] = useState("transform 0.5s ease-in-out");
   const [isPaused, setIsPaused] = useState(false);
-
-  const updateScrollButtons = () => {
-    if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-  };
-
-  const scroll = (direction: "left" | "right") => {
-    if (!scrollRef.current) return;
-    const cardWidth = scrollRef.current.querySelector("article")?.clientWidth || 320;
-    const gap = 24;
-    const scrollAmount = (cardWidth + gap) * 1; // Unico card por vez para scroll manual
-    
-    scrollRef.current.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth",
-    });
-  };
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const currentRef = useRef(0);
 
   useEffect(() => {
-    const ref = scrollRef.current;
-    if (!ref) return;
-
-    updateScrollButtons();
-    ref.addEventListener("scroll", updateScrollButtons, { passive: true });
-    return () => ref.removeEventListener("scroll", updateScrollButtons);
+    const update = () => {
+      if (containerRef.current) setContainerWidth(containerRef.current.clientWidth);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
 
-  // Auto-rotation effect
+  const gap = 24;
+  const minCard = 240;
+  const visibleCount = containerWidth > 0
+    ? Math.max(1, Math.floor((containerWidth + gap) / (minCard + gap)))
+    : 3;
+  const cardWidth = containerWidth > 0
+    ? (containerWidth - gap * (visibleCount - 1)) / visibleCount
+    : minCard;
+  const maxIndex = Math.max(0, featured.length - visibleCount);
+
+  const jumpInstant = useCallback((index: number) => {
+    setTransition("none");
+    currentRef.current = index;
+    setCurrent(index);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTransition("transform 0.5s ease-in-out");
+      });
+    });
+  }, []);
+
+  const goNext = useCallback(() => {
+    const prev = currentRef.current;
+    if (prev >= maxIndex) {
+      jumpInstant(0);
+    } else {
+      setTransition("transform 0.5s ease-in-out");
+      currentRef.current = prev + 1;
+      setCurrent(prev + 1);
+    }
+  }, [maxIndex, jumpInstant]);
+
+  const goPrev = useCallback(() => {
+    const prev = currentRef.current;
+    if (prev <= 0) {
+      jumpInstant(maxIndex);
+    } else {
+      setTransition("transform 0.5s ease-in-out");
+      currentRef.current = prev - 1;
+      setCurrent(prev - 1);
+    }
+  }, [maxIndex, jumpInstant]);
+
   useEffect(() => {
     if (isPaused) return;
-
-    const interval = setInterval(() => {
-      if (!scrollRef.current) return;
-      
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      const isAtEnd = scrollLeft >= scrollWidth - clientWidth - 20;
-      
-      if (isAtEnd) {
-        scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        const cardWidth = scrollRef.current.querySelector("article")?.clientWidth || 320;
-        const gap = 24;
-        scrollRef.current.scrollBy({ left: cardWidth + gap, behavior: "smooth" });
-      }
-    }, 1000); // interval de 2.5 segundos
-
+    const interval = setInterval(goNext, 1500);
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, goNext]);
+
+  const translateX = current * (cardWidth + gap);
 
   return (
     <section id="explorar" className="py-20 px-6 bg-gray-50 dark:bg-gray-900/40 overflow-hidden">
@@ -89,52 +101,46 @@ export function FeaturedCampaigns() {
         </div>
 
         {/* Carousel */}
-        <div 
-          className="relative group"
+        <div
+          className="relative"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {/* Navigation buttons */}
-          {canScrollLeft && (
-            <button
-              onClick={() => scroll("left")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 size-12 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-foreground hover:bg-gray-50 dark:hover:bg-gray-700 transition-all hover:scale-110 -translate-x-6"
-              aria-label="Anterior"
-            >
-              <FiChevronLeft className="size-6" />
-            </button>
-          )}
-
-          {canScrollRight && (
-            <button
-              onClick={() => scroll("right")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 size-12 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-foreground hover:bg-gray-50 dark:hover:bg-gray-700 transition-all hover:scale-110 translate-x-6"
-              aria-label="Próximo"
-            >
-              <FiChevronRight className="size-6" />
-            </button>
-          )}
-
-          {/* Scrollable container */}
-          <div
-            ref={scrollRef}
-            className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
+          {/* Navigation buttons — sempre visíveis */}
+          <button
+            onClick={goPrev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 size-12 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-foreground hover:bg-gray-50 dark:hover:bg-gray-700 transition-all hover:scale-110 -translate-x-6"
+            aria-label="Anterior"
           >
-            {featured.map((campaign, idx) => (
-              <div
-                key={campaign.id}
-                className="flex-none w-[240px] sm:w-[280px] snap-start"
-                style={{
-                  animation: `fadeInUp 0.5s ease-out ${idx * 0.1}s both`,
-                }}
-              >
-                <CampaignCard campaign={campaign} compact />
-              </div>
-            ))}
+            <FiChevronLeft className="size-6" />
+          </button>
+
+          <button
+            onClick={goNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 size-12 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-foreground hover:bg-gray-50 dark:hover:bg-gray-700 transition-all hover:scale-110 translate-x-6"
+            aria-label="Próximo"
+          >
+            <FiChevronRight className="size-6" />
+          </button>
+
+          {/* Slide container */}
+          <div ref={containerRef} className="overflow-hidden">
+            <div
+              className="flex gap-6"
+              style={{
+                transform: `translateX(-${translateX}px)`,
+                transition,
+              }}
+            >
+              {featured.map((campaign) => (
+                <div
+                  key={campaign.id}
+                  style={{ width: `${cardWidth}px`, flexShrink: 0 }}
+                >
+                  <CampaignCard campaign={campaign} compact />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

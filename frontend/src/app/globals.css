@@ -65,38 +65,38 @@
    ================================================================ */
 :root {
   /* Light base */
-  --background: #fff7ed;
+  --background: #fff5f5;
   --foreground: #0f172a;
 
   --card: #ffffff;
   --card-foreground: #0f172a;
 
-  /* Grelha / brasa */
-  --primary: #ff4400;
+  /* Brasa — vermelho fogo profundo */
+  --primary: #c41a00;
   --primary-foreground: #ffffff;
 
-  --secondary: #ffe4d5;
+  --secondary: #fee2e2;
   --secondary-foreground: #0f172a;
 
-  --muted: #fff1e7;
+  --muted: #fff1f2;
   --muted-foreground: #475569;
 
-  /* Chamas */
-  --accent: #ffaa00;
+  /* Chama — laranja vivo do topo da chama */
+  --accent: #ff5c00;
   --accent-foreground: #111827;
 
-  --destructive: #ef4444;
+  --destructive: #9f0f0f;
   --destructive-foreground: #ffffff;
 
   --success: #22c55e;
   --success-foreground: #052e16;
 
-  --warning: #ffaa00;
+  --warning: #f59e0b;
   --warning-foreground: #111827;
 
-  --border: #fed7aa;
-  --input: #fed7aa;
-  --ring: #ff5500;
+  --border: #fecaca;
+  --input: #fecaca;
+  --ring: #c41a00;
 }
 
 /* ================================================================
@@ -109,8 +109,8 @@
   --card: #0b0b0b;
   --card-foreground: #ffffff;
 
-  --primary: #ff4400;
-  --primary-foreground: #0b0b0b;
+  --primary: #e02010;
+  --primary-foreground: #ffffff;
 
   --secondary: #1a1a1a;
   --secondary-foreground: #ffffff;
@@ -118,21 +118,21 @@
   --muted: #111111;
   --muted-foreground: #a1a1aa;
 
-  --accent: #ffaa00;
-  --accent-foreground: #0b0b0b;
+  --accent: #ff5c00;
+  --accent-foreground: #ffffff;
 
-  --destructive: #ef4444;
-  --destructive-foreground: #0b0b0b;
+  --destructive: #9f0f0f;
+  --destructive-foreground: #ffffff;
 
   --success: #22c55e;
   --success-foreground: #0b0b0b;
 
-  --warning: #ffaa00;
+  --warning: #f59e0b;
   --warning-foreground: #0b0b0b;
 
   --border: #1f1f1f;
   --input: #2a2a2a;
-  --ring: #ffaa00;
+  --ring: #ff5c00;
 }
 
 /* ================================================================

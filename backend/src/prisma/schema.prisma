@@ -21,7 +21,8 @@ model Product {
   name        String
   description String
   price       Float
-  image       String
+  imageUrl        String?
+  imageDeleteUrl  String?
   available   Boolean   @default(true)
 
   categoryId  Int

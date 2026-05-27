@@ -30,6 +30,8 @@ export const createProductSchema = z.object({
   description: z.string().min(5, 'Descrição deve ter pelo menos 5 caracteres'),
   price: z.string().or(z.number()).pipe(z.coerce.number().positive('Preço deve ser positivo')),
   categoryId: z.string().or(z.number()).pipe(z.coerce.number().int('Category ID deve ser um número inteiro')),
+  imageUrl: z.string().optional(),
+  imageDeleteUrl: z.string().optional(),
   available: z.boolean().optional().default(true)
 });
 
@@ -38,6 +40,8 @@ export const updateProductSchema = z.object({
   description: z.string().min(5, 'Descrição deve ter pelo menos 5 caracteres').optional(),
   price: z.string().or(z.number()).pipe(z.coerce.number().positive('Preço deve ser positivo')).optional(),
   categoryId: z.string().or(z.number()).pipe(z.coerce.number().int('Category ID deve ser um número inteiro')).optional(),
+  imageUrl: z.string().optional(),
+  imageDeleteUrl: z.string().optional(),
   available: z.boolean().optional()
 }).strict();
 

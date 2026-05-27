@@ -22,7 +22,7 @@ export function PopularCard({ item }: { item: MenuItem }) {
   }
 
   return (
-    <Link href={`/menu/${item.id}`} className="block shrink-0 w-44 group">
+    <Link href={`/menu/${item.id}`} className="block shrink-0 w-52 group">
       <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
         {/* Image */}
         <Image

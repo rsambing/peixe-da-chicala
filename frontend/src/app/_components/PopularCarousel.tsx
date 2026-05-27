@@ -6,7 +6,7 @@ import { PopularCard } from "./PopularCard";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const popular = MENU_ITEMS.filter((i) => i.tags?.includes("mais pedido"));
-const CARD_W = 176; // w-44
+const CARD_W = 208; // w-52
 const GAP = 16;     // gap-4
 
 export function PopularCarousel() {

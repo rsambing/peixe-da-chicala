@@ -41,3 +41,4 @@ export {
 } from "./Select";
 export { Skeleton, EmptyState, Pagination } from "./Skeleton";
 export { Toaster } from "./Toaster";
+export { RevealOnScroll } from "./RevealOnScroll";

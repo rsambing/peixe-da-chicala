@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fish, Utensils, Waves, Coffee, Cookie, Plus } from "lucide-react";
 import { Button, Card, CardContent, Badge, RevealOnScroll } from "@/components/ui";
-import { MENU_CATEGORIES, MENU_ITEMS } from "@/lib/menu";
+import { MENU_CATEGORIES } from "@/lib/menu";
 import { HeroSection } from "./_components/HeroSection";
-import { PopularCard } from "./_components/PopularCard";
+import { PopularCarousel } from "./_components/PopularCarousel";
 import { SobreSection } from "./_components/SobreSection";
 import type { MenuCategoryId } from "@/lib/menu";
 
@@ -20,8 +20,6 @@ const CATEGORY_ICONS: Record<MenuCategoryId, React.ElementType> = {
 };
 
 export default function Home() {
-  const popular = MENU_ITEMS.filter((i) => i.tags?.includes("mais pedido"));
-
   return (
     <>
       <Header />
@@ -29,7 +27,7 @@ export default function Home() {
         <HeroSection />
 
         {/* ── Pratos Mais Pedidos ──────────────────────────────────── */}
-        <section id="mais-pedidos" className="py-16 overflow-hidden">
+        <section id="mais-pedidos" className="py-16">
           <div className="mx-auto max-w-7xl px-6 space-y-6">
             <RevealOnScroll className="flex items-end justify-between gap-4 flex-wrap">
               <div>
@@ -44,16 +42,8 @@ export default function Home() {
                 <Button variant="outline">Ver Cardápio</Button>
               </Link>
             </RevealOnScroll>
-          </div>
 
-          {/* Marquee — full bleed. w-max é obrigatório para translateX(-50%) ser calculado
-              em relação ao conteúdo e não ao viewport */}
-          <div className="mt-6 overflow-hidden">
-            <div className="flex gap-4 w-max animate-marquee pl-6 hover:[animation-play-state:paused]">
-              {[...popular, ...popular].map((item, i) => (
-                <PopularCard key={`${item.id}-${i}`} item={item} />
-              ))}
-            </div>
+            <PopularCarousel />
           </div>
         </section>
 

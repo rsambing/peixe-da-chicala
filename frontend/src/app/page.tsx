@@ -6,6 +6,7 @@ import { Fish, Utensils, Waves, Coffee, Cookie, Plus } from "lucide-react";
 import { Button, RevealOnScroll } from "@/components/ui";
 import { HeroSection } from "./_components/HeroSection";
 import { PopularCarousel } from "./_components/PopularCarousel";
+import { HowItWorks } from "./_components/HowItWorks";
 import { SobreSection } from "./_components/SobreSection";
 
 export default function Home() {
@@ -35,6 +36,9 @@ export default function Home() {
             <PopularCarousel />
           </div>
         </section>
+
+        {/* ── Como Funciona ───────────────────────────────────────── */}
+        <HowItWorks />
 
         {/* ── Sobre ───────────────────────────────────────────────── */}
         <SobreSection />

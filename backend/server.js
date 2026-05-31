@@ -4,6 +4,7 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 
 import { swaggerSpec } from './docs/swagger.js';
+import authRouter from './src/routes/auth.route.js';
 import userRouter from './src/routes/user.route.js';
 import categoryRouter from './src/routes/category.route.js';
 import productRouter from './src/routes/product.route.js';
@@ -23,6 +24,7 @@ app.use(
 );
 
 // Registar rotas
+app.use(authRouter);
 app.use(userRouter);
 app.use(categoryRouter);
 app.use(productRouter);

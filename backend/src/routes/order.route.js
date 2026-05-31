@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { OrderController } from "../controllers/order.controller.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
+import { authenticate, authorize } from "../middlewares/auth.middleware.js";
 import { createOrderSchema, updateOrderSchema } from "../schemas/validation.schemas.js";
 
 const orderRouter = Router();
@@ -57,7 +58,7 @@ orderRouter.post('/orders', validateRequest(createOrderSchema), (req, res) => or
  *       404:
  *         description: Encomenda não encontrada
  */
-orderRouter.get('/orders/:id', (req, res) => orderController.getOrderById(req, res));
+orderRouter.get('/orders/:id', authenticate, authorize('ADMIN', 'ATENDENTE'), (req, res) => orderController.getOrderById(req, res));
 
 /**
  * @openapi
@@ -70,7 +71,7 @@ orderRouter.get('/orders/:id', (req, res) => orderController.getOrderById(req, r
  *       200:
  *         description: Lista de encomendas
  */
-orderRouter.get('/orders', (req, res) => orderController.getAllOrders(req, res));
+orderRouter.get('/orders', authenticate, authorize('ADMIN', 'ATENDENTE'), (req, res) => orderController.getAllOrders(req, res));
 
 /**
  * @openapi
@@ -95,7 +96,7 @@ orderRouter.get('/orders', (req, res) => orderController.getAllOrders(req, res))
  *       200:
  *         description: Encomenda atualizada com sucesso
  */
-orderRouter.put('/orders/:id', validateRequest(updateOrderSchema), (req, res) => orderController.updateOrder(req, res));
+orderRouter.put('/orders/:id', authenticate, authorize('ADMIN', 'ATENDENTE'), validateRequest(updateOrderSchema), (req, res) => orderController.updateOrder(req, res));
 
 /**
  * @openapi
@@ -114,6 +115,6 @@ orderRouter.put('/orders/:id', validateRequest(updateOrderSchema), (req, res) =>
  *       204:
  *         description: Encomenda deletada com sucesso
  */
-orderRouter.delete('/orders/:id', (req, res) => orderController.deleteOrder(req, res));
+orderRouter.delete('/orders/:id', authenticate, authorize('ADMIN'), (req, res) => orderController.deleteOrder(req, res));
 
 export default orderRouter;

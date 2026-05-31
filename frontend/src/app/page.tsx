@@ -8,6 +8,7 @@ import { HeroSection } from "./_components/HeroSection";
 import { PopularCarousel } from "./_components/PopularCarousel";
 import { HowItWorks } from "./_components/HowItWorks";
 import { SobreSection } from "./_components/SobreSection";
+import { TestimonialsSection } from "./_components/TestimonialsSection";
 
 export default function Home() {
   return (
@@ -288,6 +289,10 @@ export default function Home() {
             </RevealOnScroll>
           </div>
         </section>
+
+        {/* ── Testemunhos ─────────────────────────────────────────── */}
+        <TestimonialsSection />
+
       </main>
       <Footer />
     </>

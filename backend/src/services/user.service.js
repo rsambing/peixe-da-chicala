@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import prisma from '../lib/prisma.js';
 
 export class UserService {
@@ -6,13 +7,15 @@ export class UserService {
       throw new Error("Email already exists");
     }
 
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
     return await prisma.user.create({
       data: {
         name: data.name,
         email: data.email,
-        password: data.password,
-        role: data.role ?? 'customer'
-      }
+        password: hashedPassword,
+        role: data.role ?? 'ATENDENTE',
+      },
     });
   }
 
@@ -29,7 +32,7 @@ export class UserService {
 
     if (data.name !== undefined) updateData.name = data.name;
     if (data.email !== undefined) updateData.email = data.email;
-    if (data.password !== undefined) updateData.password = data.password;
+    if (data.password !== undefined) updateData.password = await bcrypt.hash(data.password, 10);
     if (data.role !== undefined) updateData.role = data.role;
 
     return await prisma.user.update({ where: { id }, data: updateData });

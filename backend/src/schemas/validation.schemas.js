@@ -1,18 +1,26 @@
 import { z } from 'zod';
 
+const roleEnum = z.enum(['ADMIN', 'ATENDENTE']);
+
+// AUTH SCHEMAS
+export const loginSchema = z.object({
+  email: z.string().email('Email inválido'),
+  password: z.string().min(1, 'Password obrigatória'),
+});
+
 // USER SCHEMAS
 export const createUserSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-  role: z.string().optional().default('customer')
+  role: roleEnum.optional().default('ATENDENTE'),
 });
 
 export const updateUserSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').optional(),
   email: z.string().email('Email inválido').optional(),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres').optional(),
-  role: z.string().optional()
+  role: roleEnum.optional(),
 }).strict();
 
 // CATEGORY SCHEMAS

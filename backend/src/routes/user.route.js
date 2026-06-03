@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.controller.js';
 import { validateRequest } from '../middlewares/validate.middleware.js';
+import { authenticate } from '../middlewares/authenticate.middleware.js';
+import { authorize } from '../middlewares/authorize.middleware.js';
 import { createUserSchema, updateUserSchema } from '../schemas/validation.schemas.js';
 
 const userRouter = Router();
@@ -30,7 +32,13 @@ const userController = new UserController();
  *       201:
  *         description: Utilizador criado com sucesso
  */
-userRouter.post('/users', validateRequest(createUserSchema), userController.createUser);
+userRouter.post(
+  '/users',
+  authenticate,
+  authorize('ADMIN'),
+  validateRequest(createUserSchema),
+  userController.createUser
+);
 
 /**
  * @openapi
@@ -49,7 +57,7 @@ userRouter.post('/users', validateRequest(createUserSchema), userController.crea
  *       200:
  *         description: Utilizador encontrado
  */
-userRouter.get('/users/:id',userController.getUserById);
+userRouter.get('/users/:id', authenticate, authorize('ADMIN'), userController.getUserById);
 
 /**
  * @openapi
@@ -62,7 +70,7 @@ userRouter.get('/users/:id',userController.getUserById);
  *       200:
  *         description: Lista de utilizadores
  */
-userRouter.get('/users',userController.getAllUsers);
+userRouter.get('/users', authenticate, authorize('ADMIN'), userController.getAllUsers);
 
 /**
  * @openapi
@@ -92,7 +100,13 @@ userRouter.get('/users',userController.getAllUsers);
  *       200:
  *         description: Utilizador atualizado
  */
-userRouter.put('/users/:id', validateRequest(updateUserSchema), userController.updateUser);
+userRouter.put(
+  '/users/:id',
+  authenticate,
+  authorize('ADMIN'),
+  validateRequest(updateUserSchema),
+  userController.updateUser
+);
 
 /**
  * @openapi
@@ -111,6 +125,6 @@ userRouter.put('/users/:id', validateRequest(updateUserSchema), userController.u
  *       204:
  *         description: Utilizador eliminado
  */
-userRouter.delete('/users/:id',userController.deleteUser);
+userRouter.delete('/users/:id', authenticate, authorize('ADMIN'), userController.deleteUser);
 
 export default userRouter;

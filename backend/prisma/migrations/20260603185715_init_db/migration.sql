@@ -1,10 +1,13 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'ATENDENTE');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" TEXT NOT NULL DEFAULT 'customer',
+    "role" "Role" NOT NULL DEFAULT 'ATENDENTE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -16,8 +19,8 @@ CREATE TABLE "Product" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
-    "image" TEXT NOT NULL,
-    "deleteImage" TEXT NOT NULL,
+    "imageUrl" TEXT,
+    "imageDeleteUrl" TEXT,
     "available" BOOLEAN NOT NULL DEFAULT true,
     "categoryId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -1,19 +1,27 @@
+import 'dotenv/config';
 import fs from 'fs';
 
 // ========================
 // CONFIG
 // ========================
 const BASE_URL = 'http://localhost:3000';
+let authToken = null;
 
 // ========================
 // HTTP CLIENT (JSON)
 // ========================
 async function request(method, endpoint, body = null) {
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+
+  if (authToken) {
+    headers.Authorization = `Bearer ${authToken}`;
+  }
+
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method,
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers,
     body: body ? JSON.stringify(body) : null
   });
 
@@ -34,8 +42,15 @@ async function request(method, endpoint, body = null) {
 // HTTP CLIENT (FORM DATA)
 // ========================
 async function requestFormData(endpoint, formData) {
+  const headers = {};
+
+  if (authToken) {
+    headers.Authorization = `Bearer ${authToken}`;
+  }
+
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'POST',
+    headers,
     body: formData
   });
 
@@ -102,7 +117,7 @@ async function testUsers() {
       name: 'User Test',
       email: `user${Date.now()}@test.com`,
       password: '123456',
-      role: 'customer'
+      role: 'ATENDENTE'
     });
 
     assert(res.status === 201, `Expected 201, got ${res.status}`);
@@ -163,7 +178,7 @@ async function testCategories() {
 
   await test('UPDATE CATEGORY', async () => {
     const res = await request('PUT', `/categories/${ids.category}`, {
-      name: 'Updated Category'
+      name: `Updated Category ${Date.now()}`
     });
 
     assert(res.status === 200, `Expected 200, got ${res.status}`);
@@ -184,8 +199,15 @@ async function testProducts() {
     formData.append('price', '10');
     formData.append('categoryId', String(ids.category));
 
-    const buffer = fs.readFileSync('./test-image.jpg');
-    formData.append('image', new Blob([buffer]), 'test.jpg');
+    const imageBuffer = fs.existsSync('./test-image.jpg')
+      ? fs.readFileSync('./test-image.jpg')
+      : Buffer.from(
+          '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDAREAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAQFBv/EABcBAQADAAAAAAAAAAAAAAAAAAEAAhH/2gAIAQEAAD8AvwD/2Q==',
+          'base64'
+        );
+
+    const imageBlob = new Blob([imageBuffer], { type: 'image/jpeg' });
+    formData.append('image', imageBlob, 'test.jpg');
 
     const res = await requestFormData('/products', formData);
 
@@ -336,9 +358,24 @@ async function cleanup() {
 // ========================
 // RUN
 // ========================
+async function authenticateAdmin() {
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+  const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!';
+
+  const res = await request('POST', '/auth/login', {
+    email: adminEmail,
+    password: adminPassword
+  });
+
+  assert(res.status === 200, `Expected 200 for admin login, got ${res.status}`);
+  authToken = res.data?.token;
+  assert(authToken, 'Admin token missing');
+}
+
 async function run() {
   console.log('🚀 STARTING API TESTS...\n');
 
+  await authenticateAdmin();
   await testUsers();
   await testCategories();
   await testProducts();

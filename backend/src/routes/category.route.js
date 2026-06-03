@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { CategoryController } from "../controllers/category.controller.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
+import { authenticate } from "../middlewares/authenticate.middleware.js";
+import { authorize } from "../middlewares/authorize.middleware.js";
 import { createCategorySchema, updateCategorySchema } from "../schemas/validation.schemas.js";
 
 const categoryRouter = Router();
@@ -26,7 +28,13 @@ const categoryController = new CategoryController();
  *       201:
  *         description: Categoria criada com sucesso
  */
-categoryRouter.post('/categories', validateRequest(createCategorySchema), categoryController.createCategory);
+categoryRouter.post(
+  '/categories',
+  authenticate,
+  authorize('ADMIN', 'ATENDENTE'),
+  validateRequest(createCategorySchema),
+  categoryController.createCategory
+);
 
 /**
  * @openapi
@@ -86,7 +94,13 @@ categoryRouter.get('/categories', categoryController.getAllCategories);
  *       200:
  *         description: Categoria atualizada
  */
-categoryRouter.put('/categories/:id', validateRequest(updateCategorySchema), categoryController.updateCategory);
+categoryRouter.put(
+  '/categories/:id',
+  authenticate,
+  authorize('ADMIN', 'ATENDENTE'),
+  validateRequest(updateCategorySchema),
+  categoryController.updateCategory
+);
 
 /**
  * @openapi
@@ -105,6 +119,11 @@ categoryRouter.put('/categories/:id', validateRequest(updateCategorySchema), cat
  *       204:
  *         description: Categoria eliminada
  */
-categoryRouter.delete('/categories/:id', categoryController.deleteCategory);
+categoryRouter.delete(
+  '/categories/:id',
+  authenticate,
+  authorize('ADMIN', 'ATENDENTE'),
+  categoryController.deleteCategory
+);
 
 export default categoryRouter;

@@ -10,28 +10,21 @@ export class ProductController
 {
     try
     {
-        if(!req.file)
-        {
-            return res.status(400).json({
-                error: 'Imagem obrigatória'
-            });
-        }
-
-        const uploadResult =
-            await imgBBService.uploadImage(req.file);
-
         const productData = {
             name: req.body.name,
             description: req.body.description,
             price: Number(req.body.price),
-            categoryId: Number(req.body.categoryId),
-
-            imageUrl: uploadResult.imageUrl,
-            imageDeleteUrl: uploadResult.deleteUrl
+            categoryId: Number(req.body.categoryId)
         };
 
-        const product =
-            await productService.createProduct(productData);
+        if (req.file)
+        {
+            const uploadResult = await imgBBService.uploadImage(req.file);
+            productData.imageUrl = uploadResult.imageUrl;
+            productData.imageDeleteUrl = uploadResult.deleteUrl;
+        }
+
+        const product = await productService.createProduct(productData);
 
         return res.status(201).json(product);
     }

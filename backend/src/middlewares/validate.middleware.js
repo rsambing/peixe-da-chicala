@@ -5,10 +5,12 @@ export const validateRequest = (schema) => {
       req.body = validated;
       next();
     } catch (error) {
-      const formattedErrors = error.errors.map((err) => ({
-        field: err.path.join('.'),
-        message: err.message
-      }));
+      const formattedErrors = Array.isArray(error.errors)
+        ? error.errors.map((err) => ({
+            field: err.path.join('.'),
+            message: err.message
+          }))
+        : [{ message: error.message }];
 
       res.status(400).json({
         error: 'Validação falhou',

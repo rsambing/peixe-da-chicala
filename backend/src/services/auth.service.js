@@ -1,35 +1,63 @@
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import prisma from '../lib/prisma.js';
+import bcrypt from 'bcrypt';
+import { UserService } from './user.service.js';
+
+const jwtSecret = process.env.JWT_SECRET;
+const jwtExpiresIn = process.env.JWT_EXPIRES_IN || '1d';
+
+const userService = new UserService();
 
 export class AuthService {
   async login(email, password) {
-    const user = await prisma.user.findUnique({ where: { email } });
+    if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
+      throw new Error('Credenciais inválidas');
+    }
+
+    const normalizedEmail = email.toLowerCase();
+    const user = await userService.getUserByEmail(normalizedEmail);
 
     if (!user) {
       throw new Error('Credenciais inválidas');
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatches = await bcrypt.compare(password, user.password);
 
-    if (!passwordMatch) {
+    if (!passwordMatches) {
       throw new Error('Credenciais inválidas');
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN ?? '8h' }
-    );
+    const token = this.generateToken({
+      id: user.id,
+      email: user.email,
+      role: user.role
+    });
 
     return {
       token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      user: this.getSafeUser(user)
     };
+  }
+
+  generateToken(payload) {
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET não está definido');
+    }
+
+    return jwt.sign(payload, jwtSecret, {
+      expiresIn: jwtExpiresIn,
+    });
+  }
+
+  verifyToken(token) {
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET não está definido');
+    }
+
+    return jwt.verify(token, jwtSecret);
+  }
+
+  getSafeUser(user) {
+    const { password, ...safeUser } = user;
+    return safeUser;
   }
 }

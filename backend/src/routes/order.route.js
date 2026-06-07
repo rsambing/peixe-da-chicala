@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { OrderController } from "../controllers/order.controller.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
-import { authenticate, authorize } from "../middlewares/auth.middleware.js";
+import { authenticate } from "../middlewares/authenticate.middleware.js";
+import { authorize } from "../middlewares/authorize.middleware.js";
 import { createOrderSchema, updateOrderSchema } from "../schemas/validation.schemas.js";
 
 const orderRouter = Router();
@@ -37,7 +38,13 @@ const orderController = new OrderController();
  *       201:
  *         description: Encomenda criada com sucesso
  */
-orderRouter.post('/orders', validateRequest(createOrderSchema), (req, res) => orderController.createOrder(req, res));
+orderRouter.post(
+  '/orders',
+  authenticate,
+  authorize('ADMIN', 'ATENDENTE'),
+  validateRequest(createOrderSchema),
+  (req, res) => orderController.createOrder(req, res)
+);
 
 /**
  * @openapi
@@ -96,7 +103,13 @@ orderRouter.get('/orders', authenticate, authorize('ADMIN', 'ATENDENTE'), (req, 
  *       200:
  *         description: Encomenda atualizada com sucesso
  */
-orderRouter.put('/orders/:id', authenticate, authorize('ADMIN', 'ATENDENTE'), validateRequest(updateOrderSchema), (req, res) => orderController.updateOrder(req, res));
+orderRouter.put(
+  '/orders/:id',
+  authenticate,
+  authorize('ADMIN', 'ATENDENTE'),
+  validateRequest(updateOrderSchema),
+  (req, res) => orderController.updateOrder(req, res)
+);
 
 /**
  * @openapi
@@ -115,6 +128,11 @@ orderRouter.put('/orders/:id', authenticate, authorize('ADMIN', 'ATENDENTE'), va
  *       204:
  *         description: Encomenda deletada com sucesso
  */
-orderRouter.delete('/orders/:id', authenticate, authorize('ADMIN'), (req, res) => orderController.deleteOrder(req, res));
+orderRouter.delete(
+  '/orders/:id',
+  authenticate,
+  authorize('ADMIN', 'ATENDENTE'),
+  (req, res) => orderController.deleteOrder(req, res)
+);
 
 export default orderRouter;

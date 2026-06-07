@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.controller.js';
 import { validateRequest } from '../middlewares/validate.middleware.js';
-import { authenticate, authorize } from '../middlewares/auth.middleware.js';
+import { authenticate } from '../middlewares/authenticate.middleware.js';
+import { authorize } from '../middlewares/authorize.middleware.js';
 import { createUserSchema, updateUserSchema } from '../schemas/validation.schemas.js';
 
 const userRouter = Router();
@@ -31,7 +32,13 @@ const userController = new UserController();
  *       201:
  *         description: Utilizador criado com sucesso
  */
-userRouter.post('/users', authenticate, authorize('ADMIN'), validateRequest(createUserSchema), userController.createUser);
+userRouter.post(
+  '/users',
+  authenticate,
+  authorize('ADMIN'),
+  validateRequest(createUserSchema),
+  userController.createUser
+);
 
 /**
  * @openapi
@@ -93,7 +100,13 @@ userRouter.get('/users', authenticate, authorize('ADMIN'), userController.getAll
  *       200:
  *         description: Utilizador atualizado
  */
-userRouter.put('/users/:id', authenticate, authorize('ADMIN'), validateRequest(updateUserSchema), userController.updateUser);
+userRouter.put(
+  '/users/:id',
+  authenticate,
+  authorize('ADMIN'),
+  validateRequest(updateUserSchema),
+  userController.updateUser
+);
 
 /**
  * @openapi

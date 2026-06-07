@@ -10,6 +10,7 @@ import categoryRouter from './src/routes/category.route.js';
 import productRouter from './src/routes/product.route.js';
 import orderRouter from './src/routes/order.route.js';
 import orderItemRouter from './src/routes/orderItem.route.js';
+import authRouter from './src/routes/auth.route.js';
 
 const app = express();
 
@@ -30,7 +31,6 @@ app.use(categoryRouter);
 app.use(productRouter);
 app.use(orderRouter);
 app.use(orderItemRouter);
-
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

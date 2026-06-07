@@ -10,7 +10,7 @@ const authController = new AuthController();
  * @openapi
  * /auth/login:
  *   post:
- *     summary: Autenticar utilizador
+ *     summary: Autenticar utilizador e obter token JWT
  *     tags:
  *       - Autenticação
  *     requestBody:
@@ -19,9 +19,6 @@ const authController = new AuthController();
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - email
- *               - password
  *             properties:
  *               email:
  *                 type: string
@@ -29,10 +26,8 @@ const authController = new AuthController();
  *                 type: string
  *     responses:
  *       200:
- *         description: Login bem-sucedido, retorna token JWT
- *       401:
- *         description: Credenciais inválidas
+ *         description: Autenticação bem-sucedida
  */
-authRouter.post('/auth/login', validateRequest(loginSchema), (req, res) => authController.login(req, res));
+authRouter.post('/auth/login', validateRequest(loginSchema), authController.login);
 
 export default authRouter;

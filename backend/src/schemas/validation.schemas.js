@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+const roleEnum = z.enum(['ADMIN', 'ATENDENTE']);
+
+// AUTH SCHEMAS
+export const loginSchema = z.object({
+  email: z.string().email('Email inválido'),
+  password: z.string().min(1, 'Password obrigatória'),
+});
+
 // USER SCHEMAS
 const roleEnum = z.enum(['ADMIN', 'ATENDENTE']);
 

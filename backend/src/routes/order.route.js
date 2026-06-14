@@ -65,7 +65,7 @@ orderRouter.post(
  *       404:
  *         description: Encomenda não encontrada
  */
-orderRouter.get('/orders/:id', (req, res) => orderController.getOrderById(req, res));
+orderRouter.get('/orders/:id', authenticate, authorize('ADMIN', 'ATENDENTE'), (req, res) => orderController.getOrderById(req, res));
 
 /**
  * @openapi
@@ -78,7 +78,7 @@ orderRouter.get('/orders/:id', (req, res) => orderController.getOrderById(req, r
  *       200:
  *         description: Lista de encomendas
  */
-orderRouter.get('/orders', (req, res) => orderController.getAllOrders(req, res));
+orderRouter.get('/orders', authenticate, authorize('ADMIN', 'ATENDENTE'), (req, res) => orderController.getAllOrders(req, res));
 
 /**
  * @openapi

@@ -61,7 +61,7 @@ orderItemRouter.post(
  *       404:
  *         description: Item de encomenda não encontrado
  */
-orderItemRouter.get('/order-items/:id', (req, res) => orderItemController.getOrderItemById(req, res));
+orderItemRouter.get('/order-items/:id', authenticate, authorize('ADMIN', 'ATENDENTE'), (req, res) => orderItemController.getOrderItemById(req, res));
 
 /**
  * @openapi
@@ -74,7 +74,7 @@ orderItemRouter.get('/order-items/:id', (req, res) => orderItemController.getOrd
  *       200:
  *         description: Lista de itens de encomenda
  */
-orderItemRouter.get('/order-items', (req, res) => orderItemController.getAllOrderItems(req, res));
+orderItemRouter.get('/order-items', authenticate, authorize('ADMIN', 'ATENDENTE'), (req, res) => orderItemController.getAllOrderItems(req, res));
 
 /**
  * @openapi

@@ -10,7 +10,6 @@ import categoryRouter from './src/routes/category.route.js';
 import productRouter from './src/routes/product.route.js';
 import orderRouter from './src/routes/order.route.js';
 import orderItemRouter from './src/routes/orderItem.route.js';
-import authRouter from './src/routes/auth.route.js';
 // device routes removed (FCM)
 
 const app = express();

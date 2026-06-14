@@ -5,11 +5,8 @@ const roleEnum = z.enum(['ADMIN', 'ATENDENTE']);
 // AUTH SCHEMAS
 export const loginSchema = z.object({
   email: z.string().email('Email inválido'),
-  password: z.string().min(1, 'Password obrigatória'),
+  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres')
 });
-
-// USER SCHEMAS
-const roleEnum = z.enum(['ADMIN', 'ATENDENTE']);
 
 export const createUserSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -25,10 +22,6 @@ export const updateUserSchema = z.object({
   role: roleEnum.optional()
 }).strict();
 
-export const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres')
-});
 
 // CATEGORY SCHEMAS
 export const createCategorySchema = z.object({

@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+      "build": "prisma generate && next build",
     "dev": "node server.js",
     "seed:admin": "node src/seed/admin.seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Toaster } from "@/components/ui";
 import CleanupBody from "@/components/CleanupBody";
 import "./globals.css";

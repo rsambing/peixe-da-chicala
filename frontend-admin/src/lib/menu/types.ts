@@ -1,4 +1,4 @@
-export type MenuCategoryId =
+﻿export type MenuCategoryId =
   | "peixes-grelhados"
   | "pratos-tradicionais"
   | "mariscos"

@@ -1,4 +1,4 @@
-import type { MenuCategory, MenuItem } from "./types";
+﻿import type { MenuCategory, MenuItem } from "./types";
 
 export const MENU_CATEGORIES: MenuCategory[] = [
   { id: "peixes-grelhados",    name: "Peixes Grelhados",    description: "Frescos, bem temperados e no ponto." },

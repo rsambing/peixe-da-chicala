@@ -141,7 +141,7 @@ export default function CategoriasPage() {
           <button
             type="button"
             onClick={() => newFileRef.current?.click()}
-            className="shrink-0 size-16 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-red-400 transition-colors overflow-hidden flex items-center justify-center"
+            className="shrink-0 size-16 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-zinc-400 transition-colors overflow-hidden flex items-center justify-center"
           >
             {newPreview ? (
               <Image src={newPreview} alt="preview" width={64} height={64} className="object-cover size-full" unoptimized />
@@ -163,13 +163,13 @@ export default function CategoriasPage() {
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && createCategory()}
             placeholder="Ex.: Peixes Grelhados"
-            className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-400"
+            className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-zinc-300"
           />
 
           <button
             onClick={createCategory}
             disabled={creating || !newName.trim()}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white font-bold text-sm transition-colors shrink-0"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 disabled:opacity-60 text-white font-bold text-sm transition-colors shrink-0"
           >
             <Plus className="size-4" />
             {creating ? "A criar…" : "Criar"}
@@ -224,13 +224,13 @@ export default function CategoriasPage() {
                     <button
                       type="button"
                       onClick={() => editFileRef.current?.click()}
-                      className="shrink-0 size-8 rounded-lg border border-dashed border-red-300 hover:border-red-500 overflow-hidden flex items-center justify-center transition-colors"
+                      className="shrink-0 size-8 rounded-lg border border-dashed border-zinc-300 hover:border-zinc-500 overflow-hidden flex items-center justify-center transition-colors"
                       title="Alterar imagem"
                     >
                       {editPreview ? (
                         <Image src={editPreview} alt="edit preview" width={32} height={32} className="object-cover size-full" unoptimized />
                       ) : (
-                        <ImagePlus className="size-3.5 text-red-400" />
+                        <ImagePlus className="size-3.5 text-gray-400" />
                       )}
                     </button>
                     <input
@@ -249,7 +249,7 @@ export default function CategoriasPage() {
                         if (e.key === "Enter") saveEdit();
                         if (e.key === "Escape") cancelEdit();
                       }}
-                      className="flex-1 rounded-lg border border-red-300 bg-transparent px-2 py-1 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400"
+                      className="flex-1 rounded-lg border border-zinc-300 bg-transparent px-2 py-1 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-300"
                     />
                   </div>
                 ) : (

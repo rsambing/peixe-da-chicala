@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { MENU_ITEMS, type MenuItem } from "@/lib/menu";

@@ -60,7 +60,7 @@ export default function DashboardPage() {
 
   const stats = [
     { label: "Total de Pedidos", value: orders.length, icon: ShoppingBag, color: "text-blue-600" },
-    { label: "Pedidos Activos", value: pending.length, icon: Clock, color: "text-red-500" },
+    { label: "Pedidos Activos", value: pending.length, icon: Clock, color: "text-zinc-400" },
     { label: "Produtos", value: products.length, icon: Package, color: "text-purple-600" },
     { label: "Receita (entregues)", value: fmt(revenue), icon: TrendingUp, color: "text-green-600" },
   ];
@@ -105,7 +105,7 @@ export default function DashboardPage() {
       <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
           <h2 className="font-bold text-gray-900 dark:text-white">Pedidos Recentes</h2>
-          <a href="/dashboard/pedidos" className="text-sm text-red-500 hover:underline">
+          <a href="/dashboard/pedidos" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors hover:underline">
             Ver todos →
           </a>
         </div>

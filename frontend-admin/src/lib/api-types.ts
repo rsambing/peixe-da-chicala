@@ -1,4 +1,4 @@
-export interface ApiCategory {
+﻿export interface ApiCategory {
   id: number;
   name: string;
   imageUrl: string | null;

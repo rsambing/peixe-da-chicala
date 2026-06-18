@@ -118,8 +118,8 @@ export default function PedidosPage() {
             className={[
               "px-3 py-1.5 rounded-full text-sm font-medium transition-colors",
               filter === f.value
-                ? "bg-red-500 text-white"
-                : "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-red-300",
+                ? "bg-zinc-900 text-white"
+                : "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-zinc-300",
             ].join(" ")}
           >
             {f.label}
@@ -186,7 +186,7 @@ export default function PedidosPage() {
                             value={order.status}
                             disabled={updating === order.id}
                             onChange={(e) => changeStatus(order.id, e.target.value)}
-                            className="appearance-none bg-transparent pr-6 cursor-pointer text-xs rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-red-400 disabled:opacity-50"
+                            className="appearance-none bg-transparent pr-6 cursor-pointer text-xs rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-zinc-300 disabled:opacity-50"
                           >
                             {STATUSES.map((s) => (
                               <option key={s.value} value={s.value}>
@@ -204,7 +204,7 @@ export default function PedidosPage() {
                         <button
                           onClick={(e) => { e.stopPropagation(); deleteOrder(order.id); }}
                           disabled={deleting === order.id}
-                          className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 text-gray-400 transition-colors disabled:opacity-50"
+                          className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-200 text-gray-400 transition-colors disabled:opacity-50"
                         >
                           <Trash2 className="size-4" />
                         </button>
@@ -213,7 +213,7 @@ export default function PedidosPage() {
 
                     {/* Expanded items */}
                     {expanded === order.id && order.items && order.items.length > 0 && (
-                      <tr key={`${order.id}-items`} className="bg-red-50/50 dark:bg-red-950/10">
+                      <tr key={`${order.id}-items`} className="bg-zinc-50/50 dark:bg-zinc-800/20">
                         <td colSpan={8} className="px-6 py-3">
                           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                             Itens do pedido

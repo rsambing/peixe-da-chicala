@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
@@ -18,7 +18,7 @@ const PLACEHOLDER =
   "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=400&q=60";
 
 const inputClass =
-  "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500";
+  "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-zinc-300";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -211,7 +211,7 @@ export default function ProdutosPage() {
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-sm transition-colors"
         >
           <Plus className="size-4" />
           Novo Produto
@@ -233,7 +233,7 @@ export default function ProdutosPage() {
       ) : products.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <p className="text-sm">Nenhum produto cadastrado.</p>
-          <button onClick={openCreate} className="mt-3 text-red-600 text-sm font-medium hover:underline">
+          <button onClick={openCreate} className="mt-3 text-zinc-600 text-sm font-medium hover:text-zinc-900 hover:underline">
             Criar o primeiro produto
           </button>
         </div>
@@ -272,7 +272,7 @@ export default function ProdutosPage() {
                     <p className="font-bold text-gray-900 dark:text-white truncate">{p.name}</p>
                     <p className="text-xs text-gray-400">{p.category?.name}</p>
                   </div>
-                  <p className="font-black text-red-600 shrink-0">{fmt(p.price)}</p>
+                  <p className="font-black text-zinc-900 dark:text-white shrink-0">{fmt(p.price)}</p>
                 </div>
                 <p className="text-xs text-gray-500 line-clamp-2">{p.description}</p>
                 <div className="flex gap-2 pt-1">
@@ -404,7 +404,7 @@ export default function ProdutosPage() {
                           sizes="80px"
                           unoptimized
                         />
-                        <div className="absolute inset-x-0 bottom-0 h-5 bg-red-500/80 flex items-center justify-center">
+                        <div className="absolute inset-x-0 bottom-0 h-5 bg-zinc-900/80 flex items-center justify-center">
                           <span className="text-white text-[9px] font-bold uppercase tracking-wide">Nova</span>
                         </div>
                         <button
@@ -423,7 +423,7 @@ export default function ProdutosPage() {
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 hover:border-red-500 text-sm text-gray-500 dark:text-gray-400 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 hover:border-zinc-500 text-sm text-gray-500 dark:text-gray-400 transition-colors"
                 >
                   <ImagePlus className="size-4" />
                   Adicionar fotos
@@ -444,7 +444,7 @@ export default function ProdutosPage() {
                   id="available"
                   checked={form.available}
                   onChange={(e) => setForm((f) => ({ ...f, available: e.target.checked }))}
-                  className="size-4 rounded accent-red-600"
+                  className="size-4 rounded accent-zinc-900"
                 />
                 <label htmlFor="available" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Disponível no cardápio
@@ -466,7 +466,7 @@ export default function ProdutosPage() {
               <button
                 onClick={saveProduct}
                 disabled={saving}
-                className="flex-1 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-bold text-sm transition-colors"
+                className="flex-1 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 disabled:opacity-60 text-white font-bold text-sm transition-colors"
               >
                 {saving ? "A guardar…" : editing ? "Guardar" : "Criar"}
               </button>

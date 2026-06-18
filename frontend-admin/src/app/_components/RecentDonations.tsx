@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { mockDonations } from "@/lib/mock";
 import { formatCurrency } from "@/lib/mock/helpers";

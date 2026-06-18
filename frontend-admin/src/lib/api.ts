@@ -1,4 +1,4 @@
-import type { ApiProduct, ApiCategory, ApiOrder, SiteSettings } from "./api-types";
+﻿import type { ApiProduct, ApiCategory, ApiOrder, SiteSettings } from "./api-types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 

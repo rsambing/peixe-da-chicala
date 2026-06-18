@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { UtensilsCrossed, ShoppingCart, Navigation, type LucideIcon } from "lucide-react";
 
 interface Step {

@@ -89,7 +89,7 @@ export default function PedidosPage() {
   const visible = filter === "ALL" ? orders : orders.filter((o) => o.status === filter);
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-8 space-y-4 md:space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-black text-gray-900 dark:text-white">Pedidos</h1>
@@ -132,112 +132,165 @@ export default function PedidosPage() {
         ))}
       </div>
 
-      {/* Table */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="p-6 space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+      {/* Loading skeleton */}
+      {loading && (
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-2xl animate-pulse shadow-sm" />
+          ))}
+        </div>
+      )}
+
+      {!loading && visible.length === 0 && (
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8 text-center text-sm text-gray-400">
+          Nenhum pedido encontrado.
+        </div>
+      )}
+
+      {!loading && visible.length > 0 && (
+        <>
+          {/* ── Mobile: cards ── */}
+          <div className="md:hidden space-y-3">
+            {visible.map((order) => (
+              <div key={order.id} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
+                <button
+                  className="w-full text-left px-4 py-3 flex items-start justify-between gap-3"
+                  onClick={() => setExpanded(expanded === order.id ? null : order.id)}
+                >
+                  <div className="space-y-0.5 min-w-0">
+                    <p className="font-mono font-bold text-xs text-gray-900 dark:text-white">{order.trackingCode}</p>
+                    <p className="font-medium text-sm text-gray-700 dark:text-gray-300 truncate">{order.customerName}</p>
+                    <p className="text-xs text-gray-400">{order.phone}</p>
+                  </div>
+                  <div className="text-right shrink-0 space-y-1">
+                    <p className="font-bold text-sm text-gray-900 dark:text-white">{fmt(order.total)}</p>
+                    <StatusBadge status={order.status} />
+                  </div>
+                </button>
+
+                {expanded === order.id && (
+                  <div className="border-t border-gray-50 dark:border-white/5 px-4 py-3 space-y-3">
+                    {order.address && (
+                      <p className="text-xs text-gray-500">📍 {order.address}</p>
+                    )}
+
+                    {/* Status select */}
+                    <div className="relative inline-flex items-center gap-2">
+                      <span className="text-xs text-gray-500">Estado:</span>
+                      <select
+                        value={order.status}
+                        disabled={updating === order.id}
+                        onChange={(e) => changeStatus(order.id, e.target.value)}
+                        className="appearance-none bg-gray-50 dark:bg-gray-800 pr-6 cursor-pointer text-xs rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-zinc-300 disabled:opacity-50"
+                      >
+                        {STATUSES.map((s) => (
+                          <option key={s.value} value={s.value}>{s.label}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 size-3 text-gray-400 pointer-events-none" />
+                    </div>
+
+                    {/* Items */}
+                    {order.items && order.items.length > 0 && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Itens</p>
+                        {order.items.map((item) => (
+                          <div key={item.id} className="flex justify-between text-sm text-gray-700 dark:text-gray-300">
+                            <span>{item.quantity}× {item.product?.name ?? `Produto #${item.productId}`}</span>
+                            <span className="font-bold">{fmt(item.price * item.quantity)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => deleteOrder(order.id)}
+                      disabled={deleting === order.id}
+                      className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
+                    >
+                      <Trash2 className="size-3.5" /> Eliminar pedido
+                    </button>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
-        ) : visible.length === 0 ? (
-          <div className="p-8 text-center text-sm text-gray-400">
-            Nenhum pedido encontrado.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100/60 dark:border-white/5 bg-gray-50 dark:bg-gray-800/50">
-                  {["Código", "Cliente", "Telefone", "Endereço", "Total", "Estado", "Data", ""].map((h) => (
-                    <th
-                      key={h}
-                      className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((order) => (
-                  <>
-                    <tr
-                      key={order.id}
-                      className="border-b border-gray-50 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-gray-800/30 cursor-pointer"
-                      onClick={() => setExpanded(expanded === order.id ? null : order.id)}
-                    >
-                      <td className="px-4 py-3 font-mono font-bold text-gray-900 dark:text-white text-xs">
-                        {order.trackingCode}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300 font-medium">
-                        {order.customerName}
-                      </td>
-                      <td className="px-4 py-3 text-gray-500">{order.phone}</td>
-                      <td className="px-4 py-3 text-gray-500 max-w-[160px] truncate">
-                        {order.address || "—"}
-                      </td>
-                      <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">
-                        {fmt(order.total)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
-                          <select
-                            value={order.status}
-                            disabled={updating === order.id}
-                            onChange={(e) => changeStatus(order.id, e.target.value)}
-                            className="appearance-none bg-transparent pr-6 cursor-pointer text-xs rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-zinc-300 disabled:opacity-50"
-                          >
-                            {STATUSES.map((s) => (
-                              <option key={s.value} value={s.value}>
-                                {s.label}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 size-3 text-gray-400 pointer-events-none" />
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-400 text-xs">
-                        {new Date(order.createdAt).toLocaleDateString("pt-AO")}
-                      </td>
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={(e) => { e.stopPropagation(); deleteOrder(order.id); }}
-                          disabled={deleting === order.id}
-                          className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-200 text-gray-400 transition-colors disabled:opacity-50"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </td>
-                    </tr>
 
-                    {/* Expanded items */}
-                    {expanded === order.id && order.items && order.items.length > 0 && (
-                      <tr key={`${order.id}-items`} className="bg-zinc-50/50 dark:bg-zinc-800/20">
-                        <td colSpan={8} className="px-6 py-3">
-                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                            Itens do pedido
-                          </p>
-                          <div className="space-y-1">
-                            {order.items.map((item) => (
-                              <div key={item.id} className="flex justify-between text-sm text-gray-700 dark:text-gray-300">
-                                <span>
-                                  {item.quantity}× {item.product?.name ?? `Produto #${item.productId}`}
-                                </span>
-                                <span className="font-bold">{fmt(item.price * item.quantity)}</span>
-                              </div>
-                            ))}
+          {/* ── Desktop: table ── */}
+          <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100/60 dark:border-white/5 bg-gray-50 dark:bg-gray-800/50">
+                    {["Código", "Cliente", "Telefone", "Endereço", "Total", "Estado", "Data", ""].map((h) => (
+                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {visible.map((order) => (
+                    <>
+                      <tr
+                        key={order.id}
+                        className="border-b border-gray-50 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-gray-800/30 cursor-pointer"
+                        onClick={() => setExpanded(expanded === order.id ? null : order.id)}
+                      >
+                        <td className="px-4 py-3 font-mono font-bold text-gray-900 dark:text-white text-xs">{order.trackingCode}</td>
+                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 font-medium">{order.customerName}</td>
+                        <td className="px-4 py-3 text-gray-500">{order.phone}</td>
+                        <td className="px-4 py-3 text-gray-500 max-w-[160px] truncate">{order.address || "—"}</td>
+                        <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{fmt(order.total)}</td>
+                        <td className="px-4 py-3">
+                          <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
+                            <select
+                              value={order.status}
+                              disabled={updating === order.id}
+                              onChange={(e) => changeStatus(order.id, e.target.value)}
+                              className="appearance-none bg-transparent pr-6 cursor-pointer text-xs rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-zinc-300 disabled:opacity-50"
+                            >
+                              {STATUSES.map((s) => (
+                                <option key={s.value} value={s.value}>{s.label}</option>
+                              ))}
+                            </select>
+                            <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 size-3 text-gray-400 pointer-events-none" />
                           </div>
                         </td>
+                        <td className="px-4 py-3 text-gray-400 text-xs">{new Date(order.createdAt).toLocaleDateString("pt-AO")}</td>
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deleteOrder(order.id); }}
+                            disabled={deleting === order.id}
+                            className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-200 text-gray-400 transition-colors disabled:opacity-50"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        </td>
                       </tr>
-                    )}
-                  </>
-                ))}
-              </tbody>
-            </table>
+                      {expanded === order.id && order.items && order.items.length > 0 && (
+                        <tr key={`${order.id}-items`} className="bg-zinc-50/50 dark:bg-zinc-800/20">
+                          <td colSpan={8} className="px-6 py-3">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Itens do pedido</p>
+                            <div className="space-y-1">
+                              {order.items.map((item) => (
+                                <div key={item.id} className="flex justify-between text-sm text-gray-700 dark:text-gray-300">
+                                  <span>{item.quantity}× {item.product?.name ?? `Produto #${item.productId}`}</span>
+                                  <span className="font-bold">{fmt(item.price * item.quantity)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

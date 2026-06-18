@@ -66,7 +66,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 md:p-8 space-y-6 md:space-y-8">
       <div>
         <h1 className="text-2xl font-black text-gray-900 dark:text-white">Dashboard</h1>
         <p className="text-sm text-gray-500 mt-1">Visão geral do restaurante</p>

@@ -203,7 +203,7 @@ export default function ProdutosPage() {
     p.images?.[0]?.imageUrl ?? p.imageUrl ?? PLACEHOLDER;
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-8 space-y-4 md:space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-black text-gray-900 dark:text-white">Produtos</h1>
@@ -298,8 +298,8 @@ export default function ProdutosPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/50 md:px-4">
+          <div className="w-full md:max-w-lg bg-white dark:bg-gray-900 md:rounded-2xl rounded-t-2xl shadow-2xl max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100/60 dark:border-white/5">
               <h2 className="font-bold text-gray-900 dark:text-white">
                 {editing ? "Editar Produto" : "Novo Produto"}

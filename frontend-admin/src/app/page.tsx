@@ -5,16 +5,13 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 
 export default function RootPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isReady } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.replace("/dashboard");
-    } else {
-      router.replace("/login");
-    }
-  }, [isAuthenticated, router]);
+    if (!isReady) return;
+    router.replace(isAuthenticated ? "/dashboard" : "/login");
+  }, [isAuthenticated, isReady, router]);
 
   return null;
 }

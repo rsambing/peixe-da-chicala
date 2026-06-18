@@ -32,15 +32,19 @@ export const updateCategorySchema = z.object({
   name: z.string().min(2, 'Nome da categoria deve ter pelo menos 2 caracteres').optional()
 }).strict();
 
+// Coerce string "true"/"false" from FormData to real boolean
+const booleanField = z.preprocess(
+  (v) => (v === 'true' || v === true ? true : v === 'false' || v === false ? false : v),
+  z.boolean()
+);
+
 // PRODUCT SCHEMAS
 export const createProductSchema = z.object({
   name: z.string().min(2, 'Nome do produto deve ter pelo menos 2 caracteres'),
   description: z.string().min(5, 'Descrição deve ter pelo menos 5 caracteres'),
   price: z.string().or(z.number()).pipe(z.coerce.number().positive('Preço deve ser positivo')),
   categoryId: z.string().or(z.number()).pipe(z.coerce.number().int('Category ID deve ser um número inteiro')),
-  imageUrl: z.string().optional(),
-  imageDeleteUrl: z.string().optional(),
-  available: z.boolean().optional().default(true)
+  available: booleanField.optional().default(true),
 });
 
 export const updateProductSchema = z.object({
@@ -48,10 +52,8 @@ export const updateProductSchema = z.object({
   description: z.string().min(5, 'Descrição deve ter pelo menos 5 caracteres').optional(),
   price: z.string().or(z.number()).pipe(z.coerce.number().positive('Preço deve ser positivo')).optional(),
   categoryId: z.string().or(z.number()).pipe(z.coerce.number().int('Category ID deve ser um número inteiro')).optional(),
-  imageUrl: z.string().optional(),
-  imageDeleteUrl: z.string().optional(),
-  available: z.boolean().optional()
-}).strict();
+  available: booleanField.optional(),
+});
 
 // ORDER SCHEMAS
 export const createOrderSchema = z.object({

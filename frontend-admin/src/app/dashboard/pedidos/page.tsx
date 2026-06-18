@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { adminApi } from "@/lib/api";
@@ -118,8 +118,8 @@ export default function PedidosPage() {
             className={[
               "px-3 py-1.5 rounded-full text-sm font-medium transition-colors",
               filter === f.value
-                ? "bg-orange-500 text-white"
-                : "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-orange-300",
+                ? "bg-red-500 text-white"
+                : "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-red-300",
             ].join(" ")}
           >
             {f.label}
@@ -186,7 +186,7 @@ export default function PedidosPage() {
                             value={order.status}
                             disabled={updating === order.id}
                             onChange={(e) => changeStatus(order.id, e.target.value)}
-                            className="appearance-none bg-transparent pr-6 cursor-pointer text-xs rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50"
+                            className="appearance-none bg-transparent pr-6 cursor-pointer text-xs rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-red-400 disabled:opacity-50"
                           >
                             {STATUSES.map((s) => (
                               <option key={s.value} value={s.value}>
@@ -213,7 +213,7 @@ export default function PedidosPage() {
 
                     {/* Expanded items */}
                     {expanded === order.id && order.items && order.items.length > 0 && (
-                      <tr key={`${order.id}-items`} className="bg-orange-50/50 dark:bg-orange-950/10">
+                      <tr key={`${order.id}-items`} className="bg-red-50/50 dark:bg-red-950/10">
                         <td colSpan={8} className="px-6 py-3">
                           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                             Itens do pedido

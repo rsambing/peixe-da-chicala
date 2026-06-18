@@ -1,4 +1,4 @@
-import { cva, type VariantProps } from "class-variance-authority";
+﻿import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
@@ -20,7 +20,7 @@ const badgeVariants = cva(
         active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
         funded: "bg-primary/10 text-primary",
         expired: "bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500",
-        paused: "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
+        paused: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
         suspended: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
         rejected: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
       },

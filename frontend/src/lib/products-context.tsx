@@ -64,7 +64,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
                 : p.description,
             description: p.description,
             priceKz: p.price,
-            imageUrl: p.imageUrl || PLACEHOLDER_IMAGE,
+            imageUrl: p.images?.[0]?.imageUrl ?? p.imageUrl ?? PLACEHOLDER_IMAGE,
             isAvailable: p.available,
           }));
 

@@ -48,9 +48,19 @@ export class CategoryService {
 
   async deleteCategory(id) {
     const existing = await prisma.category.findUnique({ where: { id } });
-    if (existing?.imageDeleteUrl) {
+    if (!existing) throw new Error('Categoria não encontrada');
+
+    const productCount = await prisma.product.count({ where: { categoryId: id } });
+    if (productCount > 0) {
+      throw new Error(
+        `Não é possível eliminar: esta categoria tem ${productCount} produto(s) associado(s). Mova ou elimine os produtos primeiro.`
+      );
+    }
+
+    if (existing.imageDeleteUrl) {
       await imgbbService.deleteImage(existing.imageDeleteUrl).catch(() => {});
     }
+
     return await prisma.category.delete({ where: { id } });
   }
 }

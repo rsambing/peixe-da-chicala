@@ -1,4 +1,4 @@
-import type { ApiProduct, ApiCategory, ApiOrder, CreateOrderPayload } from "./api-types";
+import type { ApiProduct, ApiCategory, ApiOrder, CreateOrderPayload, SiteSettings } from "./api-types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -29,4 +29,6 @@ export const api = {
 
   getOrderByTrackingCode: (code: string) =>
     request<ApiOrder>(`/orders/track/${encodeURIComponent(code)}`),
+
+  getSettings: () => request<SiteSettings>("/settings"),
 };

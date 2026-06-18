@@ -1,26 +1,33 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 interface AuthContextValue {
   token: string | null;
+  isAuthenticated: boolean;
+  isReady: boolean;
   login: (token: string) => void;
   logout: () => void;
-  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue>({
   token: null,
+  isAuthenticated: false,
+  isReady: false,
   login: () => {},
   logout: () => {},
-  isAuthenticated: false,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("admin_token");
-  });
+  // Always start with null so server + client first render match
+  const [token, setToken] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("admin_token");
+    setToken(stored);
+    setIsReady(true);
+  }, []);
 
   function login(newToken: string) {
     localStorage.setItem("admin_token", newToken);
@@ -33,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, login, logout, isAuthenticated: !!token }}>
+    <AuthContext.Provider value={{ token, isAuthenticated: !!token, isReady, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -9,148 +9,40 @@ import { createProductSchema, updateProductSchema } from '../schemas/validation.
 const productRouter = Router();
 const productController = new ProductController();
 
-/**
- * @openapi
- * /products:
- *   post:
- *     summary: Criar novo produto
- *     tags:
- *       - Produtos
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               description:
- *                 type: string
- *               price:
- *                 type: number
- *               categoryId:
- *                 type: integer
- *               image:
- *                 type: string
- *                 format: binary
- *     responses:
- *       201:
- *         description: Produto criado com sucesso
- */
+const auth = [authenticate, authorize('ADMIN', 'ATENDENTE')];
+
+// Public
+productRouter.get('/products', (req, res) => productController.getAllProducts(req, res));
+productRouter.get('/products/:id', (req, res) => productController.getProductById(req, res));
+
+// Protected — support multiple images via field name "images"
 productRouter.post(
   '/products',
-  authenticate,
-  authorize('ADMIN', 'ATENDENTE'),
-  upload.single('image'),
+  ...auth,
+  upload.array('images', 10),
   validateRequest(createProductSchema),
-  productController.createProduct
+  (req, res) => productController.createProduct(req, res)
 );
 
-/**
- * @openapi
- * /products/{id}:
- *   get:
- *     summary: Obter produto por ID
- *     tags:
- *       - Produtos
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Produto encontrado
- */
-productRouter.get(
-  '/products/:id',
-  productController.getProductById
-);
-
-/**
- * @openapi
- * /products:
- *   get:
- *     summary: Listar todos os produtos
- *     tags:
- *       - Produtos
- *     responses:
- *       200:
- *         description: Lista de produtos
- */
-productRouter.get(
-  '/products',
-  productController.getAllProducts
-);
-
-/**
- * @openapi
- * /products/{id}:
- *   put:
- *     summary: Atualizar produto
- *     tags:
- *       - Produtos
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               description:
- *                 type: string
- *               price:
- *                 type: number
- *               categoryId:
- *                 type: integer
- *               image:
- *                 type: string
- *                 format: binary
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Produto atualizado
- */
 productRouter.put(
   '/products/:id',
-  authenticate,
-  authorize('ADMIN', 'ATENDENTE'),
-  upload.single('image'),
+  ...auth,
+  upload.array('images', 10),
   validateRequest(updateProductSchema),
-  productController.updateProduct
+  (req, res) => productController.updateProduct(req, res)
 );
 
-/**
- * @openapi
- * /products/{id}:
- *   delete:
- *     summary: Eliminar produto
- *     tags:
- *       - Produtos
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       204:
- *         description: Produto eliminado
- */
 productRouter.delete(
   '/products/:id',
-  authenticate,
-  authorize('ADMIN', 'ATENDENTE'),
-  productController.deleteProduct
+  ...auth,
+  (req, res) => productController.deleteProduct(req, res)
+);
+
+// Delete a single product image
+productRouter.delete(
+  '/products/:id/images/:imageId',
+  ...auth,
+  (req, res) => productController.deleteProductImage(req, res)
 );
 
 export default productRouter;

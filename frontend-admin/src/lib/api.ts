@@ -1,4 +1,4 @@
-import type { ApiProduct, ApiCategory, ApiOrder } from "./api-types";
+import type { ApiProduct, ApiCategory, ApiOrder, SiteSettings } from "./api-types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -57,6 +57,9 @@ export const adminApi = {
   deleteProduct: (id: number) =>
     request<void>(`/products/${id}`, { method: "DELETE" }),
 
+  deleteProductImage: (productId: number, imageId: number) =>
+    request<void>(`/products/${productId}/images/${imageId}`, { method: "DELETE" }),
+
   // Categories
   getCategories: () => request<ApiCategory[]>("/categories"),
 
@@ -88,4 +91,19 @@ export const adminApi = {
 
   deleteOrder: (id: number) =>
     request<void>(`/orders/${id}`, { method: "DELETE" }),
+
+  // Site settings
+  getSettings: () => request<SiteSettings>("/settings"),
+
+  updateSetting: (key: string, value?: string, image?: File) => {
+    if (image) {
+      const fd = new FormData();
+      fd.append("image", image);
+      return request<{ key: string; value: string }>(`/settings/${key}`, { method: "PUT", body: fd });
+    }
+    return request<{ key: string; value: string }>(`/settings/${key}`, {
+      method: "PUT",
+      body: JSON.stringify({ value }),
+    });
+  },
 };

@@ -5,6 +5,14 @@ export interface ApiCategory {
   imageDeleteUrl: string | null;
 }
 
+export interface ApiProductImage {
+  id: number;
+  productId: number;
+  imageUrl: string;
+  imageDeleteUrl: string;
+  sortOrder: number;
+}
+
 export interface ApiProduct {
   id: number;
   name: string;
@@ -15,6 +23,7 @@ export interface ApiProduct {
   available: boolean;
   categoryId: number;
   category: ApiCategory;
+  images: ApiProductImage[];
   createdAt: string;
 }
 
@@ -37,6 +46,14 @@ export interface ApiOrder {
   total: number;
   createdAt: string;
   items: ApiOrderItem[];
+}
+
+export interface SiteSettings {
+  heroImageUrl: string;
+  heroImageDeleteUrl: string;
+  loginBgUrl: string;
+  loginBgDeleteUrl: string;
+  [key: string]: string;
 }
 
 export interface ApiUser {

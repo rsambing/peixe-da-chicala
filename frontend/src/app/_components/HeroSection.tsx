@@ -1,18 +1,30 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Button } from "@/components/ui";
+import { api } from "@/lib/api";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const EMBER_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800"];
+const DEFAULT_BG =
+  "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=2200&q=80";
 
 export function HeroSection() {
+  const [bgUrl, setBgUrl] = useState<string>(DEFAULT_BG);
+
+  useEffect(() => {
+    api
+      .getSettings()
+      .then((s) => { if (s.heroImageUrl) setBgUrl(s.heroImageUrl); })
+      .catch(() => {});
+  }, []);
+
   const sectionRef = useRef<HTMLElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const embersRef = useRef<HTMLDivElement>(null);
@@ -108,12 +120,13 @@ export function HeroSection() {
         style={{ bottom: "-28%" }}
       >
         <Image
-          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=2200&q=80"
+          src={bgUrl}
           alt="Peixe grelhado na brasa"
           fill
           className="object-cover"
           priority
           sizes="100vw"
+          unoptimized={bgUrl.includes("ibb.co")}
         />
         <div className="absolute inset-0 bg-black/55" />
       </div>

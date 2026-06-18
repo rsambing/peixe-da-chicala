@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { adminApi } from "@/lib/api";
-import type { ApiProduct, ApiCategory } from "@/lib/api-types";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import type { ApiProduct, ApiCategory, ApiProductImage } from "@/lib/api-types";
+import { Plus, Pencil, Trash2, X, ImagePlus } from "lucide-react";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-AO", {
@@ -14,7 +14,20 @@ function fmt(n: number) {
   }).format(n);
 }
 
-const PLACEHOLDER = "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=400&q=60";
+const PLACEHOLDER =
+  "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=400&q=60";
+
+const inputClass =
+  "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500";
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1">
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 interface ProductForm {
   name: string;
@@ -22,7 +35,6 @@ interface ProductForm {
   price: string;
   categoryId: string;
   available: boolean;
-  imageFile: File | null;
 }
 
 const emptyForm = (): ProductForm => ({
@@ -31,8 +43,13 @@ const emptyForm = (): ProductForm => ({
   price: "",
   categoryId: "",
   available: true,
-  imageFile: null,
 });
+
+// Pending files selected but not yet uploaded
+interface PendingFile {
+  file: File;
+  previewUrl: string;
+}
 
 export default function ProdutosPage() {
   const [products, setProducts] = useState<ApiProduct[]>([]);
@@ -46,11 +63,14 @@ export default function ProdutosPage() {
   const [form, setForm] = useState<ProductForm>(emptyForm());
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+
+  // Images
+  const [existingImages, setExistingImages] = useState<ApiProductImage[]>([]);
+  const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
+  const [deletingImageId, setDeletingImageId] = useState<number | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
   async function load() {
     setLoading(true);
@@ -70,6 +90,8 @@ export default function ProdutosPage() {
     setEditing(null);
     setForm(emptyForm());
     setFormError(null);
+    setExistingImages([]);
+    setPendingFiles([]);
     setShowModal(true);
   }
 
@@ -81,15 +103,57 @@ export default function ProdutosPage() {
       price: String(p.price),
       categoryId: String(p.categoryId),
       available: p.available,
-      imageFile: null,
     });
     setFormError(null);
+    setExistingImages(p.images ?? []);
+    setPendingFiles([]);
     setShowModal(true);
   }
 
   function closeModal() {
+    pendingFiles.forEach((pf) => URL.revokeObjectURL(pf.previewUrl));
     setShowModal(false);
     setEditing(null);
+    setPendingFiles([]);
+  }
+
+  function addFiles(files: FileList | null) {
+    if (!files) return;
+    const newPending: PendingFile[] = Array.from(files).map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+    setPendingFiles((prev) => [...prev, ...newPending]);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  function removePending(idx: number) {
+    setPendingFiles((prev) => {
+      URL.revokeObjectURL(prev[idx].previewUrl);
+      return prev.filter((_, i) => i !== idx);
+    });
+  }
+
+  async function deleteExistingImage(img: ApiProductImage) {
+    if (!editing) return;
+    if (!confirm("Remover esta imagem do produto?")) return;
+    setDeletingImageId(img.id);
+    try {
+      await adminApi.deleteProductImage(editing.id, img.id);
+      setExistingImages((prev) => prev.filter((i) => i.id !== img.id));
+      // Reflect in product list
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === editing.id
+            ? { ...p, images: p.images.filter((i) => i.id !== img.id) }
+            : p
+        )
+      );
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao remover imagem");
+    } finally {
+      setDeletingImageId(null);
+    }
   }
 
   async function saveProduct() {
@@ -107,7 +171,7 @@ export default function ProdutosPage() {
     data.append("price", form.price);
     data.append("categoryId", form.categoryId);
     data.append("available", String(form.available));
-    if (form.imageFile) data.append("image", form.imageFile);
+    pendingFiles.forEach((pf) => data.append("images", pf.file));
 
     try {
       if (editing) {
@@ -135,6 +199,9 @@ export default function ProdutosPage() {
     }
   }
 
+  const primaryImage = (p: ApiProduct) =>
+    p.images?.[0]?.imageUrl ?? p.imageUrl ?? PLACEHOLDER;
+
   return (
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -144,7 +211,7 @@ export default function ProdutosPage() {
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-colors"
         >
           <Plus className="size-4" />
           Novo Produto
@@ -166,7 +233,7 @@ export default function ProdutosPage() {
       ) : products.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <p className="text-sm">Nenhum produto cadastrado.</p>
-          <button onClick={openCreate} className="mt-3 text-orange-500 text-sm font-medium hover:underline">
+          <button onClick={openCreate} className="mt-3 text-red-600 text-sm font-medium hover:underline">
             Criar o primeiro produto
           </button>
         </div>
@@ -179,12 +246,18 @@ export default function ProdutosPage() {
             >
               <div className="relative aspect-video bg-gray-100 dark:bg-gray-800">
                 <Image
-                  src={p.imageUrl || PLACEHOLDER}
+                  src={primaryImage(p)}
                   alt={p.name}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 33vw"
+                  unoptimized={primaryImage(p).includes("ibb.co")}
                 />
+                {(p.images?.length ?? 0) > 1 && (
+                  <span className="absolute top-2 right-2 bg-black/60 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    +{(p.images?.length ?? 1) - 1}
+                  </span>
+                )}
                 {!p.available && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                     <span className="bg-black/60 text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -199,7 +272,7 @@ export default function ProdutosPage() {
                     <p className="font-bold text-gray-900 dark:text-white truncate">{p.name}</p>
                     <p className="text-xs text-gray-400">{p.category?.name}</p>
                   </div>
-                  <p className="font-black text-orange-500 shrink-0">{fmt(p.price)}</p>
+                  <p className="font-black text-red-600 shrink-0">{fmt(p.price)}</p>
                 </div>
                 <p className="text-xs text-gray-500 line-clamp-2">{p.description}</p>
                 <div className="flex gap-2 pt-1">
@@ -226,7 +299,7 @@ export default function ProdutosPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
               <h2 className="font-bold text-gray-900 dark:text-white">
                 {editing ? "Editar Produto" : "Novo Produto"}
@@ -280,25 +353,89 @@ export default function ProdutosPage() {
                   >
                     <option value="">Seleccionar...</option>
                     {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
+                      <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                   </select>
                 </Field>
               </div>
 
-              <Field label="Imagem">
+              {/* ── Image gallery ── */}
+              <Field label="Fotos do produto">
+                {/* Existing images */}
+                {existingImages.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {existingImages.map((img) => (
+                      <div key={img.id} className="relative size-20 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 group">
+                        <Image
+                          src={img.imageUrl}
+                          alt="foto"
+                          fill
+                          className="object-cover"
+                          sizes="80px"
+                          unoptimized={img.imageUrl.includes("ibb.co")}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => deleteExistingImage(img)}
+                          disabled={deletingImageId === img.id}
+                          className="absolute inset-0 bg-black/0 group-hover:bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
+                        >
+                          {deletingImageId === img.id ? (
+                            <span className="text-white text-xs">...</span>
+                          ) : (
+                            <X className="size-5 text-white" />
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Pending new files */}
+                {pendingFiles.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {pendingFiles.map((pf, i) => (
+                      <div key={i} className="relative size-20 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 group">
+                        <Image
+                          src={pf.previewUrl}
+                          alt="nova foto"
+                          fill
+                          className="object-cover"
+                          sizes="80px"
+                          unoptimized
+                        />
+                        <div className="absolute inset-x-0 bottom-0 h-5 bg-red-500/80 flex items-center justify-center">
+                          <span className="text-white text-[9px] font-bold uppercase tracking-wide">Nova</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removePending(i)}
+                          className="absolute top-0.5 right-0.5 bg-black/60 rounded-full p-0.5"
+                        >
+                          <X className="size-3 text-white" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add button */}
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 hover:border-red-500 text-sm text-gray-500 dark:text-gray-400 transition-colors"
+                >
+                  <ImagePlus className="size-4" />
+                  Adicionar fotos
+                </button>
                 <input
                   ref={fileRef}
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setForm((f) => ({ ...f, imageFile: e.target.files?.[0] ?? null }))}
-                  className="text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-600 file:font-medium hover:file:bg-orange-100 cursor-pointer"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => addFiles(e.target.files)}
                 />
-                {editing?.imageUrl && !form.imageFile && (
-                  <p className="text-xs text-gray-400 mt-1">Imagem actual mantida se não seleccionar nova.</p>
-                )}
               </Field>
 
               <div className="flex items-center gap-3">
@@ -307,7 +444,7 @@ export default function ProdutosPage() {
                   id="available"
                   checked={form.available}
                   onChange={(e) => setForm((f) => ({ ...f, available: e.target.checked }))}
-                  className="size-4 rounded accent-orange-500"
+                  className="size-4 rounded accent-red-600"
                 />
                 <label htmlFor="available" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Disponível no cardápio
@@ -329,7 +466,7 @@ export default function ProdutosPage() {
               <button
                 onClick={saveProduct}
                 disabled={saving}
-                className="flex-1 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-bold text-sm transition-colors"
+                className="flex-1 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-bold text-sm transition-colors"
               >
                 {saving ? "A guardar…" : editing ? "Guardar" : "Criar"}
               </button>
@@ -337,18 +474,6 @@ export default function ProdutosPage() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-const inputClass =
-  "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400";
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-1">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
-      {children}
     </div>
   );
 }

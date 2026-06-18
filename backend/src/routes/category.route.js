@@ -3,6 +3,7 @@ import { CategoryController } from "../controllers/category.controller.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
 import { authenticate } from "../middlewares/authenticate.middleware.js";
 import { authorize } from "../middlewares/authorize.middleware.js";
+import { upload } from "../middlewares/upload-multer.js";
 import { createCategorySchema, updateCategorySchema } from "../schemas/validation.schemas.js";
 
 const categoryRouter = Router();
@@ -32,8 +33,9 @@ categoryRouter.post(
   '/categories',
   authenticate,
   authorize('ADMIN', 'ATENDENTE'),
+  upload.single('image'),
   validateRequest(createCategorySchema),
-  categoryController.createCategory
+  (req, res) => categoryController.createCategory(req, res)
 );
 
 /**
@@ -98,8 +100,9 @@ categoryRouter.put(
   '/categories/:id',
   authenticate,
   authorize('ADMIN', 'ATENDENTE'),
+  upload.single('image'),
   validateRequest(updateCategorySchema),
-  categoryController.updateCategory
+  (req, res) => categoryController.updateCategory(req, res)
 );
 
 /**

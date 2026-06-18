@@ -39,8 +39,10 @@ model Product {
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
+  id             Int       @id @default(autoincrement())
+  name           String    @unique
+  imageUrl       String?
+  imageDeleteUrl String?
 
   products  Product[]
 }

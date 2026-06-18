@@ -3,24 +3,23 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Input, Badge } from "@/components/ui";
-import { MENU_CATEGORIES, MENU_ITEMS, type MenuCategoryId } from "@/lib/menu";
+import { useProducts } from "@/lib/products-context";
+import type { MenuItem } from "@/lib/menu";
 import { MenuItemCard } from "@/components/features/menu/MenuItemCard";
 
 export function MenuClient() {
   const params = useSearchParams();
-  const initialCategory = params.get("categoria") as MenuCategoryId | null;
+  const { products, categories, isLoading } = useProducts();
 
+  const initialCategory = params.get("categoria") ?? "ALL";
   const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<MenuCategoryId | "ALL">(
-    initialCategory && MENU_CATEGORIES.some((c) => c.id === initialCategory)
-      ? initialCategory
-      : "ALL"
+  const [activeCategory, setActiveCategory] = useState<string>(
+    categories.some((c) => c.id === initialCategory) ? initialCategory : "ALL"
   );
 
-  const filtered = useMemo(() => {
+  const filtered = useMemo<MenuItem[]>(() => {
     const q = query.trim().toLowerCase();
-
-    return MENU_ITEMS.filter((item) => {
+    return products.filter((item) => {
       if (activeCategory !== "ALL" && item.categoryId !== activeCategory) return false;
       if (!q) return true;
       return (
@@ -29,7 +28,7 @@ export function MenuClient() {
         item.description.toLowerCase().includes(q)
       );
     });
-  }, [query, activeCategory]);
+  }, [query, activeCategory, products]);
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
@@ -61,7 +60,7 @@ export function MenuClient() {
           >
             Todas
           </button>
-          {MENU_CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <button
               key={cat.id}
               type="button"
@@ -78,15 +77,28 @@ export function MenuClient() {
         </div>
 
         <div className="pt-1">
-          <Badge variant="default">{filtered.length} item(s)</Badge>
+          <Badge variant="default">
+            {isLoading ? "A carregar…" : `${filtered.length} item(s)`}
+          </Badge>
         </div>
       </header>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filtered.map((item) => (
-          <MenuItemCard key={item.id} item={item} />
-        ))}
-      </section>
+      {isLoading ? (
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-64 rounded-2xl bg-muted animate-pulse"
+            />
+          ))}
+        </section>
+      ) : (
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filtered.map((item) => (
+            <MenuItemCard key={item.id} item={item} />
+          ))}
+        </section>
+      )}
     </div>
   );
 }

@@ -12,6 +12,15 @@ export class OrderController {
         }
     }
 
+    async getOrderByTrackingCode(req, res) {
+        try {
+            const order = await orderService.getOrderByTrackingCode(req.params.code);
+            res.status(200).json(order);
+        } catch (error) {
+            res.status(404).json({ error: error.message });
+        }
+    }
+
     async getOrderById(req, res) {
         try {
             const id = Number(req.params.id);
@@ -19,6 +28,7 @@ export class OrderController {
                 return res.status(400).json({ error: 'ID inválido' });
             }
             const order = await orderService.getOrderById(id);
+            if (!order) return res.status(404).json({ error: 'Pedido não encontrado' });
             res.status(200).json(order);
         } catch (error) {
             res.status(404).json({ error: error.message });

@@ -10,6 +10,7 @@ export interface MenuCategory {
   id: MenuCategoryId;
   name: string;
   description?: string;
+  imageUrl?: string;
 }
 
 export interface MenuItem {

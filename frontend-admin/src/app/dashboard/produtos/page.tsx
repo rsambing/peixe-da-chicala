@@ -1,0 +1,354 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { adminApi } from "@/lib/api";
+import type { ApiProduct, ApiCategory } from "@/lib/api-types";
+import { Plus, Pencil, Trash2, X } from "lucide-react";
+
+function fmt(n: number) {
+  return new Intl.NumberFormat("pt-AO", {
+    style: "currency",
+    currency: "AOA",
+    minimumFractionDigits: 0,
+  }).format(n);
+}
+
+const PLACEHOLDER = "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=400&q=60";
+
+interface ProductForm {
+  name: string;
+  description: string;
+  price: string;
+  categoryId: string;
+  available: boolean;
+  imageFile: File | null;
+}
+
+const emptyForm = (): ProductForm => ({
+  name: "",
+  description: "",
+  price: "",
+  categoryId: "",
+  available: true,
+  imageFile: null,
+});
+
+export default function ProdutosPage() {
+  const [products, setProducts] = useState<ApiProduct[]>([]);
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Modal
+  const [showModal, setShowModal] = useState(false);
+  const [editing, setEditing] = useState<ApiProduct | null>(null);
+  const [form, setForm] = useState<ProductForm>(emptyForm());
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const [p, c] = await Promise.all([adminApi.getProducts(), adminApi.getCategories()]);
+      setProducts(p);
+      setCategories(c);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao carregar");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function openCreate() {
+    setEditing(null);
+    setForm(emptyForm());
+    setFormError(null);
+    setShowModal(true);
+  }
+
+  function openEdit(p: ApiProduct) {
+    setEditing(p);
+    setForm({
+      name: p.name,
+      description: p.description,
+      price: String(p.price),
+      categoryId: String(p.categoryId),
+      available: p.available,
+      imageFile: null,
+    });
+    setFormError(null);
+    setShowModal(true);
+  }
+
+  function closeModal() {
+    setShowModal(false);
+    setEditing(null);
+  }
+
+  async function saveProduct() {
+    if (!form.name.trim() || !form.description.trim() || !form.price || !form.categoryId) {
+      setFormError("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    setSaving(true);
+    setFormError(null);
+
+    const data = new FormData();
+    data.append("name", form.name.trim());
+    data.append("description", form.description.trim());
+    data.append("price", form.price);
+    data.append("categoryId", form.categoryId);
+    data.append("available", String(form.available));
+    if (form.imageFile) data.append("image", form.imageFile);
+
+    try {
+      if (editing) {
+        const updated = await adminApi.updateProduct(editing.id, data);
+        setProducts((prev) => prev.map((p) => (p.id === editing.id ? updated : p)));
+      } else {
+        const created = await adminApi.createProduct(data);
+        setProducts((prev) => [created, ...prev]);
+      }
+      closeModal();
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Erro ao guardar");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function deleteProduct(id: number) {
+    if (!confirm("Eliminar este produto?")) return;
+    try {
+      await adminApi.deleteProduct(id);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao eliminar");
+    }
+  }
+
+  return (
+    <div className="p-8 space-y-6">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Produtos</h1>
+          <p className="text-sm text-gray-500 mt-1">{products.length} produto(s)</p>
+        </div>
+        <button
+          onClick={openCreate}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm transition-colors"
+        >
+          <Plus className="size-4" />
+          Novo Produto
+        </button>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-64 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+          ))}
+        </div>
+      ) : products.length === 0 ? (
+        <div className="text-center py-16 text-gray-400">
+          <p className="text-sm">Nenhum produto cadastrado.</p>
+          <button onClick={openCreate} className="mt-3 text-orange-500 text-sm font-medium hover:underline">
+            Criar o primeiro produto
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {products.map((p) => (
+            <div
+              key={p.id}
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+            >
+              <div className="relative aspect-video bg-gray-100 dark:bg-gray-800">
+                <Image
+                  src={p.imageUrl || PLACEHOLDER}
+                  alt={p.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+                {!p.available && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <span className="bg-black/60 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      Indisponível
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="p-4 space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-bold text-gray-900 dark:text-white truncate">{p.name}</p>
+                    <p className="text-xs text-gray-400">{p.category?.name}</p>
+                  </div>
+                  <p className="font-black text-orange-500 shrink-0">{fmt(p.price)}</p>
+                </div>
+                <p className="text-xs text-gray-500 line-clamp-2">{p.description}</p>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={() => openEdit(p)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Pencil className="size-3" />
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => deleteProduct(p.id)}
+                    className="flex items-center justify-center px-3 py-1.5 rounded-lg border border-red-100 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs font-medium transition-colors"
+                  >
+                    <Trash2 className="size-3" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+              <h2 className="font-bold text-gray-900 dark:text-white">
+                {editing ? "Editar Produto" : "Novo Produto"}
+              </h2>
+              <button
+                onClick={closeModal}
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5 space-y-4">
+              <Field label="Nome *">
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  className={inputClass}
+                  placeholder="Ex.: Tilápia Grelhada"
+                />
+              </Field>
+
+              <Field label="Descrição *">
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                  rows={3}
+                  className={inputClass}
+                  placeholder="Descrição do prato..."
+                />
+              </Field>
+
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Preço (Kz) *">
+                  <input
+                    type="number"
+                    min={0}
+                    value={form.price}
+                    onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+                    className={inputClass}
+                    placeholder="6500"
+                  />
+                </Field>
+
+                <Field label="Categoria *">
+                  <select
+                    value={form.categoryId}
+                    onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
+                    className={inputClass}
+                  >
+                    <option value="">Seleccionar...</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </div>
+
+              <Field label="Imagem">
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setForm((f) => ({ ...f, imageFile: e.target.files?.[0] ?? null }))}
+                  className="text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-600 file:font-medium hover:file:bg-orange-100 cursor-pointer"
+                />
+                {editing?.imageUrl && !form.imageFile && (
+                  <p className="text-xs text-gray-400 mt-1">Imagem actual mantida se não seleccionar nova.</p>
+                )}
+              </Field>
+
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="available"
+                  checked={form.available}
+                  onChange={(e) => setForm((f) => ({ ...f, available: e.target.checked }))}
+                  className="size-4 rounded accent-orange-500"
+                />
+                <label htmlFor="available" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Disponível no cardápio
+                </label>
+              </div>
+
+              {formError && (
+                <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{formError}</p>
+              )}
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex gap-3">
+              <button
+                onClick={closeModal}
+                className="flex-1 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={saveProduct}
+                disabled={saving}
+                className="flex-1 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-bold text-sm transition-colors"
+              >
+                {saving ? "A guardar…" : editing ? "Guardar" : "Criar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const inputClass =
+  "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400";
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1">
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+      {children}
+    </div>
+  );
+}

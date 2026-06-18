@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { MENU_ITEMS, type MenuItem } from "@/lib/menu";
+import type { MenuItem } from "@/lib/menu";
+import { useProducts } from "@/lib/products-context";
 
 export interface CartLine {
   itemId: string;
@@ -61,6 +62,8 @@ function safeParseLines(raw: string | null): CartLine[] {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { products } = useProducts();
+
   const [lines, setLines] = useState<CartLine[]>(() => {
     if (typeof window === "undefined") return [];
     return safeParseLines(window.localStorage.getItem(STORAGE_KEY));
@@ -70,12 +73,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
   }, [lines]);
 
-  const detailedLines = useMemo<CartLineDetailed[]>(() => {
-    const byId = new Map<string, MenuItem>(MENU_ITEMS.map((i) => [i.id, i]));
+  const productMap = useMemo<Map<string, MenuItem>>(
+    () => new Map(products.map((p) => [p.id, p])),
+    [products]
+  );
 
+  const detailedLines = useMemo<CartLineDetailed[]>(() => {
     return lines
       .map((line) => {
-        const item = byId.get(line.itemId);
+        const item = productMap.get(line.itemId);
         if (!item) return null;
         return {
           ...line,
@@ -84,7 +90,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         } satisfies CartLineDetailed;
       })
       .filter(Boolean) as CartLineDetailed[];
-  }, [lines]);
+  }, [lines, productMap]);
 
   const itemsCount = useMemo(
     () => lines.reduce((sum, line) => sum + line.quantity, 0),

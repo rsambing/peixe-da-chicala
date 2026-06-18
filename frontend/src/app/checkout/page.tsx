@@ -11,6 +11,7 @@ import {
 } from "@/components/ui";
 import { useCart } from "@/lib/cart-context";
 import { formatCurrency } from "@/lib/mock/helpers";
+import { api } from "@/lib/api";
 
 const DELIVERY_FEE_KZ = 1000;
 const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", "#ffdd00"];
@@ -22,6 +23,8 @@ function generateOrderCode() {
 export default function CheckoutPage() {
   const { detailedLines, subtotalKz, clear } = useCart();
   const [submittedCode, setSubmittedCode] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -33,8 +36,8 @@ export default function CheckoutPage() {
   });
 
   const totalKz = useMemo(
-    () => subtotalKz + (detailedLines.length ? DELIVERY_FEE_KZ : 0),
-    [subtotalKz, detailedLines.length]
+    () => subtotalKz + (detailedLines.length && form.deliveryMethod === "ENTREGA" ? DELIVERY_FEE_KZ : 0),
+    [subtotalKz, detailedLines.length, form.deliveryMethod]
   );
 
   const confirmCardRef = useRef<HTMLDivElement>(null);
@@ -48,19 +51,16 @@ export default function CheckoutPage() {
     const container = particlesRef.current;
     if (!card || !badge || !container) return;
 
-    // Card entrance
     gsap.fromTo(card,
       { autoAlpha: 0, scale: 0.85, y: 20 },
       { autoAlpha: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.6)" }
     );
 
-    // Code badge bounce in
     gsap.fromTo(badge,
       { scale: 0, rotation: -8 },
       { scale: 1, rotation: 0, duration: 0.85, ease: "elastic.out(1, 0.45)", delay: 0.35 }
     );
 
-    // Burst particles
     const count = 24;
     for (let i = 0; i < count; i++) {
       const el = document.createElement("div");
@@ -104,13 +104,51 @@ export default function CheckoutPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function submit() {
+  async function submit() {
     if (!detailedLines.length) return;
     if (!form.name.trim() || !form.phone.trim()) return;
     if (form.deliveryMethod === "ENTREGA" && !form.address.trim()) return;
-    setSubmittedCode(generateOrderCode());
-    clear();
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const trackingCode = generateOrderCode();
+    const addressValue = form.deliveryMethod === "RETIRADA"
+      ? "RETIRADA"
+      : [form.address.trim(), form.reference.trim()].filter(Boolean).join(" — ");
+
+    try {
+      const order = await api.createOrder({
+        trackingCode,
+        customerName: form.name.trim(),
+        phone: form.phone.trim(),
+        address: addressValue,
+        status: "RECEBIDO",
+        total: totalKz,
+        items: detailedLines.map((line) => ({
+          productId: Number(line.itemId),
+          quantity: line.quantity,
+          price: line.item.priceKz,
+        })),
+      });
+
+      setSubmittedCode(order.trackingCode);
+      clear();
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error ? err.message : "Erro ao criar pedido. Tente novamente."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
+
+  const canSubmit =
+    !isSubmitting &&
+    detailedLines.length > 0 &&
+    form.name.trim().length > 0 &&
+    form.phone.trim().length > 0 &&
+    (form.deliveryMethod === "RETIRADA" || form.address.trim().length > 0);
 
   return (
     <>
@@ -136,7 +174,6 @@ export default function CheckoutPage() {
                       Guarde o seu código para acompanhar o estado em tempo real.
                     </p>
 
-                    {/* Particle burst origin + code badge */}
                     <div className="relative inline-block">
                       <div
                         ref={particlesRef}
@@ -218,6 +255,7 @@ export default function CheckoutPage() {
                     placeholder="Perto do..."
                     value={form.reference}
                     onChange={(e) => update("reference", e.target.value)}
+                    disabled={form.deliveryMethod === "RETIRADA"}
                   />
                   <Textarea
                     label="Observações (opcional)"
@@ -226,19 +264,20 @@ export default function CheckoutPage() {
                     onChange={(e) => update("note", e.target.value)}
                   />
 
+                  {submitError && (
+                    <p className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">
+                      {submitError}
+                    </p>
+                  )}
+
                   <Button
                     variant="accent"
                     size="lg"
                     className="w-full"
-                    disabled={
-                      !detailedLines.length ||
-                      !form.name.trim() ||
-                      !form.phone.trim() ||
-                      (form.deliveryMethod === "ENTREGA" && !form.address.trim())
-                    }
+                    disabled={!canSubmit}
                     onClick={submit}
                   >
-                    Confirmar Pedido
+                    {isSubmitting ? "A enviar pedido…" : "Confirmar Pedido"}
                   </Button>
 
                   <Link href="/carrinho">
@@ -280,10 +319,12 @@ export default function CheckoutPage() {
                         <span className="text-muted-foreground">Subtotal</span>
                         <span className="font-display font-black">{formatCurrency(subtotalKz)}</span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Entrega</span>
-                        <span className="font-display font-black">{formatCurrency(DELIVERY_FEE_KZ)}</span>
-                      </div>
+                      {form.deliveryMethod === "ENTREGA" && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Entrega</span>
+                          <span className="font-display font-black">{formatCurrency(DELIVERY_FEE_KZ)}</span>
+                        </div>
+                      )}
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Total</span>
                         <span className="text-primary font-display font-black text-lg">

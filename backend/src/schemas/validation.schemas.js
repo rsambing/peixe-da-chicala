@@ -58,9 +58,14 @@ export const createOrderSchema = z.object({
   trackingCode: z.string().min(3, 'Código de rastreio deve ter pelo menos 3 caracteres'),
   customerName: z.string().min(2, 'Nome do cliente deve ter pelo menos 2 caracteres'),
   phone: z.string().min(9, 'Telefone inválido'),
-  address: z.string().min(5, 'Endereço deve ter pelo menos 5 caracteres'),
-  status: z.string().optional().default('pending'),
-  total: z.string().or(z.number()).pipe(z.coerce.number().positive('Total deve ser positivo'))
+  address: z.string().optional().default(''),
+  status: z.string().optional().default('RECEBIDO'),
+  total: z.string().or(z.number()).pipe(z.coerce.number().positive('Total deve ser positivo')),
+  items: z.array(z.object({
+    productId: z.string().or(z.number()).pipe(z.coerce.number().int().positive()),
+    quantity: z.string().or(z.number()).pipe(z.coerce.number().int().positive()),
+    price: z.string().or(z.number()).pipe(z.coerce.number().positive()),
+  })).optional(),
 });
 
 export const updateOrderSchema = z.object({

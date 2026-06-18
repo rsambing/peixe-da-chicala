@@ -153,7 +153,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-24 pb-16 px-6">
+      <main className="min-h-screen pt-24 pb-16 px-4 md:px-6">
         <div className="mx-auto max-w-5xl grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <h1 className="text-3xl font-display font-black text-foreground mb-2">

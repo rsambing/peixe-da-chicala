@@ -1,4 +1,4 @@
-import { Header } from "@/components/layout/Header";
+﻿import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,8 +18,8 @@ export default function Home() {
         <HeroSection />
 
         {/* ── Pratos Mais Pedidos ──────────────────────────────────── */}
-        <section id="mais-pedidos" className="py-16">
-          <div className="mx-auto max-w-7xl px-6 space-y-6">
+        <section id="mais-pedidos" className="py-12 md:py-16">
+          <div className="mx-auto max-w-7xl px-4 md:px-6 space-y-6">
             <RevealOnScroll className="flex items-end justify-between gap-4 flex-wrap">
               <div>
                 <h2 className="text-3xl font-display font-black text-foreground">
@@ -45,8 +45,8 @@ export default function Home() {
         <SobreSection />
 
         {/* ── Categorias (dinâmicas) ──────────────────────────── */}
-        <section id="categorias" className="py-16 px-6">
-          <div className="mx-auto max-w-7xl space-y-8">
+        <section id="categorias" className="py-12 md:py-16 px-4 md:px-6">
+          <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
             <RevealOnScroll>
               <div>
                 <h2 className="text-3xl font-display font-black text-foreground">Categorias</h2>
@@ -60,8 +60,8 @@ export default function Home() {
         </section>
 
         {/* ── Combos e Promoções ──────────────────────────────────── */}
-        <section className="py-16 px-6">
-          <div className="mx-auto max-w-7xl space-y-8">
+        <section className="py-12 md:py-16 px-4 md:px-6">
+          <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
             <RevealOnScroll className="flex items-end justify-between gap-4 flex-wrap">
               <div>
                 <h2 className="text-3xl font-display font-black text-foreground">
@@ -96,7 +96,7 @@ export default function Home() {
 
                 <div className="absolute bottom-0 left-0 right-0 p-6 space-y-4">
                   <div>
-                    <h3 className="font-display font-black text-white text-2xl leading-tight mb-3">
+                    <h3 className="font-display font-black text-white text-xl md:text-2xl leading-tight mb-3">
                       Brasa para 2
                     </h3>
                     <ul className="space-y-1.5">
@@ -137,7 +137,7 @@ export default function Home() {
 
                 <div className="absolute bottom-0 left-0 right-0 p-6 space-y-4">
                   <div>
-                    <h3 className="font-display font-black text-white text-2xl leading-tight mb-3">
+                    <h3 className="font-display font-black text-white text-xl md:text-2xl leading-tight mb-3">
                       Marisco & Brasa
                     </h3>
                     <ul className="space-y-1.5">

@@ -31,7 +31,7 @@ export function TestimonialsSection() {
   const [active, setActive] = useState(0);
 
   return (
-    <section className="py-16 px-6 bg-black">
+    <section className="py-12 md:py-16 px-4 md:px-6 bg-black">
       <div className="mx-auto max-w-3xl text-center">
         <h2 className="text-2xl sm:text-3xl font-display font-black text-white mb-1">
           O Que Dizem os Nossos Clientes

@@ -42,10 +42,10 @@ const steps: Step[] = [
 
 export function HowItWorks() {
   return (
-    <section id="como-funciona" className="py-24 px-6 bg-white dark:bg-transparent">
+    <section id="como-funciona" className="py-16 md:py-24 px-4 md:px-6 bg-white dark:bg-transparent">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="max-w-2xl mb-16">
+        <div className="max-w-2xl mb-10 md:mb-16">
           <span className="inline-block text-accent font-display font-bold tracking-widest uppercase text-xs mb-4">
             Passo a Passo
           </span>
@@ -89,7 +89,7 @@ export function HowItWorks() {
         </div>
 
         {/* Bottom callout */}
-        <div className="mt-20 p-10 rounded-[2.5rem] bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="mt-12 md:mt-20 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
           <div className="flex items-center gap-6">
             <div className="size-16 rounded-2xl bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center text-3xl">
               🍽️

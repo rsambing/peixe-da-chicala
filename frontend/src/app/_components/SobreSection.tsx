@@ -49,7 +49,7 @@ export function SobreSection() {
   }, { scope: sectionRef });
 
   return (
-    <section ref={sectionRef} className="py-20 px-6">
+    <section ref={sectionRef} className="py-12 md:py-20 px-4 md:px-6">
       <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
         {/* ── Left: text ─────────────────────────────────────── */}
@@ -115,7 +115,7 @@ export function SobreSection() {
           {/* Badge 1 — top left (fora da imagem, tipo "Rovo" no Jira) */}
           <div
             ref={badge1Ref}
-            className="absolute -top-5 left-6 flex items-center gap-2.5 bg-card border shadow-lg rounded-xl px-3.5 py-2.5 min-w-[152px]"
+            className="hidden sm:flex absolute -top-5 left-6 items-center gap-2.5 bg-card border shadow-lg rounded-xl px-3.5 py-2.5 min-w-[152px]"
           >
             <div className="size-9 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
               <Star className="size-4 text-accent fill-accent" />
@@ -131,7 +131,7 @@ export function SobreSection() {
           {/* Badge 2 — bottom right (tipo "IN PROGRESS" no Jira) */}
           <div
             ref={badge2Ref}
-            className="absolute -bottom-5 right-6 flex items-center gap-2 bg-primary text-primary-foreground rounded-xl px-4 py-2.5 shadow-lg"
+            className="hidden sm:flex absolute -bottom-5 right-6 items-center gap-2 bg-primary text-primary-foreground rounded-xl px-4 py-2.5 shadow-lg"
           >
             <CheckCircle2 className="size-4 shrink-0" />
             <div>

@@ -17,7 +17,7 @@ export default function CartPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-24 pb-16 px-6">
+      <main className="min-h-screen pt-24 pb-16 px-4 md:px-6">
         <div className="mx-auto max-w-5xl grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
             <header>
@@ -40,7 +40,7 @@ export default function CartPage() {
               <div className="space-y-3">
                 {detailedLines.map((line) => (
                   <Card key={line.itemId}>
-                    <CardContent className="p-4 flex gap-4 items-center">
+                    <CardContent className="p-3 md:p-4 flex gap-3 md:gap-4 items-center">
                       {/* Imagem do prato */}
                       <div className="relative size-20 shrink-0 rounded-xl overflow-hidden bg-muted">
                         <Image
@@ -74,7 +74,7 @@ export default function CartPage() {
                           <button
                             type="button"
                             onClick={() => setQuantity(line.itemId, line.quantity - 1)}
-                            className="size-7 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-sm font-bold transition-colors"
+                            className="size-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-sm font-bold transition-colors"
                           >
                             −
                           </button>
@@ -84,7 +84,7 @@ export default function CartPage() {
                           <button
                             type="button"
                             onClick={() => setQuantity(line.itemId, line.quantity + 1)}
-                            className="size-7 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-sm font-bold transition-colors"
+                            className="size-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-sm font-bold transition-colors"
                           >
                             +
                           </button>

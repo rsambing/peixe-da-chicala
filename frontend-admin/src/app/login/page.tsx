@@ -57,50 +57,46 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
 
       {/* Card */}
-      <div className="relative z-10 w-full max-w-sm space-y-6">
-        <div className="text-center space-y-3">
-          <div className="flex justify-center">
+      <div className="relative z-10 w-full max-w-sm">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 space-y-5"
+        >
+          <div className="flex flex-col items-center gap-2 mb-2">
             <Image
               src="/images/logo-com-escrita.png"
               alt="Peixe da Chicala"
               width={140}
               height={56}
-              className="brightness-0 invert"
             />
+            <p className="text-xs text-gray-400 font-medium tracking-wide uppercase">Painel de Gestão</p>
           </div>
-          <p className="text-sm text-white/70">Painel de Gestão</p>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 space-y-4"
-        >
           <div className="space-y-1">
-            <label className="text-sm font-medium text-white/80">Email</label>
+            <label className="text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@exemplo.com"
-              className="w-full rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-zinc-300"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-white/80">Senha</label>
+            <label className="text-sm font-medium text-gray-700">Senha</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-zinc-300"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-300 bg-red-950/40 rounded-lg px-3 py-2 border border-zinc-300/30">
+            <p className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2 border border-red-200">
               {error}
             </p>
           )}

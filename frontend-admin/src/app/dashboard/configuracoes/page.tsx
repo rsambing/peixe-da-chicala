@@ -49,7 +49,7 @@ function BgField({ label, description, settingKey, currentUrl, onSaved }: BgFiel
   const displayUrl = preview || currentUrl;
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
       <div className="relative h-48 w-full bg-gray-100 dark:bg-gray-800">
         {displayUrl ? (
           <Image src={displayUrl} alt={label} fill className="object-cover" unoptimized />

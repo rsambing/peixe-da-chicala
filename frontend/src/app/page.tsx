@@ -111,7 +111,7 @@ export default function Home() {
                   <div className="flex items-center justify-between pt-3 border-t border-white/15">
                     <span className="font-display font-black text-white text-xl">Kz 9.500</span>
                     <span className="inline-flex items-center gap-1.5 bg-white text-foreground text-sm font-display font-black px-4 py-2 rounded-full group-hover:bg-accent group-hover:text-white transition-colors duration-300">
-                      Pedir <span className="group-hover:translate-x-0.5 inline-block transition-transform duration-300">→</span>
+                      Pedir <span className="group-hover:translate-x-0.5 inline-block transition-transform duration-300"></span>
                     </span>
                   </div>
                 </div>
@@ -152,7 +152,7 @@ export default function Home() {
                   <div className="flex items-center justify-between pt-3 border-t border-white/15">
                     <span className="font-display font-black text-white text-xl">Kz 7.200</span>
                     <span className="inline-flex items-center gap-1.5 bg-white text-foreground text-sm font-display font-black px-4 py-2 rounded-full group-hover:bg-accent group-hover:text-white transition-colors duration-300">
-                      Pedir <span className="group-hover:translate-x-0.5 inline-block transition-transform duration-300">→</span>
+                      Pedir <span className="group-hover:translate-x-0.5 inline-block transition-transform duration-300"></span>
                     </span>
                   </div>
                 </div>

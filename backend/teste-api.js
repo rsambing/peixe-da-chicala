@@ -101,7 +101,7 @@ async function test(name, fn) {
     log.ok(name);
   } catch (err) {
     console.error(`❌ ${name}`);
-    console.error('   →', err.message);
+    console.error('   ', err.message);
     process.exit(1);
   }
 }

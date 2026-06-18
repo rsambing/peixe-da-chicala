@@ -76,7 +76,7 @@ export function CategoriesSection() {
       <div className="mt-12 text-center">
         <Link href="/#explorar">
           <button className="group relative px-8 py-3.5 font-display font-black uppercase tracking-widest text-xs overflow-hidden border-2 border-primary rounded-full transition-all hover:text-white">
-            <span className="relative z-10">Explorar Todas as Causas →</span>
+            <span className="relative z-10">Explorar Todas as Causas </span>
             <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </button>
         </Link>

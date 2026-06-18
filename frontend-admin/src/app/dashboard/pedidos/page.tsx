@@ -133,7 +133,7 @@ export default function PedidosPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -148,7 +148,7 @@ export default function PedidosPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                <tr className="border-b border-gray-100/60 dark:border-white/5 bg-gray-50 dark:bg-gray-800/50">
                   {["Código", "Cliente", "Telefone", "Endereço", "Total", "Estado", "Data", ""].map((h) => (
                     <th
                       key={h}
@@ -164,7 +164,7 @@ export default function PedidosPage() {
                   <>
                     <tr
                       key={order.id}
-                      className="border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/30 cursor-pointer"
+                      className="border-b border-gray-50 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-gray-800/30 cursor-pointer"
                       onClick={() => setExpanded(expanded === order.id ? null : order.id)}
                     >
                       <td className="px-4 py-3 font-mono font-bold text-gray-900 dark:text-white text-xs">

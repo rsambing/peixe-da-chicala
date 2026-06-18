@@ -95,7 +95,7 @@ export function FeaturedCampaigns() {
           </div>
           <Link href="/#explorar">
             <Button variant="outline" size="sm">
-              Ver Todas →
+              Ver Todas 
             </Button>
           </Link>
         </div>

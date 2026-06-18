@@ -79,7 +79,7 @@ export function SobreSection() {
           <div className="flex flex-wrap gap-3 pt-2">
             <Link href="/menu">
               <Button variant="accent" size="lg" className="gap-2">
-                Fazer Pedido <span aria-hidden>→</span>
+                Fazer Pedido <span aria-hidden></span>
               </Button>
             </Link>
             <Link href="/acompanhar">

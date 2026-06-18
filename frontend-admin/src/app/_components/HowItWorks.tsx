@@ -105,7 +105,7 @@ export function HowItWorks() {
           </div>
           <Link href="/menu">
             <button className="px-8 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full font-display font-bold text-foreground hover:bg-gray-50 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
-              Ver Cardápio →
+              Ver Cardápio 
             </button>
           </Link>
         </div>

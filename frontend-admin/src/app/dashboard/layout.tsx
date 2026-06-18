@@ -38,8 +38,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-950">
       {/* Sidebar */}
-      <aside className="w-56 shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-3">
+      <aside className="w-56 shrink-0 bg-white dark:bg-gray-900 flex flex-col">
+        <div className="px-5 py-4 border-b border-gray-100/60 dark:border-white/5 flex items-center gap-3">
           <Image
             src="/images/logo.png"
             alt="Peixe da Chicala"
@@ -77,7 +77,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        <div className="px-3 py-4 border-t border-gray-100 dark:border-gray-800">
+        <div className="px-3 py-4 border-t border-gray-100/60 dark:border-white/5">
           <button
             onClick={handleLogout}
             className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-sm font-medium text-gray-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"

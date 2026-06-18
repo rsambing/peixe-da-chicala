@@ -85,7 +85,7 @@ export default function DashboardPage() {
           return (
             <div
               key={s.label}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 space-y-3"
+              className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 space-y-3"
             >
               <div className={`${s.color}`}>
                 <Icon className="size-5" />
@@ -102,11 +102,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent orders */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100/60 dark:border-white/5 flex items-center justify-between">
           <h2 className="font-bold text-gray-900 dark:text-white">Pedidos Recentes</h2>
           <a href="/dashboard/pedidos" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors hover:underline">
-            Ver todos →
+            Ver todos 
           </a>
         </div>
 
@@ -124,7 +124,7 @@ export default function DashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 dark:border-gray-800">
+                <tr className="border-b border-gray-100/60 dark:border-white/5">
                   {["Código", "Cliente", "Total", "Estado", "Data"].map((h) => (
                     <th
                       key={h}
@@ -139,7 +139,7 @@ export default function DashboardPage() {
                 {recent.map((order) => (
                   <tr
                     key={order.id}
-                    className="border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/30"
+                    className="border-b border-gray-50 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-gray-800/30"
                   >
                     <td className="px-6 py-3 font-mono font-bold text-gray-900 dark:text-white">
                       {order.trackingCode}

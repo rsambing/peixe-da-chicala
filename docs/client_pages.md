@@ -134,9 +134,9 @@ Conteúdo:
 
 Fluxo visual exemplo:
 Pedido Recebido
-→ Em Preparação
-→ Saiu Para Entrega
-→ Entregue
+ Em Preparação
+ Saiu Para Entrega
+ Entregue
 
 Objetivo:
 Dar transparência ao cliente e reduzir chamadas/mensagens para perguntar pelo pedido.

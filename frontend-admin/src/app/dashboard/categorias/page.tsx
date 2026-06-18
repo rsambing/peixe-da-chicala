@@ -133,7 +133,7 @@ export default function CategoriasPage() {
       )}
 
       {/* Add new */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 space-y-4">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 space-y-4">
         <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Nova Categoria</p>
 
         <div className="flex gap-4 items-start">
@@ -178,7 +178,7 @@ export default function CategoriasPage() {
       </div>
 
       {/* List */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -196,7 +196,7 @@ export default function CategoriasPage() {
                 key={cat.id}
                 className={[
                   "flex items-center gap-3 px-5 py-3",
-                  i < categories.length - 1 ? "border-b border-gray-50 dark:border-gray-800/50" : "",
+                  i < categories.length - 1 ? "border-b border-gray-50 dark:border-white/5" : "",
                   "hover:bg-gray-50 dark:hover:bg-gray-800/30",
                 ].join(" ")}
               >

@@ -21,6 +21,7 @@ export interface ApiProduct {
   imageUrl: string | null;
   imageDeleteUrl: string | null;
   available: boolean;
+  featured: boolean;
   categoryId: number;
   category: ApiCategory;
   images: ApiProductImage[];

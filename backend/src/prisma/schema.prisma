@@ -29,6 +29,7 @@ model Product {
   imageUrl        String?
   imageDeleteUrl  String?
   available   Boolean   @default(true)
+  featured    Boolean   @default(false)
 
   categoryId  Int
   category    Category  @relation(fields: [categoryId], references: [id])

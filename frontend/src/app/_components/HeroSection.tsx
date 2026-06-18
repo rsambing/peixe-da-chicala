@@ -144,13 +144,13 @@ export function HeroSection() {
           ref={badgeRef}
           className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-4 py-2 border border-white/20 text-sm text-white mb-8"
         >
-          <span className="inline-block size-2 rounded-full bg-accent animate-pulse" />
+          <span className="inline-block size-2 rounded-full bg-primary animate-pulse" />
           Peixe grelhado · sabor de Luanda
         </div>
 
         <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.05] tracking-tight">
           <span ref={line1Ref} className="block">Peixe na brasa,</span>
-          <span ref={line2Ref} className="block text-accent">pronto para pedir</span>
+          <span ref={line2Ref} className="block text-primary">pronto para pedir</span>
         </h1>
 
         <p ref={subtitleRef} className="mt-5 text-lg sm:text-xl text-white/85 max-w-2xl mx-auto">

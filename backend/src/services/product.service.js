@@ -13,6 +13,14 @@ export class ProductService {
     return await prisma.product.findMany({ include: INCLUDE, orderBy: { createdAt: 'desc' } });
   }
 
+  async getFeaturedProducts() {
+    return await prisma.product.findMany({
+      where: { featured: true, available: true },
+      include: INCLUDE,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async getProductById(id) {
     return await prisma.product.findUnique({ where: { id }, include: INCLUDE });
   }
@@ -37,6 +45,7 @@ export class ProductService {
           price: Number(data.price),
           categoryId: Number(data.categoryId),
           available: data.available !== undefined ? data.available === 'true' || data.available === true : true,
+          featured: data.featured !== undefined ? data.featured === 'true' || data.featured === true : false,
           imageUrl,
           imageDeleteUrl,
         },
@@ -64,6 +73,7 @@ export class ProductService {
     if (data.price !== undefined) updateData.price = Number(data.price);
     if (data.categoryId !== undefined) updateData.categoryId = Number(data.categoryId);
     if (data.available !== undefined) updateData.available = data.available === 'true' || data.available === true;
+    if (data.featured !== undefined) updateData.featured = data.featured === 'true' || data.featured === true;
 
     return await prisma.$transaction(async (tx) => {
       await tx.product.update({ where: { id }, data: updateData });

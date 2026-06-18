@@ -13,6 +13,7 @@ const auth = [authenticate, authorize('ADMIN', 'ATENDENTE')];
 
 // Public
 productRouter.get('/products', (req, res) => productController.getAllProducts(req, res));
+productRouter.get('/products/featured', (req, res) => productController.getFeaturedProducts(req, res));
 productRouter.get('/products/:id', (req, res) => productController.getProductById(req, res));
 
 // Protected — support multiple images via field name "images"

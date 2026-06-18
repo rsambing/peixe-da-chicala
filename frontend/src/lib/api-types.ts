@@ -1,4 +1,4 @@
-export interface ApiCategory {
+﻿export interface ApiCategory {
   id: number;
   name: string;
   imageUrl: string | null;
@@ -21,6 +21,7 @@ export interface ApiProduct {
   imageUrl: string | null;
   imageDeleteUrl: string | null;
   available: boolean;
+  featured: boolean;
   categoryId: number;
   category: ApiCategory;
   images: ApiProductImage[];

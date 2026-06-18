@@ -35,6 +35,7 @@ interface ProductForm {
   price: string;
   categoryId: string;
   available: boolean;
+  featured: boolean;
 }
 
 const emptyForm = (): ProductForm => ({
@@ -43,6 +44,7 @@ const emptyForm = (): ProductForm => ({
   price: "",
   categoryId: "",
   available: true,
+  featured: false,
 });
 
 // Pending files selected but not yet uploaded
@@ -103,6 +105,7 @@ export default function ProdutosPage() {
       price: String(p.price),
       categoryId: String(p.categoryId),
       available: p.available,
+      featured: p.featured ?? false,
     });
     setFormError(null);
     setExistingImages(p.images ?? []);
@@ -171,6 +174,7 @@ export default function ProdutosPage() {
     data.append("price", form.price);
     data.append("categoryId", form.categoryId);
     data.append("available", String(form.available));
+    data.append("featured", String(form.featured));
     pendingFiles.forEach((pf) => data.append("images", pf.file));
 
     try {
@@ -438,17 +442,31 @@ export default function ProdutosPage() {
                 />
               </Field>
 
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="available"
-                  checked={form.available}
-                  onChange={(e) => setForm((f) => ({ ...f, available: e.target.checked }))}
-                  className="size-4 rounded accent-zinc-900"
-                />
-                <label htmlFor="available" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Disponível no cardápio
-                </label>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="available"
+                    checked={form.available}
+                    onChange={(e) => setForm((f) => ({ ...f, available: e.target.checked }))}
+                    className="size-4 rounded accent-zinc-900"
+                  />
+                  <label htmlFor="available" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Disponível no cardápio
+                  </label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="featured"
+                    checked={form.featured}
+                    onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+                    className="size-4 rounded accent-zinc-900"
+                  />
+                  <label htmlFor="featured" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Produto em destaque <span className="text-xs text-gray-400">(aparece na página inicial)</span>
+                  </label>
+                </div>
               </div>
 
               {formError && (

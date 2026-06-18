@@ -17,6 +17,8 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 export const api = {
   getProducts: () => request<ApiProduct[]>("/products"),
 
+  getFeaturedProducts: () => request<ApiProduct[]>("/products/featured"),
+
   getProductById: (id: number) => request<ApiProduct>(`/products/${id}`),
 
   getCategories: () => request<ApiCategory[]>("/categories"),

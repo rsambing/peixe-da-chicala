@@ -18,10 +18,13 @@ const NAV_LINKS = [
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { itemsCount } = useCart();
   const cartBtnRef = useRef<HTMLAnchorElement>(null);
   const prevCountRef = useRef(itemsCount);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const isHomePage = pathname === "/";
   const useSolidStyle = !isHomePage || scrolled;
@@ -92,7 +95,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Link ref={cartBtnRef} href="/carrinho" className="hidden sm:inline-flex">
             <Button variant="primary" size="sm">
-              Carrinho{itemsCount ? ` (${itemsCount})` : ""}
+              Carrinho{mounted && itemsCount ? ` (${itemsCount})` : ""}
             </Button>
           </Link>
 
@@ -147,7 +150,7 @@ export function Header() {
             </Link>
             <Link href="/carrinho" onClick={() => setMobileOpen(false)}>
               <Button variant="outline" className="w-full mt-2">
-                Carrinho{itemsCount ? ` (${itemsCount})` : ""}
+                Carrinho{mounted && itemsCount ? ` (${itemsCount})` : ""}
               </Button>
             </Link>
             <Link href="/acompanhar" onClick={() => setMobileOpen(false)}>

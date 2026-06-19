@@ -20,11 +20,12 @@ export class OrderService {
             productId: Number(item.productId),
             quantity: Number(item.quantity),
             price: Number(item.price),
+            note: item.note ?? null,
           })),
         });
         return await tx.order.findUnique({
           where: { id: order.id },
-          include: { items: { include: { product: true } } },
+          include: { items: { include: { product: { include: { images: { orderBy: { sortOrder: 'asc' } } } } } } },
         });
       });
     }
@@ -35,14 +36,14 @@ export class OrderService {
   async getOrderById(id) {
     return await prisma.order.findUnique({
       where: { id },
-      include: { items: { include: { product: true } } },
+      include: { items: { include: { product: { include: { images: { orderBy: { sortOrder: 'asc' } } } } } } },
     });
   }
 
   async getOrderByTrackingCode(code) {
     const order = await prisma.order.findUnique({
       where: { trackingCode: code },
-      include: { items: { include: { product: true } } },
+      include: { items: { include: { product: { include: { images: { orderBy: { sortOrder: 'asc' } } } } } } },
     });
     if (!order) throw new Error('Pedido não encontrado');
     return order;
@@ -50,7 +51,7 @@ export class OrderService {
 
   async getAllOrders() {
     return await prisma.order.findMany({
-      include: { items: { include: { product: true } } },
+      include: { items: { include: { product: { include: { images: { orderBy: { sortOrder: 'asc' } } } } } } },
       orderBy: { createdAt: 'desc' },
     });
   }

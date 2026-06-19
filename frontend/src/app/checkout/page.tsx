@@ -6,7 +6,7 @@ import gsap from "gsap";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import {
-  Button, Card, CardContent, Input, Textarea,
+  Button, Input, Textarea,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui";
 import { useCart } from "@/lib/cart-context";
@@ -129,6 +129,7 @@ export default function CheckoutPage() {
           productId: Number(line.itemId),
           quantity: line.quantity,
           price: line.item.priceKz,
+          note: line.note || undefined,
         })),
       });
 
@@ -164,112 +165,108 @@ export default function CheckoutPage() {
             </p>
 
             {submittedCode ? (
-              <div ref={confirmCardRef} style={{ visibility: "hidden" }}>
-                <Card className="border-0 shadow-none bg-transparent">
-                  <CardContent className="p-0 space-y-5">
-                    <h2 className="text-2xl font-display font-black text-foreground">
-                      Pedido confirmado! 🔥
-                    </h2>
-                    <p className="text-muted-foreground">
-                      Guarde o seu código para acompanhar o estado em tempo real.
-                    </p>
+              <div ref={confirmCardRef} className="space-y-5" style={{ visibility: "hidden" }}>
+                <h2 className="text-2xl font-display font-black text-foreground">
+                  Pedido confirmado! 🔥
+                </h2>
+                <p className="text-muted-foreground">
+                  Guarde o seu código para acompanhar o estado em tempo real.
+                </p>
 
-                    <div className="relative inline-block">
-                      <div
-                        ref={particlesRef}
-                        className="absolute inset-0 pointer-events-none overflow-visible"
-                        aria-hidden="true"
-                      />
-                      <div
-                        ref={codeBadgeRef}
-                        className="inline-flex items-center gap-3 rounded-2xl bg-primary/10 border border-primary/20 px-5 py-3"
-                      >
-                        <span className="text-sm text-muted-foreground">Código</span>
-                        <span className="font-display font-black text-primary text-2xl tracking-widest">
-                          {submittedCode}
-                        </span>
-                      </div>
-                    </div>
+                <div className="relative inline-block">
+                  <div
+                    ref={particlesRef}
+                    className="absolute inset-0 pointer-events-none overflow-visible"
+                    aria-hidden="true"
+                  />
+                  <div
+                    ref={codeBadgeRef}
+                    className="inline-flex items-center gap-3 rounded-2xl bg-primary/10 border border-primary/20 px-5 py-3"
+                  >
+                    <span className="text-sm text-muted-foreground">Código</span>
+                    <span className="font-display font-black text-primary text-2xl tracking-widest">
+                      {submittedCode}
+                    </span>
+                  </div>
+                </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <Link
-                        href={`/acompanhar?codigo=${encodeURIComponent(submittedCode)}`}
-                        className="flex-1"
-                      >
-                        <Button variant="accent" size="lg" className="w-full">
-                          Acompanhar Pedido
-                        </Button>
-                      </Link>
-                      <Link href="/menu" className="flex-1">
-                        <Button variant="outline" size="lg" className="w-full">
-                          Voltar ao Cardápio
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href={`/acompanhar?codigo=${encodeURIComponent(submittedCode)}`}
+                    className="flex-1"
+                  >
+                    <Button variant="accent" size="lg" className="w-full">
+                      Acompanhar Pedido
+                    </Button>
+                  </Link>
+                  <Link href="/menu" className="flex-1">
+                    <Button variant="outline" size="lg" className="w-full">
+                      Voltar ao Cardápio
+                    </Button>
+                  </Link>
+                </div>
               </div>
             ) : (
-              <Card className="border-0 shadow-none bg-transparent">
-                <CardContent className="p-0 space-y-4">
-                  <Input
-                    label="Nome"
-                    placeholder="O seu nome"
-                    value={form.name}
-                    onChange={(e) => update("name", e.target.value)}
-                  />
-                  <Input
-                    label="Telefone"
-                    placeholder="9XX XXX XXX"
-                    value={form.phone}
-                    onChange={(e) => update("phone", e.target.value)}
-                  />
+              <div className="space-y-4">
+                <Input
+                  label="Nome"
+                  placeholder="O seu nome"
+                  value={form.name}
+                  onChange={(e) => update("name", e.target.value)}
+                />
+                <Input
+                  label="Telefone"
+                  placeholder="9XX XXX XXX"
+                  value={form.phone}
+                  onChange={(e) => update("phone", e.target.value)}
+                />
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-medium text-foreground">
-                      Método de entrega
-                    </label>
-                    <Select
-                      value={form.deliveryMethod}
-                      onValueChange={(v) => update("deliveryMethod", v)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Escolha" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ENTREGA">Entrega</SelectItem>
-                        <SelectItem value="RETIRADA">Retirada</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-foreground">
+                    Método de entrega
+                  </label>
+                  <Select
+                    value={form.deliveryMethod}
+                    onValueChange={(v) => update("deliveryMethod", v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Escolha" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ENTREGA">Entrega</SelectItem>
+                      <SelectItem value="RETIRADA">Retirada</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  <Input
-                    label="Endereço"
-                    placeholder="Rua, bairro, número..."
-                    value={form.address}
-                    onChange={(e) => update("address", e.target.value)}
-                    disabled={form.deliveryMethod === "RETIRADA"}
-                  />
-                  <Input
-                    label="Referência (opcional)"
-                    placeholder="Perto do..."
-                    value={form.reference}
-                    onChange={(e) => update("reference", e.target.value)}
-                    disabled={form.deliveryMethod === "RETIRADA"}
-                  />
-                  <Textarea
-                    label="Observações (opcional)"
-                    placeholder="Ex.: sem picante, com mais limão..."
-                    value={form.note}
-                    onChange={(e) => update("note", e.target.value)}
-                  />
+                <Input
+                  label="Endereço"
+                  placeholder="Rua, bairro, número..."
+                  value={form.address}
+                  onChange={(e) => update("address", e.target.value)}
+                  disabled={form.deliveryMethod === "RETIRADA"}
+                />
+                <Input
+                  label="Referência (opcional)"
+                  placeholder="Perto do..."
+                  value={form.reference}
+                  onChange={(e) => update("reference", e.target.value)}
+                  disabled={form.deliveryMethod === "RETIRADA"}
+                />
+                <Textarea
+                  label="Observações (opcional)"
+                  placeholder="Ex.: sem picante, com mais limão..."
+                  value={form.note}
+                  onChange={(e) => update("note", e.target.value)}
+                />
 
-                  {submitError && (
-                    <p className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">
-                      {submitError}
-                    </p>
-                  )}
+                {submitError && (
+                  <p className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">
+                    {submitError}
+                  </p>
+                )}
 
+                <div className="pt-2">
                   <Button
                     variant="accent"
                     size="lg"
@@ -279,63 +276,63 @@ export default function CheckoutPage() {
                   >
                     {isSubmitting ? "A enviar pedido…" : "Confirmar Pedido"}
                   </Button>
+                </div>
 
-                  <Link href="/carrinho" className="block mt-4">
+                <div className="pt-2">
+                  <Link href="/carrinho">
                     <Button variant="outline" size="lg" className="w-full">
                       Voltar ao Carrinho
                     </Button>
                   </Link>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             )}
           </div>
 
-          <aside className="space-y-3">
-            <Card className="border-0 shadow-none bg-gray-50 rounded-2xl">
-              <CardContent className="p-6 space-y-4">
-                <h2 className="text-xl font-display font-black text-foreground">Resumo</h2>
+          <aside>
+            <div className="bg-gray-50 rounded-2xl p-6 space-y-4">
+              <h2 className="text-xl font-display font-black text-foreground">Resumo</h2>
 
-                {detailedLines.length === 0 ? (
-                  <p className="text-muted-foreground">O carrinho está vazio.</p>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="space-y-2 text-sm">
-                      {detailedLines.map((line) => (
-                        <div key={line.itemId} className="flex items-start justify-between gap-3">
-                          <p className="text-foreground font-medium truncate">
-                            {line.quantity}× {line.item.name}
-                          </p>
-                          <p className="font-display font-black shrink-0">
-                            {formatCurrency(line.lineTotalKz)}
-                          </p>
-                        </div>
-                      ))}
+              {detailedLines.length === 0 ? (
+                <p className="text-muted-foreground">O carrinho está vazio.</p>
+              ) : (
+                <div className="space-y-3">
+                  <div className="space-y-2 text-sm">
+                    {detailedLines.map((line) => (
+                      <div key={line.itemId} className="flex items-start justify-between gap-3">
+                        <p className="text-foreground font-medium truncate">
+                          {line.quantity}× {line.item.name}
+                        </p>
+                        <p className="font-display font-black shrink-0">
+                          {formatCurrency(line.lineTotalKz)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="h-px bg-gray-200" />
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="font-display font-black">{formatCurrency(subtotalKz)}</span>
                     </div>
-
-                    <div className="h-px bg-border" />
-
-                    <div className="space-y-2 text-sm">
+                    {form.deliveryMethod === "ENTREGA" && (
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Subtotal</span>
-                        <span className="font-display font-black">{formatCurrency(subtotalKz)}</span>
+                        <span className="text-muted-foreground">Entrega</span>
+                        <span className="font-display font-black">{formatCurrency(DELIVERY_FEE_KZ)}</span>
                       </div>
-                      {form.deliveryMethod === "ENTREGA" && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Entrega</span>
-                          <span className="font-display font-black">{formatCurrency(DELIVERY_FEE_KZ)}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Total</span>
-                        <span className="text-primary font-display font-black text-lg">
-                          {formatCurrency(totalKz)}
-                        </span>
-                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Total</span>
+                      <span className="text-primary font-display font-black text-lg">
+                        {formatCurrency(totalKz)}
+                      </span>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </div>
+              )}
+            </div>
           </aside>
         </div>
       </main>

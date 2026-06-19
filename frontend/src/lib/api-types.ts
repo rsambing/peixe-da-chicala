@@ -34,6 +34,7 @@ export interface ApiOrderItem {
   productId: number;
   quantity: number;
   price: number;
+  note: string | null;
   product: ApiProduct;
 }
 
@@ -83,5 +84,5 @@ export interface CreateOrderPayload {
   address: string;
   status: string;
   total: number;
-  items: { productId: number; quantity: number; price: number }[];
+  items: { productId: number; quantity: number; price: number; note?: string }[];
 }

@@ -41,10 +41,11 @@ app.get('/', (req, res) => {
   res.send('Peixe da Chicala API');
 });
 
-// Local dev only — Vercel handles the server in production
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(process.env.PORT || 3000, () => {
-    console.log(`Esta a bumbar ${process.env.PORT || 3000}`);
+// Vercel serverless skips listen(); Render and local dev need it
+if (!process.env.VERCEL) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Esta a bumbar ${port}`);
   });
 }
 

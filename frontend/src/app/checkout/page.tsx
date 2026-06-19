@@ -153,7 +153,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-24 pb-16 px-4 md:px-6">
+      <main className="min-h-screen bg-white pt-24 pb-16 px-4 md:px-6">
         <div className="mx-auto max-w-5xl grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <h1 className="text-3xl font-display font-black text-foreground mb-2">
@@ -165,8 +165,8 @@ export default function CheckoutPage() {
 
             {submittedCode ? (
               <div ref={confirmCardRef} style={{ visibility: "hidden" }}>
-                <Card>
-                  <CardContent className="p-6 space-y-5">
+                <Card className="border-0 shadow-none bg-transparent">
+                  <CardContent className="p-0 space-y-5">
                     <h2 className="text-2xl font-display font-black text-foreground">
                       Pedido confirmado! 🔥
                     </h2>
@@ -210,8 +210,8 @@ export default function CheckoutPage() {
                 </Card>
               </div>
             ) : (
-              <Card>
-                <CardContent className="p-6 space-y-4">
+              <Card className="border-0 shadow-none bg-transparent">
+                <CardContent className="p-0 space-y-4">
                   <Input
                     label="Nome"
                     placeholder="O seu nome"
@@ -280,7 +280,7 @@ export default function CheckoutPage() {
                     {isSubmitting ? "A enviar pedido…" : "Confirmar Pedido"}
                   </Button>
 
-                  <Link href="/carrinho">
+                  <Link href="/carrinho" className="block mt-4">
                     <Button variant="outline" size="lg" className="w-full">
                       Voltar ao Carrinho
                     </Button>
@@ -291,7 +291,7 @@ export default function CheckoutPage() {
           </div>
 
           <aside className="space-y-3">
-            <Card>
+            <Card className="border-0 shadow-none bg-gray-50 rounded-2xl">
               <CardContent className="p-6 space-y-4">
                 <h2 className="text-xl font-display font-black text-foreground">Resumo</h2>
 

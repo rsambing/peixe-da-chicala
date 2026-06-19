@@ -54,19 +54,28 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
         const adaptedProducts: MenuItem[] = apiProducts
           .filter((p) => p.available)
-          .map((p) => ({
-            id: String(p.id),
-            categoryId: slugify(catMap.get(p.categoryId) ?? "outros") as MenuItem["categoryId"],
-            name: p.name,
-            shortDesc:
-              p.description.length > 100
-                ? p.description.slice(0, 100) + "…"
-                : p.description,
-            description: p.description,
-            priceKz: p.price,
-            imageUrl: p.images?.[0]?.imageUrl ?? p.imageUrl ?? PLACEHOLDER_IMAGE,
-            isAvailable: p.available,
-          }));
+          .map((p) => {
+            const allImages = p.images?.length
+              ? p.images.map((img) => img.imageUrl)
+              : p.imageUrl
+              ? [p.imageUrl]
+              : [PLACEHOLDER_IMAGE];
+
+            return {
+              id: String(p.id),
+              categoryId: slugify(catMap.get(p.categoryId) ?? "outros") as MenuItem["categoryId"],
+              name: p.name,
+              shortDesc:
+                p.description.length > 100
+                  ? p.description.slice(0, 100) + "…"
+                  : p.description,
+              description: p.description,
+              priceKz: p.price,
+              imageUrl: allImages[0],
+              images: allImages,
+              isAvailable: p.available,
+            };
+          });
 
         setCategories(adaptedCategories);
         setProducts(adaptedProducts);

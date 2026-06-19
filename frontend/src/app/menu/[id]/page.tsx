@@ -94,7 +94,7 @@ export default function MenuItemDetailPage() {
             <div className="space-y-6">
               <div>
                 <Link href="/menu" className="text-sm text-muted-foreground hover:text-foreground">
-                  ← Voltar ao Cardápio
+                   Voltar ao Cardápio
                 </Link>
                 <div className="flex items-start justify-between gap-4 mt-3">
                   <div>

@@ -59,11 +59,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Destaques da Casa (dinâmico - só aparece se houver produtos em destaque) ── */}
-        <FeaturedSection />
-
         {/* ── Testemunhos ─────────────────────────────────────────── */}
         <TestimonialsSection />
+
+        {/* ── Destaques da Casa (dinâmico - só aparece se houver produtos em destaque) ── */}
+        <FeaturedSection />
 
         {/* ── CTA Final ───────────────────────────────────────────── */}
         <section className="relative overflow-hidden bg-zinc-950 py-24 md:py-36 px-6">

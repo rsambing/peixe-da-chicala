@@ -101,7 +101,7 @@ export function HowItWorks() {
                     </div>
                   )}
 
-                  {/* Number badge — always visible */}
+                  {/* Number badge - always visible */}
                   <div className="absolute top-6 left-6 size-10 rounded-full bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center font-display font-black text-sm text-foreground z-10">
                     {step.number}
                   </div>
@@ -125,27 +125,6 @@ export function HowItWorks() {
           })}
         </div>
 
-        {/* Bottom callout */}
-        <div className="mt-12 md:mt-20 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
-          <div className="flex items-center gap-6">
-            <div className="size-16 rounded-2xl bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center text-3xl">
-              🍽️
-            </div>
-            <div>
-              <h4 className="font-display font-bold text-xl text-foreground mb-1">
-                Pronto para experimentar?
-              </h4>
-              <p className="text-muted-foreground">
-                O cardápio está à espera. Primeiro pedido, primeira vez - é simples.
-              </p>
-            </div>
-          </div>
-          <Link href="/menu">
-            <button className="px-8 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full font-display font-bold text-foreground hover:bg-gray-50 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
-              Ver Cardápio
-            </button>
-          </Link>
-        </div>
       </div>
     </section>
   );

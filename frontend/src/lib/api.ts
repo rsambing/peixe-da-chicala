@@ -1,4 +1,4 @@
-import type { ApiProduct, ApiCategory, ApiOrder, CreateOrderPayload, SiteSettings } from "./api-types";
+import type { ApiProduct, ApiCategory, ApiOrder, CreateOrderPayload, SiteSettings, ApiTestimonial } from "./api-types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -33,4 +33,6 @@ export const api = {
     request<ApiOrder>(`/orders/track/${encodeURIComponent(code)}`),
 
   getSettings: () => request<SiteSettings>("/settings"),
+
+  getTestimonials: () => request<ApiTestimonial[]>("/testimonials"),
 };

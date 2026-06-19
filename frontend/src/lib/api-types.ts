@@ -55,7 +55,19 @@ export interface SiteSettings {
   howItWorksStep1ImageUrl: string;
   howItWorksStep2ImageUrl: string;
   howItWorksStep3ImageUrl: string;
+  sobreImageUrl: string;
   [key: string]: string;
+}
+
+export interface ApiTestimonial {
+  id: number;
+  quote: string;
+  name: string;
+  role: string;
+  avatarUrl: string | null;
+  avatarDeleteUrl: string | null;
+  sortOrder: number;
+  createdAt: string;
 }
 
 export interface CreateOrderPayload {

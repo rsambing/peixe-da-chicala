@@ -144,12 +144,19 @@ export default function ConfiguracoesPage() {
           <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
             Imagens de Fundo
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <BgField
               label="Hero Section"
               description="Fundo da página principal"
               settingKey="heroImageUrl"
               currentUrl={settings.heroImageUrl}
+              onSaved={handleSaved}
+            />
+            <BgField
+              label="Secção Sobre"
+              description="Imagem do mar à brasa"
+              settingKey="sobreImageUrl"
+              currentUrl={settings.sobreImageUrl}
               onSaved={handleSaved}
             />
             <BgField

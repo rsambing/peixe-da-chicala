@@ -5,13 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { LayoutDashboard, ShoppingBag, Package, Tag, Settings, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Package, Tag, Settings, LogOut, Menu, X, MessageSquare } from "lucide-react";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/pedidos", label: "Pedidos", icon: ShoppingBag },
   { href: "/dashboard/produtos", label: "Produtos", icon: Package },
   { href: "/dashboard/categorias", label: "Categorias", icon: Tag },
+  { href: "/dashboard/testemunhos", label: "Testemunhos", icon: MessageSquare },
   { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
 ];
 

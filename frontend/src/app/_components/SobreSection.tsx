@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
@@ -8,15 +8,23 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Flame, CheckCircle2, Star } from "lucide-react";
 import { Button } from "@/components/ui";
+import { api } from "@/lib/api";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80";
+
 export function SobreSection() {
+  const [imageUrl, setImageUrl] = useState(DEFAULT_IMAGE);
   const sectionRef = useRef<HTMLElement>(null);
   const leftRef    = useRef<HTMLDivElement>(null);
   const imageRef   = useRef<HTMLDivElement>(null);
   const badge1Ref  = useRef<HTMLDivElement>(null);
   const badge2Ref  = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    api.getSettings().then((s) => { if (s.sobreImageUrl) setImageUrl(s.sobreImageUrl); }).catch(() => {});
+  }, []);
 
   useGSAP(() => {
     const leftChildren = leftRef.current ? Array.from(leftRef.current.children) : [];
@@ -103,7 +111,7 @@ export function SobreSection() {
             className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl"
           >
             <Image
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80"
+              src={imageUrl}
               alt="Peixe grelhado na brasa"
               fill
               className="object-cover"

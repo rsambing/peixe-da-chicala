@@ -45,6 +45,7 @@ export const createProductSchema = z.object({
   price: z.string().or(z.number()).pipe(z.coerce.number().positive('Preço deve ser positivo')),
   categoryId: z.string().or(z.number()).pipe(z.coerce.number().int('Category ID deve ser um número inteiro')),
   available: booleanField.optional().default(true),
+  featured: booleanField.optional().default(false),
 });
 
 export const updateProductSchema = z.object({
@@ -53,6 +54,7 @@ export const updateProductSchema = z.object({
   price: z.string().or(z.number()).pipe(z.coerce.number().positive('Preço deve ser positivo')).optional(),
   categoryId: z.string().or(z.number()).pipe(z.coerce.number().int('Category ID deve ser um número inteiro')).optional(),
   available: booleanField.optional(),
+  featured: booleanField.optional(),
 });
 
 // ORDER SCHEMAS

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { adminApi } from "@/lib/api";
 import type { ApiOrder } from "@/lib/api-types";
 import { ChevronDown, Trash2, X, MapPin, Phone, User, Clock } from "lucide-react";
+import { Pagination } from "@/components/Pagination";
 
 const STATUSES = [
   { value: "RECEBIDO",          label: "Recebido",      color: "bg-amber-100 text-amber-800"   },
@@ -199,6 +200,8 @@ export default function PedidosPage() {
   const [orders, setOrders] = useState<ApiOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("ALL");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 15;
   const [updating, setUpdating] = useState<number | null>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -245,7 +248,8 @@ export default function PedidosPage() {
     }
   }
 
-  const visible = filter === "ALL" ? orders : orders.filter((o) => o.status === filter);
+  const filtered = filter === "ALL" ? orders : orders.filter((o) => o.status === filter);
+  const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="p-4 md:p-8 space-y-4 md:space-y-6">
@@ -271,7 +275,7 @@ export default function PedidosPage() {
         {ALL_FILTERS.map((f) => (
           <button
             key={f.value}
-            onClick={() => setFilter(f.value)}
+            onClick={() => { setFilter(f.value); setPage(1); }}
             className={[
               "px-3 py-1.5 rounded-full text-sm font-medium transition-colors",
               filter === f.value
@@ -368,6 +372,12 @@ export default function PedidosPage() {
               </tbody>
             </table>
           </div>
+        <Pagination
+          page={page}
+          total={filtered.length}
+          pageSize={PAGE_SIZE}
+          onChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+        />
         </>
       )}
 

@@ -56,7 +56,7 @@ export default function DashboardPage() {
   const revenue = orders
     .filter((o) => o.status === "ENTREGUE")
     .reduce((sum, o) => sum + o.total, 0);
-  const recent = orders.slice(0, 8);
+  const recent = orders.slice(0, 5);
 
   const stats = [
     { label: "Total de Pedidos", value: orders.length, icon: ShoppingBag, color: "text-blue-600" },
@@ -80,7 +80,17 @@ export default function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((s) => {
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 space-y-3 animate-pulse">
+              <div className="size-5 rounded-md bg-gray-100 dark:bg-gray-800" />
+              <div className="space-y-2">
+                <div className="h-7 bg-gray-100 dark:bg-gray-800 rounded-full w-1/2" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-3/4" />
+              </div>
+            </div>
+          ))
+        ) : stats.map((s) => {
           const Icon = s.icon;
           return (
             <div
@@ -92,7 +102,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-2xl font-black text-gray-900 dark:text-white">
-                  {loading ? "-" : s.value}
+                  {s.value}
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
               </div>
@@ -111,9 +121,15 @@ export default function DashboardPage() {
         </div>
 
         {loading ? (
-          <div className="p-6 space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-10 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+          <div className="divide-y divide-gray-50 dark:divide-white/5 animate-pulse">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 px-6 py-3">
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-24 shrink-0" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-32 flex-1" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-20 shrink-0" />
+                <div className="h-5 bg-gray-100 dark:bg-gray-800 rounded-full w-20 shrink-0" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-16 shrink-0" />
+              </div>
             ))}
           </div>
         ) : recent.length === 0 ? (

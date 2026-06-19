@@ -5,6 +5,7 @@ import Image from "next/image";
 import { adminApi } from "@/lib/api";
 import type { ApiTestimonial } from "@/lib/api-types";
 import { Plus, Pencil, Trash2, X, Check, ImagePlus, GripVertical } from "lucide-react";
+import { Pagination } from "@/components/Pagination";
 
 interface TestimonialForm {
   quote: string;
@@ -114,6 +115,8 @@ function Modal({
 export default function TestemunhosPage() {
   const [list, setList] = useState<ApiTestimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
   const [error, setError] = useState<string | null>(null);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -210,9 +213,22 @@ export default function TestemunhosPage() {
       )}
 
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-24 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+        <div className="space-y-3 animate-pulse">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-4 flex items-start gap-4">
+              <div className="size-3.5 rounded bg-gray-100 dark:bg-gray-800 mt-1 shrink-0" />
+              <div className="size-12 rounded-full bg-gray-100 dark:bg-gray-800 shrink-0" />
+              <div className="flex-1 space-y-2 min-w-0">
+                <div className="h-3.5 bg-gray-100 dark:bg-gray-800 rounded-full w-1/4" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-1/6" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-full" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-3/4" />
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <div className="w-16 h-7 bg-gray-100 dark:bg-gray-800 rounded-lg" />
+                <div className="w-9 h-7 bg-gray-100 dark:bg-gray-800 rounded-lg" />
+              </div>
+            </div>
           ))}
         </div>
       ) : list.length === 0 ? (
@@ -221,8 +237,9 @@ export default function TestemunhosPage() {
           <p className="text-sm mt-1">Adiciona o primeiro clicando no botão acima.</p>
         </div>
       ) : (
+        <>
         <div className="space-y-3">
-          {list.map((t) => (
+          {list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((t) => (
             <div key={t.id} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-4 flex items-start gap-4">
               <GripVertical className="size-4 text-gray-300 dark:text-gray-600 mt-1 shrink-0" />
               <div className="size-12 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 shrink-0 relative">
@@ -257,6 +274,8 @@ export default function TestemunhosPage() {
             </div>
           ))}
         </div>
+        <Pagination page={page} total={list.length} pageSize={PAGE_SIZE} onChange={setPage} />
+        </>
       )}
 
       {modalOpen && (

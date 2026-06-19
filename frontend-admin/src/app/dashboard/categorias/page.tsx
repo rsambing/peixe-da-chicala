@@ -5,11 +5,14 @@ import Image from "next/image";
 import { adminApi } from "@/lib/api";
 import type { ApiCategory } from "@/lib/api-types";
 import { Plus, Pencil, Trash2, Check, X, ImagePlus } from "lucide-react";
+import { Pagination } from "@/components/Pagination";
 
 export default function CategoriasPage() {
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 20;
 
   // New category
   const [newName, setNewName] = useState("");
@@ -180,9 +183,19 @@ export default function CategoriasPage() {
       {/* List */}
       <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-6 space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-14 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+          <div className="divide-y divide-gray-50 dark:divide-white/5 animate-pulse">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3 px-5 py-3">
+                <div className="size-10 rounded-lg bg-gray-100 dark:bg-gray-800 shrink-0" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3.5 bg-gray-100 dark:bg-gray-800 rounded-full w-1/3" />
+                  <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-1/5" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="w-16 h-7 bg-gray-100 dark:bg-gray-800 rounded-lg" />
+                  <div className="w-9 h-7 bg-gray-100 dark:bg-gray-800 rounded-lg" />
+                </div>
+              </div>
             ))}
           </div>
         ) : categories.length === 0 ? (
@@ -190,13 +203,14 @@ export default function CategoriasPage() {
             Nenhuma categoria criada ainda.
           </div>
         ) : (
+          <>
           <ul>
-            {categories.map((cat, i) => (
+            {categories.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((cat, i, arr) => (
               <li
                 key={cat.id}
                 className={[
                   "flex items-center gap-3 px-5 py-3",
-                  i < categories.length - 1 ? "border-b border-gray-50 dark:border-white/5" : "",
+                  i < arr.length - 1 ? "border-b border-gray-50 dark:border-white/5" : "",
                   "hover:bg-gray-50 dark:hover:bg-gray-800/30",
                 ].join(" ")}
               >
@@ -295,6 +309,10 @@ export default function CategoriasPage() {
               </li>
             ))}
           </ul>
+          <div className="px-5 py-3 border-t border-gray-50 dark:border-white/5">
+            <Pagination page={page} total={categories.length} pageSize={PAGE_SIZE} onChange={setPage} />
+          </div>
+          </>
         )}
       </div>
     </div>

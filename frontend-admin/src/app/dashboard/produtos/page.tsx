@@ -5,6 +5,7 @@ import Image from "next/image";
 import { adminApi } from "@/lib/api";
 import type { ApiProduct, ApiCategory, ApiProductImage } from "@/lib/api-types";
 import { Plus, Pencil, Trash2, X, ImagePlus } from "lucide-react";
+import { Pagination } from "@/components/Pagination";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-AO", {
@@ -58,6 +59,8 @@ export default function ProdutosPage() {
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 12;
 
   // Modal
   const [showModal, setShowModal] = useState(false);
@@ -231,7 +234,26 @@ export default function ProdutosPage() {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-64 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+            <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden animate-pulse">
+              <div className="aspect-video bg-gray-100 dark:bg-gray-800" />
+              <div className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1.5 flex-1">
+                    <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-full w-3/4" />
+                    <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-1/3" />
+                  </div>
+                  <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-full w-16 shrink-0" />
+                </div>
+                <div className="space-y-1">
+                  <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-full" />
+                  <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-4/5" />
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <div className="flex-1 h-7 bg-gray-100 dark:bg-gray-800 rounded-lg" />
+                  <div className="w-9 h-7 bg-gray-100 dark:bg-gray-800 rounded-lg" />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       ) : products.length === 0 ? (
@@ -242,8 +264,9 @@ export default function ProdutosPage() {
           </button>
         </div>
       ) : (
+        <>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {products.map((p) => (
+          {products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((p) => (
             <div
               key={p.id}
               className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden"
@@ -298,6 +321,8 @@ export default function ProdutosPage() {
             </div>
           ))}
         </div>
+        <Pagination page={page} total={products.length} pageSize={PAGE_SIZE} onChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
+        </>
       )}
 
       {/* Modal */}

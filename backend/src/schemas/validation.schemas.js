@@ -69,6 +69,7 @@ export const createOrderSchema = z.object({
     productId: z.string().or(z.number()).pipe(z.coerce.number().int().positive()),
     quantity: z.string().or(z.number()).pipe(z.coerce.number().int().positive()),
     price: z.string().or(z.number()).pipe(z.coerce.number().positive()),
+    note: z.string().optional(),
   })).optional(),
 });
 

@@ -15,6 +15,25 @@ import { api } from "@/lib/api";
 
 const DELIVERY_FEE_KZ = 1000;
 const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", "#ffdd00"];
+const PROFILE_KEY = "peixe-da-chicala.profile.v1";
+
+type Profile = { name: string; phone: string; address: string; reference: string; deliveryMethod: "ENTREGA" | "RETIRADA" };
+
+function loadProfile(): Profile | null {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as Profile;
+  } catch { return null; }
+}
+
+function saveProfile(p: Profile) {
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+}
+
+function clearProfile() {
+  localStorage.removeItem(PROFILE_KEY);
+}
 
 function generateOrderCode() {
   return `PDC-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -25,6 +44,7 @@ export default function CheckoutPage() {
   const [submittedCode, setSubmittedCode] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [hasProfile, setHasProfile] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -34,6 +54,15 @@ export default function CheckoutPage() {
     note: "",
     deliveryMethod: "ENTREGA" as "ENTREGA" | "RETIRADA",
   });
+
+  // Pre-fill from saved profile on mount
+  useEffect(() => {
+    const saved = loadProfile();
+    if (saved) {
+      setForm((prev) => ({ ...prev, ...saved, note: "" }));
+      setHasProfile(true);
+    }
+  }, []);
 
   const totalKz = useMemo(
     () => subtotalKz + (detailedLines.length && form.deliveryMethod === "ENTREGA" ? DELIVERY_FEE_KZ : 0),
@@ -133,6 +162,14 @@ export default function CheckoutPage() {
         })),
       });
 
+      saveProfile({
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        address: form.address.trim(),
+        reference: form.reference.trim(),
+        deliveryMethod: form.deliveryMethod,
+      });
+      setHasProfile(true);
       setSubmittedCode(order.trackingCode);
       clear();
     } catch (err) {
@@ -208,6 +245,22 @@ export default function CheckoutPage() {
               </div>
             ) : (
               <div className="space-y-4">
+                {hasProfile && (
+                  <div className="flex items-center justify-between gap-3 bg-green-50 rounded-xl px-4 py-2.5">
+                    <p className="text-sm text-green-700 font-medium">✓ Dados preenchidos automaticamente</p>
+                    <button
+                      onClick={() => {
+                        clearProfile();
+                        setHasProfile(false);
+                        setForm({ name: "", phone: "", address: "", reference: "", note: "", deliveryMethod: "ENTREGA" });
+                      }}
+                      className="text-xs text-green-600 hover:text-green-800 underline underline-offset-2 transition-colors shrink-0"
+                    >
+                      Limpar
+                    </button>
+                  </div>
+                )}
+
                 <Input
                   label="Nome"
                   placeholder="O seu nome"

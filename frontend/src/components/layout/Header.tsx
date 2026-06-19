@@ -11,7 +11,6 @@ import { useCart } from "@/lib/cart-context";
 
 const NAV_LINKS = [
   { label: "Início", href: "/#inicio" },
-  { label: "Mais Pedidos", href: "/#mais-pedidos" },
   { label: "Cardápio", href: "/menu" },
   { label: "Contactos", href: "/contactos" },
 ];

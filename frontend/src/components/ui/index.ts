@@ -1,4 +1,4 @@
-// ── Design System — Levanta Angola ──
+// ── Design System - Levanta Angola ──
 // Barrel exports for all UI primitives
 
 export { Button, buttonVariants, type ButtonProps } from "./Button";

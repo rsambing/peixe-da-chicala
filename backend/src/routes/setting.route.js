@@ -7,10 +7,10 @@ import { upload } from '../middlewares/upload-multer.js';
 const settingRouter = Router();
 const settingController = new SettingController();
 
-// Public — frontend reads hero/login backgrounds without auth
+// Public - frontend reads hero/login backgrounds without auth
 settingRouter.get('/settings', (req, res) => settingController.getAll(req, res));
 
-// Protected — admin changes backgrounds
+// Protected - admin changes backgrounds
 settingRouter.put(
   '/settings/:key',
   authenticate,

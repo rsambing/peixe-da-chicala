@@ -8,14 +8,14 @@ import { createOrderSchema, updateOrderSchema } from "../schemas/validation.sche
 const orderRouter = Router();
 const orderController = new OrderController();
 
-// Rota pública — clientes criam pedidos sem autenticação
+// Rota pública - clientes criam pedidos sem autenticação
 orderRouter.post(
   '/orders',
   validateRequest(createOrderSchema),
   (req, res) => orderController.createOrder(req, res)
 );
 
-// Rota pública — clientes acompanham o seu pedido pelo código
+// Rota pública - clientes acompanham o seu pedido pelo código
 // NOTA: deve vir antes de /orders/:id para "track" não ser interpretado como ID
 orderRouter.get(
   '/orders/track/:code',

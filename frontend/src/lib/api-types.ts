@@ -52,6 +52,9 @@ export interface ApiOrder {
 export interface SiteSettings {
   heroImageUrl: string;
   loginBgUrl: string;
+  howItWorksStep1ImageUrl: string;
+  howItWorksStep2ImageUrl: string;
+  howItWorksStep3ImageUrl: string;
   [key: string]: string;
 }
 

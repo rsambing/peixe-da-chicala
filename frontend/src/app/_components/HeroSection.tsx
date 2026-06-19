@@ -113,7 +113,7 @@ export function HeroSection() {
       id="inicio"
       className="relative min-h-[100svh] flex items-center justify-center overflow-hidden"
     >
-      {/* Parallax background — extends below to give room for parallax movement */}
+      {/* Parallax background - extends below to give room for parallax movement */}
       <div
         ref={bgRef}
         className="absolute inset-x-0 top-0"
@@ -131,7 +131,7 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-black/55" />
       </div>
 
-      {/* Embers — created dynamically in GSAP, no SSR mismatch */}
+      {/* Embers - created dynamically in GSAP, no SSR mismatch */}
       <div
         ref={embersRef}
         className="absolute inset-0 pointer-events-none overflow-hidden"
@@ -162,7 +162,7 @@ export function HeroSection() {
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link href="/menu">
-            <Button variant="accent" size="xl" className="px-10">
+            <Button variant="primary" size="xl" className="px-10">
               Fazer Pedido
             </Button>
           </Link>

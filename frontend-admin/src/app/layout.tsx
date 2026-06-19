@@ -18,7 +18,7 @@ const instrument = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Peixe da Chicala — Admin",
+  title: "Peixe da Chicala - Admin",
   description: "Painel de gestão do Peixe da Chicala.",
   icons: {
     icon: [

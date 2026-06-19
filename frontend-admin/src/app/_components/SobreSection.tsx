@@ -112,7 +112,7 @@ export function SobreSection() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           </div>
 
-          {/* Badge 1 — top left (fora da imagem, tipo "Rovo" no Jira) */}
+          {/* Badge 1 - top left (fora da imagem, tipo "Rovo" no Jira) */}
           <div
             ref={badge1Ref}
             className="absolute -top-5 left-6 flex items-center gap-2.5 bg-card border shadow-lg rounded-xl px-3.5 py-2.5 min-w-[152px]"
@@ -128,7 +128,7 @@ export function SobreSection() {
             </div>
           </div>
 
-          {/* Badge 2 — bottom right (tipo "IN PROGRESS" no Jira) */}
+          {/* Badge 2 - bottom right (tipo "IN PROGRESS" no Jira) */}
           <div
             ref={badge2Ref}
             className="absolute -bottom-5 right-6 flex items-center gap-2 bg-primary text-primary-foreground rounded-xl px-4 py-2.5 shadow-lg"

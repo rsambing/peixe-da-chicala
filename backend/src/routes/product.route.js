@@ -16,7 +16,7 @@ productRouter.get('/products', (req, res) => productController.getAllProducts(re
 productRouter.get('/products/featured', (req, res) => productController.getFeaturedProducts(req, res));
 productRouter.get('/products/:id', (req, res) => productController.getProductById(req, res));
 
-// Protected — support multiple images via field name "images"
+// Protected - support multiple images via field name "images"
 productRouter.post(
   '/products',
   ...auth,

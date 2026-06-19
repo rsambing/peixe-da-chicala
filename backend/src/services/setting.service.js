@@ -7,6 +7,12 @@ const DEFAULTS = {
   heroImageDeleteUrl: '',
   loginBgUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=2200&q=80',
   loginBgDeleteUrl: '',
+  howItWorksStep1ImageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80',
+  howItWorksStep1ImageDeleteUrl: '',
+  howItWorksStep2ImageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80',
+  howItWorksStep2ImageDeleteUrl: '',
+  howItWorksStep3ImageUrl: 'https://images.unsplash.com/photo-1526367790999-0150786686a2?auto=format&fit=crop&w=800&q=80',
+  howItWorksStep3ImageDeleteUrl: '',
 };
 
 export class SettingService {

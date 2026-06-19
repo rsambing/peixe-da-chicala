@@ -115,7 +115,7 @@ export default function CheckoutPage() {
     const trackingCode = generateOrderCode();
     const addressValue = form.deliveryMethod === "RETIRADA"
       ? "RETIRADA"
-      : [form.address.trim(), form.reference.trim()].filter(Boolean).join(" — ");
+      : [form.address.trim(), form.reference.trim()].filter(Boolean).join(" - ");
 
     try {
       const order = await api.createOrder({

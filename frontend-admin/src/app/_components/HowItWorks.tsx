@@ -16,7 +16,7 @@ const steps: Step[] = [
     icon: UtensilsCrossed,
     title: "Escolhe o teu prato",
     description:
-      "Navega pelo cardápio, filtra por categoria e adiciona os teus favoritos ao carrinho. Peixes grelhados, mariscos, bebidas — tudo a um toque.",
+      "Navega pelo cardápio, filtra por categoria e adiciona os teus favoritos ao carrinho. Peixes grelhados, mariscos, bebidas - tudo a um toque.",
     color: "bg-primary/10 dark:bg-primary/20",
     iconColor: "text-primary",
   },
@@ -34,7 +34,7 @@ const steps: Step[] = [
     icon: Navigation,
     title: "Acompanha em tempo real",
     description:
-      "Recebe um código único e segue o estado do teu pedido — da cozinha até à tua porta.",
+      "Recebe um código único e segue o estado do teu pedido - da cozinha até à tua porta.",
     color: "bg-success/10 dark:bg-success/20",
     iconColor: "text-success",
   },
@@ -54,7 +54,7 @@ export function HowItWorks() {
             <span className="text-primary italic font-serif">Peixe da Chicala</span>
           </h2>
           <p className="text-muted-foreground text-xl leading-relaxed">
-            Três passos simples — do cardápio à entrega.
+            Três passos simples - do cardápio à entrega.
           </p>
         </div>
 
@@ -99,7 +99,7 @@ export function HowItWorks() {
                 Pronto para experimentar?
               </h4>
               <p className="text-muted-foreground">
-                O cardápio está à espera. Primeiro pedido, primeira vez — é simples.
+                O cardápio está à espera. Primeiro pedido, primeira vez - é simples.
               </p>
             </div>
           </div>

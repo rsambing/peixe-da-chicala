@@ -54,6 +54,9 @@ export interface SiteSettings {
   heroImageDeleteUrl: string;
   loginBgUrl: string;
   loginBgDeleteUrl: string;
+  howItWorksStep1ImageUrl: string;
+  howItWorksStep2ImageUrl: string;
+  howItWorksStep3ImageUrl: string;
   [key: string]: string;
 }
 

@@ -1,5 +1,5 @@
 ﻿/* ================================================================
-   Enums — Mirrored from Prisma Schema
+   Enums - Mirrored from Prisma Schema
    ================================================================ */
 
 export enum UserRole {

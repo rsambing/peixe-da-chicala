@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ================================================================
-  PEIXE DA CHICALA — Design Tokens
+  PEIXE DA CHICALA - Design Tokens
   Dark base + fire accents (grelha/chamas)
   ================================================================ */
 
@@ -71,7 +71,7 @@
   --card: #ffffff;
   --card-foreground: #0f172a;
 
-  /* Brasa — vermelho fogo profundo */
+  /* Brasa - vermelho fogo profundo */
   --primary: #c41a00;
   --primary-foreground: #ffffff;
 
@@ -81,7 +81,7 @@
   --muted: #fff1f2;
   --muted-foreground: #475569;
 
-  /* Chama — laranja vivo do topo da chama */
+  /* Chama - laranja vivo do topo da chama */
   --accent: #ff5c00;
   --accent-foreground: #111827;
 

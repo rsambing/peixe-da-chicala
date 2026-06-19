@@ -18,7 +18,7 @@ const instrument = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Peixe da Chicala — Peixe grelhado na brasa, pronto para pedir",
+  title: "Peixe da Chicala - Peixe grelhado na brasa, pronto para pedir",
   description:
     "Cardápio digital do Peixe da Chicala. Escolha os pratos, adicione ao carrinho e acompanhe o seu pedido em tempo real.",
   icons: {

@@ -92,7 +92,7 @@ export function Header() {
         {/* Actions */}
         <div className="flex items-center gap-2">
           <Link ref={cartBtnRef} href="/carrinho" className="hidden sm:inline-flex">
-            <Button variant={useSolidStyle ? "primary" : "accent"} size="sm">
+            <Button variant="primary" size="sm">
               Carrinho{itemsCount ? ` (${itemsCount})` : ""}
             </Button>
           </Link>

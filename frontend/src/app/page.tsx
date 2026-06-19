@@ -26,7 +26,7 @@ export default function Home() {
                   Pratos Mais Pedidos
                 </h2>
                 <p className="text-muted-foreground">
-                  Os favoritos da casa — rápidos, suculentos e bem servidos.
+                  Os favoritos da casa - rápidos, suculentos e bem servidos.
                 </p>
               </div>
               <Link href="/menu">
@@ -59,7 +59,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Destaques da Casa (dinâmico — só aparece se houver produtos em destaque) ── */}
+        {/* ── Destaques da Casa (dinâmico - só aparece se houver produtos em destaque) ── */}
         <FeaturedSection />
 
         {/* ── Testemunhos ─────────────────────────────────────────── */}

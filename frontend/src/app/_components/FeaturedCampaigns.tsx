@@ -106,7 +106,7 @@ export function FeaturedCampaigns() {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {/* Navigation buttons — sempre visíveis */}
+          {/* Navigation buttons - sempre visíveis */}
           <button
             onClick={goPrev}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 size-12 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-foreground hover:bg-gray-50 dark:hover:bg-gray-700 transition-all hover:scale-110 -translate-x-6"

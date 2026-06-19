@@ -92,7 +92,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-2xl font-black text-gray-900 dark:text-white">
-                  {loading ? "—" : s.value}
+                  {loading ? "-" : s.value}
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
               </div>

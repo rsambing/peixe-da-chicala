@@ -240,7 +240,7 @@ export default function PedidosPage() {
                         <td className="px-4 py-3 font-mono font-bold text-gray-900 dark:text-white text-xs">{order.trackingCode}</td>
                         <td className="px-4 py-3 text-gray-700 dark:text-gray-300 font-medium">{order.customerName}</td>
                         <td className="px-4 py-3 text-gray-500">{order.phone}</td>
-                        <td className="px-4 py-3 text-gray-500 max-w-[160px] truncate">{order.address || "—"}</td>
+                        <td className="px-4 py-3 text-gray-500 max-w-[160px] truncate">{order.address || "-"}</td>
                         <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{fmt(order.total)}</td>
                         <td className="px-4 py-3">
                           <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>

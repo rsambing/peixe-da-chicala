@@ -160,6 +160,33 @@ export default function ConfiguracoesPage() {
               onSaved={handleSaved}
             />
           </div>
+
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider pt-2">
+            Como Funciona — Imagens dos Passos
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <BgField
+              label="Passo 01 — Escolhe o teu prato"
+              description="Imagem do cardápio/seleção"
+              settingKey="howItWorksStep1ImageUrl"
+              currentUrl={settings.howItWorksStep1ImageUrl}
+              onSaved={handleSaved}
+            />
+            <BgField
+              label="Passo 02 — Confirma e paga"
+              description="Imagem do pagamento"
+              settingKey="howItWorksStep2ImageUrl"
+              currentUrl={settings.howItWorksStep2ImageUrl}
+              onSaved={handleSaved}
+            />
+            <BgField
+              label="Passo 03 — Acompanha em tempo real"
+              description="Imagem da entrega/rastreio"
+              settingKey="howItWorksStep3ImageUrl"
+              currentUrl={settings.howItWorksStep3ImageUrl}
+              onSaved={handleSaved}
+            />
+          </div>
         </>
       ) : null}
     </div>

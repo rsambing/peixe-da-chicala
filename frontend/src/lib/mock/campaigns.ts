@@ -10,7 +10,7 @@ import {
 import { mockUsers } from "./users";
 
 /* ================================================================
-   Mock Campaigns  — realistic Angolan context
+   Mock Campaigns  - realistic Angolan context
    ================================================================ */
 
 export const mockCampaigns: Campaign[] = [
@@ -30,10 +30,10 @@ Queremos construir uma escola com 6 salas de aula, casa de banho, um espaço de 
 
 ## Como os Fundos Serão Utilizados
 
-- **60%** — Materiais de construção
-- **25%** — Mão de obra qualificada
-- **10%** — Equipamento escolar (carteiras, quadros)
-- **5%** — Custos administrativos
+- **60%** - Materiais de construção
+- **25%** - Mão de obra qualificada
+- **10%** - Equipamento escolar (carteiras, quadros)
+- **5%** - Custos administrativos
 
 ## Impacto Esperado
 
@@ -361,7 +361,7 @@ Mais de 40 artistas de 12 províncias já confirmaram participação.
   },
   {
     id: "camp-6",
-    title: "Ajuda de Emergência — Cheias em Cabinda",
+    title: "Ajuda de Emergência - Cheias em Cabinda",
     shortDesc:
       "Famílias desalojadas pelas cheias em Cabinda precisam de apoio urgente: alimentos, abrigo e medicamentos.",
     fullDesc: `

@@ -58,6 +58,12 @@ export interface SiteSettings {
   howItWorksStep2ImageUrl: string;
   howItWorksStep3ImageUrl: string;
   sobreImageUrl: string;
+  contactPhone: string;
+  contactWhatsapp: string;
+  contactEmail: string;
+  contactAddress: string;
+  contactHours: string;
+  contactMapEmbedUrl: string;
   [key: string]: string;
 }
 

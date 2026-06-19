@@ -15,6 +15,12 @@ const DEFAULTS = {
   howItWorksStep3ImageDeleteUrl: '',
   sobreImageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80',
   sobreImageDeleteUrl: '',
+  contactPhone: '(+244) 9XX XXX XXX',
+  contactWhatsapp: '244900000000',
+  contactEmail: 'contacto@peixedachicala.ao',
+  contactAddress: 'Chicala, Luanda, Angola',
+  contactHours: 'Segunda a Domingo · 11h – 22h',
+  contactMapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3942.7926625315554!2d13.2195114!3d-8.805540099999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1a51f359b0e34c9f%3A0x923f6dfbbaa7dce7!2sPeixe%20da%20Chicala!5e0!3m2!1spt-PT!2sao!4v1781841659933!5m2!1spt-PT!2sao',
 };
 
 export class SettingService {

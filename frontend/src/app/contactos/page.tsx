@@ -1,133 +1,140 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
+import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Button, Card, CardContent, Badge, Input, Textarea } from "@/components/ui";
+import { api } from "@/lib/api";
+import type { SiteSettings } from "@/lib/api-types";
+
+
+function InfoCard({
+  icon: Icon,
+  label,
+  value,
+  href,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  href?: string | null;
+}) {
+  return (
+    <div className="bg-gray-50 rounded-2xl p-5">
+      <div className="size-9 rounded-xl bg-white shadow-sm flex items-center justify-center mb-3">
+        <Icon className="size-4 text-primary" />
+      </div>
+      <p className="text-xs text-gray-400 font-medium mb-0.5">{label}</p>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-display font-bold text-gray-900 hover:text-primary transition-colors leading-snug"
+        >
+          {value}
+        </a>
+      ) : (
+        <p className="text-sm font-display font-bold text-gray-900 leading-snug">{value}</p>
+      )}
+    </div>
+  );
+}
 
 export default function ContactosPage() {
-  const [form, setForm] = useState({ name: "", phone: "", message: "" });
-
-  function update(field: keyof typeof form, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
-
-  function submit() {
-    if (!form.name.trim() || !form.phone.trim() || !form.message.trim()) return;
-    toast.success("Mensagem enviada", {
-      description: "Obrigado! Vamos responder o mais rápido possível.",
-    });
-    setForm({ name: "", phone: "", message: "" });
-  }
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
+  useEffect(() => {
+    api.getSettings().then(setSettings).catch(() => {});
+  }, []);
+  const whatsappHref = settings?.contactWhatsapp
+    ? `https://wa.me/${settings.contactWhatsapp}`
+    : null;
 
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-24 pb-16 px-6">
-        <div className="mx-auto max-w-5xl space-y-8">
-          <header className="space-y-2">
-            <h1 className="text-3xl font-display font-black text-foreground">
+      <main className="min-h-screen bg-white pt-24 pb-16">
+        <div className="mx-auto max-w-5xl px-4 md:px-6">
+
+          {/* ── Header ──────────────────────────────────────── */}
+          <div className="text-center mb-10">
+            <h1 className="text-4xl sm:text-5xl font-display font-black text-gray-900 mb-3">
               Contactos
             </h1>
-            <p className="text-muted-foreground">
-              Fale connosco para encomendas, reservas e informações.
+            <p className="text-gray-500 text-lg max-w-md mx-auto">
+              Fale connosco para encomendas, reservas ou qualquer informação.
             </p>
-          </header>
+          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-display font-black text-foreground">
-                    Peixe da Chicala
-                  </h2>
-                  <Badge variant="accent">Aberto hoje</Badge>
-                </div>
+          {/* ── Info cards ──────────────────────────────────── */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+            <InfoCard
+              icon={Phone}
+              label="Telefone"
+              value={settings?.contactPhone ?? "A carregar…"}
+              href={whatsappHref}
+            />
+            <InfoCard
+              icon={Mail}
+              label="Email"
+              value={settings?.contactEmail ?? "A carregar…"}
+              href={settings?.contactEmail ? `mailto:${settings.contactEmail}` : null}
+            />
+            <InfoCard
+              icon={MapPin}
+              label="Localização"
+              value={settings?.contactAddress ?? "A carregar…"}
+              href="https://maps.app.goo.gl/3kggRRD11o9PSQAD8"
+            />
+            <InfoCard
+              icon={Clock}
+              label="Horário"
+              value={settings?.contactHours ?? "A carregar…"}
+            />
+          </div>
 
-                <div className="space-y-2 text-sm">
-                  <p>
-                    <span className="text-muted-foreground">Telefone/WhatsApp:</span>{" "}
-                    <span className="text-foreground font-medium">(+244) 9XX XXX XXX</span>
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Email:</span>{" "}
-                    <span className="text-foreground font-medium">contacto@peixedachicala.ao</span>
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Localização:</span>{" "}
-                    <span className="text-foreground font-medium">Chicala, Luanda</span>
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Horário:</span>{" "}
-                    <span className="text-foreground font-medium">11:00 – 22:00</span>
-                  </p>
-                </div>
+          {/* ── Map + Form ──────────────────────────────────── */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <Link href="/menu" className="flex-1">
-                    <Button variant="accent" size="lg" className="w-full">
-                      Fazer Pedido
-                    </Button>
-                  </Link>
-                  <a href="#" className="flex-1">
-                    <Button variant="outline" size="lg" className="w-full">
-                      Abrir WhatsApp
-                    </Button>
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <h2 className="text-xl font-display font-black text-foreground">
-                  Enviar mensagem
-                </h2>
-                <Input
-                  label="Nome"
-                  placeholder="O seu nome"
-                  value={form.name}
-                  onChange={(e) => update("name", e.target.value)}
+            {/* Map */}
+            <div className="lg:col-span-3 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+              {settings?.contactMapEmbedUrl ? (
+                <iframe
+                  title="Peixe da Chicala — Localização"
+                  src={settings.contactMapEmbedUrl}
+                  className="w-full h-[280px]"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
                 />
-                <Input
-                  label="Telefone"
-                  placeholder="9XX XXX XXX"
-                  value={form.phone}
-                  onChange={(e) => update("phone", e.target.value)}
-                />
-                <Textarea
-                  label="Mensagem"
-                  placeholder="Como podemos ajudar?"
-                  value={form.message}
-                  onChange={(e) => update("message", e.target.value)}
-                />
-                <Button
-                  variant="accent"
-                  size="lg"
-                  className="w-full"
-                  disabled={!form.name.trim() || !form.phone.trim() || !form.message.trim()}
-                  onClick={submit}
+              ) : (
+                <div className="h-[280px] bg-gray-100 animate-pulse rounded-2xl" />
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="lg:col-span-2 flex flex-col gap-3 justify-center">
+              {whatsappHref && (
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-800 font-display font-bold text-sm transition-colors"
                 >
-                  Enviar
-                </Button>
-              </CardContent>
-            </Card>
+                  <MessageCircle className="size-5" />
+                  Falar no WhatsApp
+                </a>
+              )}
+              <Link
+                href="/menu"
+                className="flex items-center justify-center w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-display font-bold text-sm transition-colors"
+              >
+                Fazer Pedido Online
+              </Link>
+            </div>
 
-            <Card>
-              <CardContent className="p-0 overflow-hidden">
-                <div className="aspect-video bg-muted">
-                  <iframe
-                    title="Mapa"
-                    className="w-full h-full"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps?q=Chicala%2C%20Luanda&output=embed"
-                  />
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </main>

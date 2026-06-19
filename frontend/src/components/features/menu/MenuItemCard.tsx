@@ -4,11 +4,12 @@ import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
-import { Badge } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import type { MenuItem } from "@/lib/menu";
 import { formatCurrency } from "@/lib/mock/helpers";
 import { useCart } from "@/lib/cart-context";
+
+const PLACEHOLDER = "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=800&q=80";
 
 export function MenuItemCard({ item }: { item: MenuItem }) {
   const { addItem } = useCart();
@@ -26,19 +27,15 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
 
   return (
     <Link href={`/menu/${item.id}`} className="block group">
-      <div
-        className={cn(
-          "relative aspect-[4/3] rounded-2xl overflow-hidden",
-          !item.isAvailable && "opacity-60"
-        )}
-      >
+      <div className={cn("relative aspect-[4/3] rounded-2xl overflow-hidden", !item.isAvailable && "opacity-60")}>
+
         {/* Image */}
         <Image
-          src={item.imageUrl}
+          src={item.imageUrl || PLACEHOLDER}
           alt={item.name}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, 33vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
 
         {/* Gradient */}
@@ -54,17 +51,16 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
         )}
 
         {/* Badge topo esquerdo */}
-        {(item.tags?.includes("mais pedido") || item.tags?.includes("recomendado")) && (
+        {item.tags?.includes("mais pedido") && item.isAvailable && (
           <div className="absolute top-3 left-3">
-            <Badge variant={item.tags.includes("mais pedido") ? "accent" : "primary"}>
-              {item.tags.includes("mais pedido") ? "Mais pedido" : "Recomendado"}
-            </Badge>
+            <span className="bg-primary text-white font-display font-black text-xs px-3 py-1.5 rounded-full">
+              Mais pedido
+            </span>
           </div>
         )}
 
         {/* Conteúdo em baixo */}
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2.5">
-          {/* Texto */}
           <div className="space-y-0.5">
             <h3 className="font-display font-black text-white leading-tight drop-shadow-sm">
               {item.name}
@@ -72,9 +68,8 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
             <p className="text-sm text-white/65 line-clamp-1">{item.shortDesc}</p>
           </div>
 
-          {/* Preço + botão */}
           <div className="flex items-center justify-between gap-3">
-            <span className="font-display font-black text-accent text-lg leading-none">
+            <span className="font-display font-black text-white text-lg leading-none">
               {formatCurrency(item.priceKz)}
             </span>
             <button
@@ -82,9 +77,9 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
               type="button"
               disabled={!item.isAvailable}
               onClick={handleAdd}
-              className="rounded-full font-display font-bold text-sm h-9 px-4 bg-accent text-accent-foreground hover:bg-accent/90 transition-colors disabled:pointer-events-none disabled:opacity-50 shrink-0"
+              className="rounded-full font-display font-bold text-sm h-9 px-4 bg-primary text-white hover:bg-primary/90 transition-colors disabled:pointer-events-none disabled:opacity-50 shrink-0"
             >
-              Adicionar
+              + Adicionar
             </button>
           </div>
         </div>

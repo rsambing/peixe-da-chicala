@@ -38,9 +38,14 @@ app.use(testimonialRouter);
 // device routes removed (FCM)
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Peixe da Chicala API');
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Esta a bumbar ${process.env.PORT}`);
-});
+// Local dev only — Vercel handles the server in production
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(process.env.PORT || 3000, () => {
+    console.log(`Esta a bumbar ${process.env.PORT || 3000}`);
+  });
+}
+
+export default app;

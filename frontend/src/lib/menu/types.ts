@@ -22,7 +22,7 @@ export interface MenuItem {
   ingredients?: string[];
   priceKz: number;
   imageUrl: string;
-  images: string[];
+  images?: string[];
   isAvailable: boolean;
   tags?: string[];
   recommendedExtraIds?: string[];

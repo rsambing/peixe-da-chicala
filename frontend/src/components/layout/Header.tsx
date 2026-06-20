@@ -53,7 +53,7 @@ export function Header() {
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         // Always solid on mobile; transparent hero only on md+ when applicable
         "bg-card/95 backdrop-blur-md shadow-sm border-b",
-        !useSolidStyle && "md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-transparent"
+        !useSolidStyle && "md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-b-0"
       )}
     >
       <div className="mx-auto relative flex max-w-7xl items-center justify-between px-6 py-3">

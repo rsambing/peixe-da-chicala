@@ -51,9 +51,8 @@ export function Header() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        // Always solid on mobile; transparent hero only on md+ when applicable
         "bg-card/95 backdrop-blur-md shadow-sm border-b",
-        !useSolidStyle && "md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-b-0"
+        !useSolidStyle && "bg-transparent backdrop-blur-none shadow-none border-b-0"
       )}
     >
       <div className="mx-auto relative flex max-w-7xl items-center justify-between px-6 py-3">
@@ -64,7 +63,7 @@ export function Header() {
             alt="Peixe da Chicala"
             className={cn(
               "h-15 w-auto transition-all",
-              !useSolidStyle ? "md:brightness-0 md:invert" : "brightness-100"
+              !useSolidStyle ? "brightness-0 invert" : "brightness-100"
             )}
             width={120}
             height={60}

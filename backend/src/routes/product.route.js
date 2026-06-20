@@ -11,12 +11,86 @@ const productController = new ProductController();
 
 const auth = [authenticate, authorize('ADMIN', 'ATENDENTE')];
 
-// Public
+/**
+ * @openapi
+ * /products:
+ *   get:
+ *     summary: Listar todos os produtos
+ *     tags:
+ *       - Produtos
+ *     responses:
+ *       200:
+ *         description: Lista de produtos
+ */
 productRouter.get('/products', (req, res) => productController.getAllProducts(req, res));
+
+/**
+ * @openapi
+ * /products/featured:
+ *   get:
+ *     summary: Listar produtos em destaque
+ *     tags:
+ *       - Produtos
+ *     responses:
+ *       200:
+ *         description: Lista de produtos em destaque
+ */
 productRouter.get('/products/featured', (req, res) => productController.getFeaturedProducts(req, res));
+
+/**
+ * @openapi
+ * /products/{id}:
+ *   get:
+ *     summary: Obter produto por ID
+ *     tags:
+ *       - Produtos
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Produto encontrado
+ *       404:
+ *         description: Produto não encontrado
+ */
 productRouter.get('/products/:id', (req, res) => productController.getProductById(req, res));
 
-// Protected - support multiple images via field name "images"
+/**
+ * @openapi
+ * /products:
+ *   post:
+ *     summary: Criar produto (admin)
+ *     tags:
+ *       - Produtos
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               categoryId:
+ *                 type: integer
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *     responses:
+ *       201:
+ *         description: Produto criado
+ */
 productRouter.post(
   '/products',
   ...auth,
@@ -25,6 +99,42 @@ productRouter.post(
   (req, res) => productController.createProduct(req, res)
 );
 
+/**
+ * @openapi
+ * /products/{id}:
+ *   put:
+ *     summary: Atualizar produto (admin)
+ *     tags:
+ *       - Produtos
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *     responses:
+ *       200:
+ *         description: Produto atualizado
+ */
 productRouter.put(
   '/products/:id',
   ...auth,
@@ -33,13 +143,55 @@ productRouter.put(
   (req, res) => productController.updateProduct(req, res)
 );
 
+/**
+ * @openapi
+ * /products/{id}:
+ *   delete:
+ *     summary: Eliminar produto (admin)
+ *     tags:
+ *       - Produtos
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Produto eliminado
+ */
 productRouter.delete(
   '/products/:id',
   ...auth,
   (req, res) => productController.deleteProduct(req, res)
 );
 
-// Delete a single product image
+/**
+ * @openapi
+ * /products/{id}/images/{imageId}:
+ *   delete:
+ *     summary: Eliminar imagem de produto (admin)
+ *     tags:
+ *       - Produtos
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: imageId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Imagem eliminada
+ */
 productRouter.delete(
   '/products/:id/images/:imageId',
   ...auth,

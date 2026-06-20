@@ -7,10 +7,50 @@ import { upload } from '../middlewares/upload-multer.js';
 const settingRouter = Router();
 const settingController = new SettingController();
 
-// Public - frontend reads hero/login backgrounds without auth
+/**
+ * @openapi
+ * /settings:
+ *   get:
+ *     summary: Obter todas as configurações do site (público)
+ *     tags:
+ *       - Configurações
+ *     responses:
+ *       200:
+ *         description: Mapa de chave-valor com as configurações
+ */
 settingRouter.get('/settings', (req, res) => settingController.getAll(req, res));
 
-// Protected - admin changes backgrounds
+/**
+ * @openapi
+ * /settings/{key}:
+ *   put:
+ *     summary: Atualizar configuração por chave (admin)
+ *     tags:
+ *       - Configurações
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: hero_background
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               value:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Configuração atualizada
+ */
 settingRouter.put(
   '/settings/:key',
   authenticate,

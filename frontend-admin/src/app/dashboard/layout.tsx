@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { LayoutDashboard, ShoppingBag, Package, Tag, Settings, LogOut, Menu, X, MessageSquare } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Package, Tag, Settings, LogOut, Menu, X, MessageSquare, Users } from "lucide-react";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -14,6 +14,7 @@ const NAV = [
   { href: "/dashboard/categorias", label: "Categorias", icon: Tag },
   { href: "/dashboard/testemunhos", label: "Testemunhos", icon: MessageSquare },
   { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
+  { href: "/dashboard/utilizadores", label: "Utilizadores", icon: Users },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

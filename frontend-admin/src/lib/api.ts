@@ -1,4 +1,4 @@
-﻿import type { ApiProduct, ApiCategory, ApiOrder, SiteSettings, ApiTestimonial } from "./api-types";
+﻿import type { ApiProduct, ApiCategory, ApiOrder, SiteSettings, ApiTestimonial, ApiUser } from "./api-types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -103,6 +103,18 @@ export const adminApi = {
 
   deleteTestimonial: (id: number) =>
     request<void>(`/testimonials/${id}`, { method: "DELETE" }),
+
+  // Users
+  getUsers: () => request<ApiUser[]>("/users"),
+
+  createUser: (data: { name: string; email: string; password: string; role: "ADMIN" | "ATENDENTE" }) =>
+    request<ApiUser>("/users", { method: "POST", body: JSON.stringify(data) }),
+
+  updateUser: (id: number, data: { name?: string; email?: string; password?: string; role?: string }) =>
+    request<ApiUser>(`/users/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+
+  deleteUser: (id: number) =>
+    request<void>(`/users/${id}`, { method: "DELETE" }),
 
   // Site settings
   getSettings: () => request<SiteSettings>("/settings"),

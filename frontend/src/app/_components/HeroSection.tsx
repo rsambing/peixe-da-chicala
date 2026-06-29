@@ -156,8 +156,7 @@ export function HeroSection() {
         <p ref={subtitleRef} className="mt-5 text-lg sm:text-xl text-white/85 max-w-2xl mx-auto">
           Explore o cardápio, adicione ao carrinho e acompanhe o seu pedido com um código.
         </p>
-
-        <div
+     <div
           ref={ctaRef}
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
@@ -172,10 +171,11 @@ export function HeroSection() {
               size="xl"
               className="px-10 border-white/40 text-white hover:bg-white hover:text-foreground"
             >
-              Ver Mais Pedidos
+              Pratos Mais Pedidos
             </Button>
           </Link>
         </div>
+      
       </div>
     </section>
   );

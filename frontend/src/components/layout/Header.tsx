@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
+import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart-context";
@@ -59,7 +60,7 @@ export function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center group">
           <Image
-            src="/images/logo-com-escrita.png"
+            src="/images/logo.png"
             alt="Peixe da Chicala"
             className={cn(
               "h-15 w-auto transition-all",
@@ -93,7 +94,8 @@ export function Header() {
         {/* Actions */}
         <div className="flex items-center gap-2">
           <Link ref={cartBtnRef} href="/carrinho" className="hidden sm:inline-flex">
-            <Button variant="primary" size="sm">
+            <Button variant="primary" size="sm" className="flex items-center gap-1.5">
+              <ShoppingCart className="size-4" />
               Carrinho{mounted && itemsCount ? ` (${itemsCount})` : ""}
             </Button>
           </Link>
@@ -148,7 +150,8 @@ export function Header() {
               <Button variant="primary" className="w-full mt-2">Fazer Pedido</Button>
             </Link>
             <Link href="/carrinho" onClick={() => setMobileOpen(false)}>
-              <Button variant="outline" className="w-full mt-2">
+              <Button variant="outline" className="w-full mt-2 flex items-center gap-2">
+                <ShoppingCart className="size-4" />
                 Carrinho{mounted && itemsCount ? ` (${itemsCount})` : ""}
               </Button>
             </Link>

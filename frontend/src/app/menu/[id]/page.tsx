@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -219,12 +219,14 @@ export default function MenuItemDetailPage() {
                   <button
                     disabled={!item.isAvailable}
                     onClick={() => addItem(item.id, quantity, note.trim() || undefined)}
-                    className="flex-1 h-14 rounded-full bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none text-white font-display font-bold text-base transition-colors"
+                    className="flex-1 h-14 rounded-full bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none text-white font-display font-bold text-base transition-colors flex items-center justify-center gap-2"
                   >
-                    + Adicionar ao Carrinho
+                    <ShoppingCart className="size-5" />
+                    Adicionar ao Carrinho
                   </button>
                   <Link href="/carrinho" className="flex-1">
-                    <button className="w-full h-14 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-800 font-display font-bold text-base transition-colors">
+                    <button className="w-full h-14 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-800 font-display font-bold text-base transition-colors flex items-center justify-center gap-2">
+                      <ShoppingCart className="size-5" />
                       Ver Carrinho
                     </button>
                   </Link>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ShoppingCart } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui";
@@ -30,7 +31,10 @@ export default function CartPage() {
           {/* Lista */}
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <h1 className="text-3xl font-display font-black text-gray-900">Carrinho</h1>
+              <h1 className="text-3xl font-display font-black text-gray-900 flex items-center gap-3">
+                <ShoppingCart className="size-8" />
+                Carrinho
+              </h1>
               <p className="text-gray-500 mt-1">
                 {count ? `${count} item(s) no carrinho` : "O seu carrinho está vazio."}
               </p>
@@ -44,7 +48,9 @@ export default function CartPage() {
               </div>
             ) : lines.length === 0 ? (
               <div className="py-12 text-center space-y-4">
-                <p className="text-4xl">🛒</p>
+                <div className="flex justify-center">
+                  <ShoppingCart className="size-16 text-gray-300" />
+                </div>
                 <p className="text-gray-400">Adicione pratos do cardápio para continuar.</p>
                 <Link href="/menu">
                   <Button variant="primary">Ver Cardápio</Button>

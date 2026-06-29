@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
+import { ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MenuItem } from "@/lib/menu";
 import { formatCurrency } from "@/lib/mock/helpers";
@@ -77,9 +78,10 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
               type="button"
               disabled={!item.isAvailable}
               onClick={handleAdd}
-              className="rounded-full font-display font-bold text-sm h-9 px-4 bg-primary text-white hover:bg-primary/90 transition-colors disabled:pointer-events-none disabled:opacity-50 shrink-0"
+              className="rounded-full font-display font-bold text-sm h-9 px-4 bg-primary text-white hover:bg-primary/90 transition-colors disabled:pointer-events-none disabled:opacity-50 shrink-0 flex items-center gap-1.5"
             >
-              + Adicionar
+              <ShoppingCart className="size-3.5" />
+              Adicionar
             </button>
           </div>
         </div>

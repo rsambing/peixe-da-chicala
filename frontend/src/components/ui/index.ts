@@ -42,3 +42,4 @@ export {
 export { Skeleton, EmptyState, Pagination } from "./Skeleton";
 export { Toaster } from "./Toaster";
 export { RevealOnScroll } from "./RevealOnScroll";
+export { FloatingCart } from "./FloatingCart";

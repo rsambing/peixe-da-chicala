@@ -6,6 +6,7 @@ import { adminApi } from "@/lib/api";
 import type { ApiOrder } from "@/lib/api-types";
 import { ChevronDown, Trash2, X, MapPin, Phone, User, Clock, CreditCard } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
+import { useNewOrders } from "@/lib/new-orders-context";
 
 const STATUSES = [
   { value: "RECEBIDO",          label: "Recebido",      color: "bg-amber-100 text-amber-800"   },
@@ -222,6 +223,7 @@ function OrderDetailPanel({ order, onClose, onStatusChange, updating }: {
 }
 
 export default function PedidosPage() {
+  const { setNewCount } = useNewOrders();
   const [orders, setOrders] = useState<ApiOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("ALL");
@@ -235,6 +237,8 @@ export default function PedidosPage() {
 
   const baselineIdRef = useRef(0);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => { setNewCount(newOrderIds.size); }, [newOrderIds, setNewCount]);
 
   useEffect(() => { load(); }, []);
 
@@ -398,28 +402,36 @@ export default function PedidosPage() {
         <>
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
-            {visible.map((order) => (
-              <button
-                key={order.id}
-                className="w-full text-left bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden px-4 py-3 flex items-start justify-between gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors"
-                onClick={() => openOrder(order)}
-              >
-                <div className="space-y-0.5 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-mono font-bold text-xs text-gray-900 dark:text-white">{order.trackingCode}</p>
-                    {newOrderIds.has(order.id) && (
-                      <span className="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-black rounded-full">NOVO</span>
-                    )}
+            {visible.map((order) => {
+              const isNew = newOrderIds.has(order.id);
+              return (
+                <button
+                  key={order.id}
+                  className={[
+                    "w-full text-left rounded-2xl shadow-sm overflow-hidden px-4 py-3 flex items-start justify-between gap-3 transition-colors",
+                    isNew
+                      ? "bg-red-50 dark:bg-red-900/15 border border-red-200 dark:border-red-800/40 hover:bg-red-100/60 dark:hover:bg-red-900/25"
+                      : "bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800/60",
+                  ].join(" ")}
+                  onClick={() => openOrder(order)}
+                >
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-mono font-bold text-xs text-gray-900 dark:text-white">{order.trackingCode}</p>
+                      {isNew && (
+                        <span className="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-black rounded-full animate-pulse">NOVO</span>
+                      )}
+                    </div>
+                    <p className="font-medium text-sm text-gray-700 dark:text-gray-300 truncate">{order.customerName}</p>
+                    <p className="text-xs text-gray-400">{order.phone}</p>
                   </div>
-                  <p className="font-medium text-sm text-gray-700 dark:text-gray-300 truncate">{order.customerName}</p>
-                  <p className="text-xs text-gray-400">{order.phone}</p>
-                </div>
-                <div className="text-right shrink-0 space-y-1">
-                  <p className="font-bold text-sm text-gray-900 dark:text-white">{fmt(order.total)}</p>
-                  <StatusBadge status={order.status} />
-                </div>
-              </button>
-            ))}
+                  <div className="text-right shrink-0 space-y-1">
+                    <p className="font-bold text-sm text-gray-900 dark:text-white">{fmt(order.total)}</p>
+                    <StatusBadge status={order.status} />
+                  </div>
+                </button>
+              );
+            })}
           </div>
 
           {/* Desktop table */}
@@ -435,17 +447,24 @@ export default function PedidosPage() {
                 </tr>
               </thead>
               <tbody>
-                {visible.map((order) => (
+                {visible.map((order) => {
+                  const isNew = newOrderIds.has(order.id);
+                  return (
                   <tr
                     key={order.id}
-                    className="border-b border-gray-50 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-gray-800/30 cursor-pointer"
+                    className={[
+                      "border-b cursor-pointer transition-colors",
+                      isNew
+                        ? "bg-red-50 dark:bg-red-900/15 border-red-100 dark:border-red-900/30 hover:bg-red-100/60 dark:hover:bg-red-900/25"
+                        : "border-gray-50 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-gray-800/30",
+                    ].join(" ")}
                     onClick={() => openOrder(order)}
                   >
                     <td className="px-4 py-3 font-mono text-xs">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-gray-900 dark:text-white">{order.trackingCode}</span>
-                        {newOrderIds.has(order.id) && (
-                          <span className="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-black rounded-full">NOVO</span>
+                        {isNew && (
+                          <span className="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-black rounded-full animate-pulse">NOVO</span>
                         )}
                       </div>
                     </td>
@@ -467,7 +486,8 @@ export default function PedidosPage() {
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

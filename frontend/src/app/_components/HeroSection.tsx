@@ -12,11 +12,9 @@ import { api } from "@/lib/api";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const EMBER_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800"];
-const DEFAULT_BG =
-  "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=2200&q=80";
 
 export function HeroSection() {
-  const [bgUrl, setBgUrl] = useState<string>(DEFAULT_BG);
+  const [bgUrl, setBgUrl] = useState<string | null>(null);
 
   useEffect(() => {
     api
@@ -119,15 +117,19 @@ export function HeroSection() {
         className="absolute inset-x-0 top-0"
         style={{ bottom: "-28%" }}
       >
-        <Image
-          src={bgUrl}
-          alt="Peixe grelhado na brasa"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-          unoptimized={bgUrl.includes("ibb.co")}
-        />
+        {bgUrl ? (
+          <Image
+            src={bgUrl}
+            alt="Peixe grelhado na brasa"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+            unoptimized={bgUrl.includes("ibb.co")}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-black" />
+        )}
         <div className="absolute inset-0 bg-black/55" />
       </div>
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useNewOrders } from "@/lib/new-orders-context";
 import { BackendLoader } from "@/components/BackendLoader";
 import { LayoutDashboard, ShoppingBag, Package, Tag, Settings, LogOut, Menu, X, MessageSquare, Users } from "lucide-react";
 
@@ -26,6 +27,7 @@ const ROLE_LABEL: Record<string, string> = {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isReady, user, logout } = useAuth();
+  const { newCount } = useNewOrders();
   const router = useRouter();
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -48,6 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (!isReady) return null;
   if (!isAuthenticated) return null;
+  if (!user) { logout(); router.replace("/login"); return null; }
 
   const visibleNav = NAV.filter(
     (item) => !item.roles || (user && item.roles.includes(user.role as never))
@@ -78,6 +81,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               >
                 <Icon className="size-4 shrink-0" />
                 {item.label}
+                {item.href === "/dashboard/pedidos" && newCount > 0 && (
+                  <span className="ml-auto flex items-center justify-center h-5 min-w-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-black animate-pulse">
+                    {newCount}
+                  </span>
+                )}
               </Link>
             );
           })}

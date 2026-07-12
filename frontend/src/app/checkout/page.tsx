@@ -40,25 +40,6 @@ function generateOrderCode() {
   return `PDC-${Math.floor(100000 + Math.random() * 900000)}`;
 }
 
-const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; icon: string; desc: string }[] = [
-  { value: "DINHEIRO", label: "Dinheiro", icon: "💵", desc: "Pague na entrega ou levantamento" },
-  { value: "TPA",      label: "TPA",      icon: "💳", desc: "Pague com cartão — o entregador leva o terminal" },
-];
-
-function PaymentInfo({ method }: { method: PaymentMethod }) {
-  if (method === "TPA") {
-    return (
-      <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
-        <p className="text-sm text-violet-700">O entregador levará o terminal TPA consigo. Pode pagar com cartão na entrega.</p>
-      </div>
-    );
-  }
-  return (
-    <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-      <p className="text-sm text-gray-600">O pagamento será feito em dinheiro na entrega ou levantamento. O estafeta terá troco.</p>
-    </div>
-  );
-}
 
 export default function CheckoutPage() {
   const { detailedLines, subtotalKz, clear } = useCart();
@@ -339,33 +320,22 @@ export default function CheckoutPage() {
                   onChange={(e) => update("note", e.target.value)}
                 />
 
-                {/* Método de pagamento */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-medium text-foreground">
                     Método de pagamento
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    {PAYMENT_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => update("paymentMethod", opt.value)}
-                        className={[
-                          "flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-colors",
-                          form.paymentMethod === opt.value
-                            ? "border-foreground bg-foreground text-background"
-                            : "border-border bg-muted/30 hover:bg-muted text-foreground",
-                        ].join(" ")}
-                      >
-                        <span className="text-lg">{opt.icon}</span>
-                        <span className="text-xs font-bold leading-tight">{opt.label}</span>
-                        <span className={["text-[11px] leading-tight", form.paymentMethod === opt.value ? "text-background/70" : "text-muted-foreground"].join(" ")}>
-                          {opt.desc}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  <PaymentInfo method={form.paymentMethod} />
+                  <Select
+                    value={form.paymentMethod}
+                    onValueChange={(v) => update("paymentMethod", v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DINHEIRO">💵 Dinheiro</SelectItem>
+                      <SelectItem value="TPA">💳 TPA</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {submitError && (

@@ -18,7 +18,7 @@ const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", 
 const PROFILE_KEY = "peixe-da-chicala.profile.v1";
 
 type PaymentMethod = "DINHEIRO" | "TPA";
-type Profile = { name: string; phone: string; address: string; reference: string; deliveryMethod: "ENTREGA" | "RETIRADA" | "RESERVA" };
+type Profile = { name: string; phone: string; address: string; reference: string; deliveryMethod: "ENTREGA" | "RETIRADA" };
 
 function loadProfile(): Profile | null {
   try {
@@ -73,7 +73,7 @@ export default function CheckoutPage() {
     address: "",
     reference: "",
     note: "",
-    deliveryMethod: "ENTREGA" as "ENTREGA" | "RETIRADA" | "RESERVA",
+    deliveryMethod: "ENTREGA" as "ENTREGA" | "RETIRADA",
     paymentMethod: "DINHEIRO" as PaymentMethod,
   });
 
@@ -91,7 +91,7 @@ export default function CheckoutPage() {
     [subtotalKz, detailedLines.length, form.deliveryMethod]
   );
 
-  const isAddressless = form.deliveryMethod === "RETIRADA" || form.deliveryMethod === "RESERVA";
+  const isAddressless = form.deliveryMethod === "RETIRADA";
 
   const confirmCardRef = useRef<HTMLDivElement>(null);
   const codeBadgeRef = useRef<HTMLDivElement>(null);
@@ -166,10 +166,9 @@ export default function CheckoutPage() {
     setSubmitError(null);
 
     const trackingCode = generateOrderCode();
-    const addressValue =
-      form.deliveryMethod === "RETIRADA" ? "RETIRADA" :
-      form.deliveryMethod === "RESERVA"  ? "RESERVA"  :
-      [form.address.trim(), form.reference.trim()].filter(Boolean).join(" - ");
+    const addressValue = form.deliveryMethod === "RETIRADA"
+      ? "RETIRADA"
+      : [form.address.trim(), form.reference.trim()].filter(Boolean).join(" - ");
 
     try {
       const order = await api.createOrder({
@@ -278,7 +277,7 @@ export default function CheckoutPage() {
                       onClick={() => {
                         clearProfile();
                         setHasProfile(false);
-                        setForm({ name: "", phone: "", address: "", reference: "", note: "", deliveryMethod: "ENTREGA" as const, paymentMethod: "DINHEIRO" as const });
+                        setForm({ name: "", phone: "", address: "", reference: "", note: "", deliveryMethod: "ENTREGA", paymentMethod: "DINHEIRO" });
                       }}
                       className="text-xs text-green-600 hover:text-green-800 underline underline-offset-2 transition-colors shrink-0"
                     >
@@ -314,7 +313,7 @@ export default function CheckoutPage() {
                     <SelectContent>
                       <SelectItem value="ENTREGA">Entrega</SelectItem>
                       <SelectItem value="RETIRADA">Retirada</SelectItem>
-                      <SelectItem value="RESERVA">Reserva</SelectItem>
+                      {/* <SelectItem value="RESERVA">Reserva</SelectItem> */}
                     </SelectContent>
                   </Select>
                 </div>

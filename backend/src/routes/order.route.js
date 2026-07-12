@@ -108,7 +108,7 @@ orderRouter.get(
 orderRouter.get(
   '/orders/:id',
   authenticate,
-  authorize('ADMIN', 'ATENDENTE'),
+  authorize('ADMIN', 'GESTOR', 'ATENDENTE'),
   (req, res) => orderController.getOrderById(req, res)
 );
 
@@ -128,7 +128,7 @@ orderRouter.get(
 orderRouter.get(
   '/orders',
   authenticate,
-  authorize('ADMIN', 'ATENDENTE'),
+  authorize('ADMIN', 'GESTOR', 'ATENDENTE'),
   (req, res) => orderController.getAllOrders(req, res)
 );
 
@@ -191,7 +191,7 @@ orderRouter.put(
 orderRouter.delete(
   '/orders/:id',
   authenticate,
-  authorize('ADMIN', 'ATENDENTE'),
+  authorize('ADMIN'),
   (req, res) => orderController.deleteOrder(req, res)
 );
 

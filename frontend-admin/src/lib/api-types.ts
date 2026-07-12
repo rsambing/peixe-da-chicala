@@ -1,4 +1,4 @@
-﻿export interface ApiCategory {
+export interface ApiCategory {
   id: number;
   name: string;
   imageUrl: string | null;
@@ -45,6 +45,7 @@ export interface ApiOrder {
   phone: string;
   address: string;
   status: string;
+  paymentMethod: string;
   total: number;
   createdAt: string;
   items: ApiOrderItem[];
@@ -83,6 +84,6 @@ export interface ApiUser {
   id: number;
   name: string;
   email: string;
-  role: "ADMIN" | "ATENDENTE";
+  role: "ADMIN" | "GESTOR" | "ATENDENTE";
   createdAt: string;
 }

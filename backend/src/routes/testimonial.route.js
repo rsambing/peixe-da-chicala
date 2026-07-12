@@ -52,7 +52,7 @@ testimonialRouter.get('/testimonials', (req, res) => ctrl.getAll(req, res));
 testimonialRouter.post(
   '/testimonials',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'GESTOR'),
   upload.single('avatar'),
   (req, res) => ctrl.create(req, res)
 );
@@ -94,7 +94,7 @@ testimonialRouter.post(
 testimonialRouter.put(
   '/testimonials/:id',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'GESTOR'),
   upload.single('avatar'),
   (req, res) => ctrl.update(req, res)
 );
@@ -121,7 +121,7 @@ testimonialRouter.put(
 testimonialRouter.delete(
   '/testimonials/:id',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'GESTOR'),
   (req, res) => ctrl.delete(req, res)
 );
 

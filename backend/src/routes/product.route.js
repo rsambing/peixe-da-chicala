@@ -9,7 +9,7 @@ import { createProductSchema, updateProductSchema } from '../schemas/validation.
 const productRouter = Router();
 const productController = new ProductController();
 
-const auth = [authenticate, authorize('ADMIN', 'ATENDENTE')];
+const auth = [authenticate, authorize('ADMIN', 'GESTOR')];
 
 /**
  * @openapi

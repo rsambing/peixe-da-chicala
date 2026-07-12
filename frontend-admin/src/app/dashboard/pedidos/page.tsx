@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { adminApi } from "@/lib/api";
 import type { ApiOrder } from "@/lib/api-types";
-import { ChevronDown, Trash2, X, MapPin, Phone, User, Clock } from "lucide-react";
+import { ChevronDown, Trash2, X, MapPin, Phone, User, Clock, CreditCard } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
 
 const STATUSES = [
@@ -16,6 +16,17 @@ const STATUSES = [
 
 const ALL_FILTERS = [{ value: "ALL", label: "Todos" }, ...STATUSES];
 
+const PAYMENT_LABEL: Record<string, string> = {
+  DINHEIRO: "Dinheiro",
+  MULTICAIXA_EXPRESS: "Multicaixa Express",
+  REFERENCIA: "Referência Bancária",
+};
+const PAYMENT_COLOR: Record<string, string> = {
+  DINHEIRO: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300",
+  MULTICAIXA_EXPRESS: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  REFERENCIA: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+};
+
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-AO", { style: "currency", currency: "AOA", minimumFractionDigits: 0 }).format(n);
 }
@@ -25,6 +36,15 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${s?.color ?? "bg-gray-100 text-gray-600"}`}>
       {s?.label ?? status}
+    </span>
+  );
+}
+
+function PaymentBadge({ method }: { method?: string }) {
+  if (!method) return null;
+  return (
+    <span className={["text-xs font-semibold px-2.5 py-1 rounded-full", PAYMENT_COLOR[method] ?? "bg-gray-100 text-gray-600"].join(" ")}>
+      {PAYMENT_LABEL[method] ?? method}
     </span>
   );
 }
@@ -64,8 +84,8 @@ function OrderDetailPanel({ order, onClose, onStatusChange, updating }: {
         </div>
 
         <div className="flex-1 p-6 space-y-6">
-          {/* Status */}
-          <div className="flex items-center gap-3">
+          {/* Status + pagamento */}
+          <div className="flex flex-wrap items-center gap-3">
             <StatusBadge status={order.status} />
             <span className="text-gray-300 dark:text-gray-600">→</span>
             <div className="relative inline-flex items-center gap-1">
@@ -84,6 +104,7 @@ function OrderDetailPanel({ order, onClose, onStatusChange, updating }: {
             {updating === order.id && (
               <span className="text-xs text-gray-400 animate-pulse">A guardar…</span>
             )}
+            <PaymentBadge method={order.paymentMethod} />
           </div>
 
           {/* Info cards */}
@@ -113,6 +134,14 @@ function OrderDetailPanel({ order, onClose, onStatusChange, updating }: {
             )}
             <div className="col-span-2 bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 space-y-1">
               <div className="flex items-center gap-1.5 text-xs text-gray-400 font-semibold uppercase tracking-wide">
+                <CreditCard className="size-3.5" /> Pagamento
+              </div>
+              <p className="font-semibold text-gray-900 dark:text-white text-sm">
+                {PAYMENT_LABEL[order.paymentMethod] ?? order.paymentMethod ?? "Dinheiro"}
+              </p>
+            </div>
+            <div className="col-span-2 bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 space-y-1">
+              <div className="flex items-center gap-1.5 text-xs text-gray-400 font-semibold uppercase tracking-wide">
                 <Clock className="size-3.5" /> Data
               </div>
               <p className="font-semibold text-gray-900 dark:text-white text-sm">
@@ -140,7 +169,6 @@ function OrderDetailPanel({ order, onClose, onStatusChange, updating }: {
                   return (
                     <div key={item.id} className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4">
                       <div className="flex items-start gap-3">
-                        {/* Image(s) */}
                         <div className="relative size-16 shrink-0 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800">
                           {img ? (
                             <Image src={img} alt={name} fill className="object-cover" sizes="64px" />
@@ -169,7 +197,6 @@ function OrderDetailPanel({ order, onClose, onStatusChange, updating }: {
                         </div>
                       </div>
 
-                      {/* Extra product images row */}
                       {allImages.length > 1 && (
                         <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
                           {allImages.map((pi) => (
@@ -206,19 +233,64 @@ export default function PedidosPage() {
   const [deleting, setDeleting] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<ApiOrder | null>(null);
+  const [newOrderIds, setNewOrderIds] = useState<Set<number>>(new Set());
+
+  const baselineIdRef = useRef(0);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => { load(); }, []);
+
+  // Polling every 30s for new orders
+  useEffect(() => {
+    pollingRef.current = setInterval(silentPoll, 30_000);
+    return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function load() {
     setLoading(true);
     setError(null);
     try {
-      setOrders(await adminApi.getOrders());
+      const data = await adminApi.getOrders();
+      setOrders(data);
+      if (data.length > 0) {
+        baselineIdRef.current = Math.max(...data.map((o) => o.id));
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao carregar pedidos");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function silentPoll() {
+    if (baselineIdRef.current === 0) return;
+    try {
+      const latest = await adminApi.getOrders();
+      const newIds = latest
+        .filter((o) => o.id > baselineIdRef.current)
+        .map((o) => o.id);
+
+      if (newIds.length > 0) {
+        setOrders(latest);
+        setNewOrderIds((prev) => new Set([...prev, ...newIds]));
+        baselineIdRef.current = Math.max(...newIds);
+
+        if (typeof window !== "undefined" && "Notification" in window) {
+          if (Notification.permission === "default") {
+            Notification.requestPermission();
+          } else if (Notification.permission === "granted") {
+            const first = latest.find((o) => newIds.includes(o.id));
+            if (first) {
+              new Notification("Novo pedido recebido!", {
+                body: `${first.trackingCode} — ${first.customerName}`,
+                icon: "/images/logo.png",
+              });
+            }
+          }
+        }
+      }
+    } catch {}
   }
 
   async function changeStatus(id: number, status: string) {
@@ -248,14 +320,31 @@ export default function PedidosPage() {
     }
   }
 
+  function openOrder(order: ApiOrder) {
+    setSelected(order);
+    setNewOrderIds((prev) => {
+      const next = new Set(prev);
+      next.delete(order.id);
+      return next;
+    });
+  }
+
   const filtered = filter === "ALL" ? orders : orders.filter((o) => o.status === filter);
   const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const newCount = newOrderIds.size;
 
   return (
     <div className="p-4 md:p-8 space-y-4 md:space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Pedidos</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-black text-gray-900 dark:text-white">Pedidos</h1>
+            {newCount > 0 && (
+              <span className="flex items-center justify-center h-6 min-w-6 px-1.5 rounded-full bg-red-500 text-white text-xs font-black animate-pulse">
+                {newCount}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-gray-500 mt-1">{orders.length} pedido(s) no total</p>
         </div>
         <button
@@ -315,10 +404,15 @@ export default function PedidosPage() {
               <button
                 key={order.id}
                 className="w-full text-left bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden px-4 py-3 flex items-start justify-between gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors"
-                onClick={() => setSelected(order)}
+                onClick={() => openOrder(order)}
               >
                 <div className="space-y-0.5 min-w-0">
-                  <p className="font-mono font-bold text-xs text-gray-900 dark:text-white">{order.trackingCode}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-mono font-bold text-xs text-gray-900 dark:text-white">{order.trackingCode}</p>
+                    {newOrderIds.has(order.id) && (
+                      <span className="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-black rounded-full">NOVO</span>
+                    )}
+                  </div>
                   <p className="font-medium text-sm text-gray-700 dark:text-gray-300 truncate">{order.customerName}</p>
                   <p className="text-xs text-gray-400">{order.phone}</p>
                 </div>
@@ -347,9 +441,16 @@ export default function PedidosPage() {
                   <tr
                     key={order.id}
                     className="border-b border-gray-50 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-gray-800/30 cursor-pointer"
-                    onClick={() => setSelected(order)}
+                    onClick={() => openOrder(order)}
                   >
-                    <td className="px-4 py-3 font-mono font-bold text-gray-900 dark:text-white text-xs">{order.trackingCode}</td>
+                    <td className="px-4 py-3 font-mono text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-gray-900 dark:text-white">{order.trackingCode}</span>
+                        {newOrderIds.has(order.id) && (
+                          <span className="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-black rounded-full">NOVO</span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-gray-700 dark:text-gray-300 font-medium">{order.customerName}</td>
                     <td className="px-4 py-3 text-gray-500">{order.phone}</td>
                     <td className="px-4 py-3 text-gray-500 max-w-[160px] truncate">{order.address || "-"}</td>

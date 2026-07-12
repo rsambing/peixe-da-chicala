@@ -9,7 +9,7 @@ import { createCategorySchema, updateCategorySchema } from "../schemas/validatio
 const categoryRouter = Router();
 const categoryController = new CategoryController();
 
-const auth = [authenticate, authorize('ADMIN', 'ATENDENTE')];
+const auth = [authenticate, authorize('ADMIN', 'GESTOR')];
 
 /**
  * @openapi

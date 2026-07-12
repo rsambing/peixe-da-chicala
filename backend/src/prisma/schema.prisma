@@ -8,6 +8,7 @@ datasource db {
 
 enum Role {
   ADMIN
+  GESTOR
   ATENDENTE
 }
 
@@ -66,6 +67,7 @@ model Order {
   phone         String
   address       String
   status        String      @default("pending")
+  paymentMethod String      @default("DINHEIRO")
   total         Float
   items         OrderItem[]
 

@@ -31,8 +31,8 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const { token } = await adminApi.login(email.trim(), password);
-      login(token);
+      const { token, user } = await adminApi.login(email.trim(), password);
+      login(token, user);
       router.replace("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Credenciais inválidas.");

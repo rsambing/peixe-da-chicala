@@ -54,7 +54,7 @@ settingRouter.get('/settings', (req, res) => settingController.getAll(req, res))
 settingRouter.put(
   '/settings/:key',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'GESTOR'),
   upload.single('image'),
   (req, res) => settingController.update(req, res)
 );

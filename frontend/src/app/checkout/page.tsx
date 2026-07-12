@@ -17,6 +17,7 @@ const DELIVERY_FEE_KZ = 1000;
 const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", "#ffdd00"];
 const PROFILE_KEY = "peixe-da-chicala.profile.v1";
 
+type PaymentMethod = "DINHEIRO" | "MULTICAIXA_EXPRESS" | "REFERENCIA";
 type Profile = { name: string; phone: string; address: string; reference: string; deliveryMethod: "ENTREGA" | "RETIRADA" };
 
 function loadProfile(): Profile | null {
@@ -39,6 +40,52 @@ function generateOrderCode() {
   return `PDC-${Math.floor(100000 + Math.random() * 900000)}`;
 }
 
+const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; icon: string; desc: string }[] = [
+  { value: "DINHEIRO", label: "Dinheiro", icon: "💵", desc: "Pague na entrega ou levantamento" },
+  { value: "MULTICAIXA_EXPRESS", label: "Multicaixa Express", icon: "📱", desc: "Transfira pela app do banco" },
+  { value: "REFERENCIA", label: "Referência Bancária", icon: "🏦", desc: "Pague na caixa automática" },
+];
+
+function PaymentInfo({ method, total }: { method: PaymentMethod; total: number }) {
+  const totalStr = new Intl.NumberFormat("pt-AO", { style: "currency", currency: "AOA", minimumFractionDigits: 0 }).format(total);
+
+  if (method === "MULTICAIXA_EXPRESS") {
+    return (
+      <div className="rounded-xl border border-green-200 bg-green-50 p-4 space-y-1.5">
+        <p className="text-sm font-bold text-green-800">Instruções — Multicaixa Express</p>
+        <p className="text-sm text-green-700">Abra a app do seu banco, selecione <b>Multicaixa Express</b> e envie:</p>
+        <div className="flex flex-col gap-1 text-sm text-green-900 font-mono">
+          <span>Número: <b>+244 923 456 789</b></span>
+          <span>Montante: <b>{totalStr}</b></span>
+          <span>Descrição: <b>Peixe da Chicala</b></span>
+        </div>
+        <p className="text-xs text-green-600">Guarde o comprovativo. Confirmaremos o pagamento antes da entrega.</p>
+      </div>
+    );
+  }
+
+  if (method === "REFERENCIA") {
+    return (
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 space-y-1.5">
+        <p className="text-sm font-bold text-blue-800">Instruções — Referência Bancária</p>
+        <p className="text-sm text-blue-700">Pague na caixa automática (ATM/Homebanking) com os dados:</p>
+        <div className="flex flex-col gap-1 text-sm text-blue-900 font-mono">
+          <span>Entidade: <b>11111</b></span>
+          <span>Referência: <b>000 423 891</b></span>
+          <span>Montante: <b>{totalStr}</b></span>
+        </div>
+        <p className="text-xs text-blue-600">Confirmaremos o pagamento após receber a notificação do banco.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+      <p className="text-sm text-gray-600">O pagamento será feito em dinheiro na entrega ou levantamento. O estafeta terá troco.</p>
+    </div>
+  );
+}
+
 export default function CheckoutPage() {
   const { detailedLines, subtotalKz, clear } = useCart();
   const [submittedCode, setSubmittedCode] = useState<string | null>(null);
@@ -53,6 +100,7 @@ export default function CheckoutPage() {
     reference: "",
     note: "",
     deliveryMethod: "ENTREGA" as "ENTREGA" | "RETIRADA",
+    paymentMethod: "DINHEIRO" as PaymentMethod,
   });
 
   // Pre-fill from saved profile on mount
@@ -153,6 +201,7 @@ export default function CheckoutPage() {
         phone: form.phone.trim(),
         address: addressValue,
         status: "RECEBIDO",
+        paymentMethod: form.paymentMethod,
         total: totalKz,
         items: detailedLines.map((line) => ({
           productId: Number(line.itemId),
@@ -252,7 +301,7 @@ export default function CheckoutPage() {
                       onClick={() => {
                         clearProfile();
                         setHasProfile(false);
-                        setForm({ name: "", phone: "", address: "", reference: "", note: "", deliveryMethod: "ENTREGA" });
+                        setForm({ name: "", phone: "", address: "", reference: "", note: "", deliveryMethod: "ENTREGA", paymentMethod: "DINHEIRO" });
                       }}
                       className="text-xs text-green-600 hover:text-green-800 underline underline-offset-2 transition-colors shrink-0"
                     >
@@ -312,6 +361,35 @@ export default function CheckoutPage() {
                   value={form.note}
                   onChange={(e) => update("note", e.target.value)}
                 />
+
+                {/* Método de pagamento */}
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-foreground">
+                    Método de pagamento
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {PAYMENT_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => update("paymentMethod", opt.value)}
+                        className={[
+                          "flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-colors",
+                          form.paymentMethod === opt.value
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border bg-muted/30 hover:bg-muted text-foreground",
+                        ].join(" ")}
+                      >
+                        <span className="text-lg">{opt.icon}</span>
+                        <span className="text-xs font-bold leading-tight">{opt.label}</span>
+                        <span className={["text-[11px] leading-tight", form.paymentMethod === opt.value ? "text-background/70" : "text-muted-foreground"].join(" ")}>
+                          {opt.desc}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  <PaymentInfo method={form.paymentMethod} total={totalKz} />
+                </div>
 
                 {submitError && (
                   <p className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">

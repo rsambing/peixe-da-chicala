@@ -12,14 +12,14 @@ function CreateModal({
   onClose,
   saving,
 }: {
-  onSave: (data: { name: string; email: string; password: string; role: "ADMIN" | "ATENDENTE" }) => void;
+  onSave: (data: { name: string; email: string; password: string; role: "ADMIN" | "GESTOR" | "ATENDENTE" }) => void;
   onClose: () => void;
   saving: boolean;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"ADMIN" | "ATENDENTE">("ATENDENTE");
+  const [role, setRole] = useState<"ADMIN" | "GESTOR" | "ATENDENTE">("ATENDENTE");
 
   const valid = name.trim() && email.trim() && password.length >= 6;
 
@@ -55,21 +55,21 @@ function CreateModal({
             className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-400"
           />
 
-          <div className="grid grid-cols-2 gap-2">
-            {(["ADMIN", "ATENDENTE"] as const).map((r) => (
+          <div className="grid grid-cols-3 gap-2">
+            {(["ADMIN", "GESTOR", "ATENDENTE"] as const).map((r) => (
               <button
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
                 className={[
-                  "flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-semibold transition-colors",
+                  "flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border text-xs font-semibold transition-colors",
                   role === r
                     ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
                     : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800",
                 ].join(" ")}
               >
                 {r === "ADMIN" ? <ShieldCheck className="size-4" /> : <User className="size-4" />}
-                {r === "ADMIN" ? "Admin" : "Atendente"}
+                {r === "ADMIN" ? "Admin" : r === "GESTOR" ? "Gestor" : "Atendente"}
               </button>
             ))}
           </div>
@@ -195,7 +195,7 @@ export default function UtilizadoresPage() {
     }
   }
 
-  async function handleCreate(data: { name: string; email: string; password: string; role: "ADMIN" | "ATENDENTE" }) {
+  async function handleCreate(data: { name: string; email: string; password: string; role: "ADMIN" | "GESTOR" | "ATENDENTE" }) {
     setCreating(true);
     try {
       const created = await adminApi.createUser(data);
@@ -234,9 +234,10 @@ export default function UtilizadoresPage() {
     }
   }
 
-  const ROLE_LABEL: Record<string, string> = { ADMIN: "Admin", ATENDENTE: "Atendente" };
+  const ROLE_LABEL: Record<string, string> = { ADMIN: "Admin", GESTOR: "Gestor", ATENDENTE: "Atendente" };
   const ROLE_COLOR: Record<string, string> = {
     ADMIN: "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300",
+    GESTOR: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
     ATENDENTE: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
   };
 

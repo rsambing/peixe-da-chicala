@@ -45,6 +45,7 @@ export interface ApiOrder {
   phone: string;
   address: string;
   status: string;
+  paymentMethod: string;
   total: number;
   createdAt: string;
   items: ApiOrderItem[];
@@ -83,6 +84,7 @@ export interface CreateOrderPayload {
   phone: string;
   address: string;
   status: string;
+  paymentMethod: string;
   total: number;
   items: { productId: number; quantity: number; price: number; note?: string }[];
 }

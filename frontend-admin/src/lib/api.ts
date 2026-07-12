@@ -40,7 +40,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 export const adminApi = {
   // Auth
   login: (email: string, password: string) =>
-    request<{ token: string }>("/auth/login", {
+    request<{ token: string; user: ApiUser }>("/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     }),
@@ -107,7 +107,7 @@ export const adminApi = {
   // Users
   getUsers: () => request<ApiUser[]>("/users"),
 
-  createUser: (data: { name: string; email: string; password: string; role: "ADMIN" | "ATENDENTE" }) =>
+  createUser: (data: { name: string; email: string; password: string; role: "ADMIN" | "GESTOR" | "ATENDENTE" }) =>
     request<ApiUser>("/users", { method: "POST", body: JSON.stringify(data) }),
 
   updateUser: (id: number, data: { name?: string; email?: string; password?: string; role?: string }) =>

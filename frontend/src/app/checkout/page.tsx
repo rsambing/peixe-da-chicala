@@ -17,8 +17,8 @@ const DELIVERY_FEE_KZ = 1000;
 const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", "#ffdd00"];
 const PROFILE_KEY = "peixe-da-chicala.profile.v1";
 
-type PaymentMethod = "DINHEIRO" | "MULTICAIXA_EXPRESS" | "REFERENCIA";
-type Profile = { name: string; phone: string; address: string; reference: string; deliveryMethod: "ENTREGA" | "RETIRADA" };
+type PaymentMethod = "DINHEIRO" | "TPA";
+type Profile = { name: string; phone: string; address: string; reference: string; deliveryMethod: "ENTREGA" | "RETIRADA" | "RESERVA" };
 
 function loadProfile(): Profile | null {
   try {
@@ -42,43 +42,17 @@ function generateOrderCode() {
 
 const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; icon: string; desc: string }[] = [
   { value: "DINHEIRO", label: "Dinheiro", icon: "💵", desc: "Pague na entrega ou levantamento" },
-  { value: "MULTICAIXA_EXPRESS", label: "Multicaixa Express", icon: "📱", desc: "Transfira pela app do banco" },
-  { value: "REFERENCIA", label: "Referência Bancária", icon: "🏦", desc: "Pague na caixa automática" },
+  { value: "TPA",      label: "TPA",      icon: "💳", desc: "Pague com cartão — o entregador leva o terminal" },
 ];
 
-function PaymentInfo({ method, total }: { method: PaymentMethod; total: number }) {
-  const totalStr = new Intl.NumberFormat("pt-AO", { style: "currency", currency: "AOA", minimumFractionDigits: 0 }).format(total);
-
-  if (method === "MULTICAIXA_EXPRESS") {
+function PaymentInfo({ method }: { method: PaymentMethod }) {
+  if (method === "TPA") {
     return (
-      <div className="rounded-xl border border-green-200 bg-green-50 p-4 space-y-1.5">
-        <p className="text-sm font-bold text-green-800">Instruções — Multicaixa Express</p>
-        <p className="text-sm text-green-700">Abra a app do seu banco, selecione <b>Multicaixa Express</b> e envie:</p>
-        <div className="flex flex-col gap-1 text-sm text-green-900 font-mono">
-          <span>Número: <b>+244 923 456 789</b></span>
-          <span>Montante: <b>{totalStr}</b></span>
-          <span>Descrição: <b>Peixe da Chicala</b></span>
-        </div>
-        <p className="text-xs text-green-600">Guarde o comprovativo. Confirmaremos o pagamento antes da entrega.</p>
+      <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
+        <p className="text-sm text-violet-700">O entregador levará o terminal TPA consigo. Pode pagar com cartão na entrega.</p>
       </div>
     );
   }
-
-  if (method === "REFERENCIA") {
-    return (
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 space-y-1.5">
-        <p className="text-sm font-bold text-blue-800">Instruções — Referência Bancária</p>
-        <p className="text-sm text-blue-700">Pague na caixa automática (ATM/Homebanking) com os dados:</p>
-        <div className="flex flex-col gap-1 text-sm text-blue-900 font-mono">
-          <span>Entidade: <b>11111</b></span>
-          <span>Referência: <b>000 423 891</b></span>
-          <span>Montante: <b>{totalStr}</b></span>
-        </div>
-        <p className="text-xs text-blue-600">Confirmaremos o pagamento após receber a notificação do banco.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
       <p className="text-sm text-gray-600">O pagamento será feito em dinheiro na entrega ou levantamento. O estafeta terá troco.</p>
@@ -99,7 +73,7 @@ export default function CheckoutPage() {
     address: "",
     reference: "",
     note: "",
-    deliveryMethod: "ENTREGA" as "ENTREGA" | "RETIRADA",
+    deliveryMethod: "ENTREGA" as "ENTREGA" | "RETIRADA" | "RESERVA",
     paymentMethod: "DINHEIRO" as PaymentMethod,
   });
 
@@ -116,6 +90,8 @@ export default function CheckoutPage() {
     () => subtotalKz + (detailedLines.length && form.deliveryMethod === "ENTREGA" ? DELIVERY_FEE_KZ : 0),
     [subtotalKz, detailedLines.length, form.deliveryMethod]
   );
+
+  const isAddressless = form.deliveryMethod === "RETIRADA" || form.deliveryMethod === "RESERVA";
 
   const confirmCardRef = useRef<HTMLDivElement>(null);
   const codeBadgeRef = useRef<HTMLDivElement>(null);
@@ -190,9 +166,10 @@ export default function CheckoutPage() {
     setSubmitError(null);
 
     const trackingCode = generateOrderCode();
-    const addressValue = form.deliveryMethod === "RETIRADA"
-      ? "RETIRADA"
-      : [form.address.trim(), form.reference.trim()].filter(Boolean).join(" - ");
+    const addressValue =
+      form.deliveryMethod === "RETIRADA" ? "RETIRADA" :
+      form.deliveryMethod === "RESERVA"  ? "RESERVA"  :
+      [form.address.trim(), form.reference.trim()].filter(Boolean).join(" - ");
 
     try {
       const order = await api.createOrder({
@@ -214,8 +191,8 @@ export default function CheckoutPage() {
       saveProfile({
         name: form.name.trim(),
         phone: form.phone.trim(),
-        address: form.address.trim(),
-        reference: form.reference.trim(),
+        address: isAddressless ? "" : form.address.trim(),
+        reference: isAddressless ? "" : form.reference.trim(),
         deliveryMethod: form.deliveryMethod,
       });
       setHasProfile(true);
@@ -235,7 +212,7 @@ export default function CheckoutPage() {
     detailedLines.length > 0 &&
     form.name.trim().length > 0 &&
     form.phone.trim().length > 0 &&
-    (form.deliveryMethod === "RETIRADA" || form.address.trim().length > 0);
+    (isAddressless || form.address.trim().length > 0);
 
   return (
     <>
@@ -301,7 +278,7 @@ export default function CheckoutPage() {
                       onClick={() => {
                         clearProfile();
                         setHasProfile(false);
-                        setForm({ name: "", phone: "", address: "", reference: "", note: "", deliveryMethod: "ENTREGA", paymentMethod: "DINHEIRO" });
+                        setForm({ name: "", phone: "", address: "", reference: "", note: "", deliveryMethod: "ENTREGA" as const, paymentMethod: "DINHEIRO" as const });
                       }}
                       className="text-xs text-green-600 hover:text-green-800 underline underline-offset-2 transition-colors shrink-0"
                     >
@@ -337,6 +314,7 @@ export default function CheckoutPage() {
                     <SelectContent>
                       <SelectItem value="ENTREGA">Entrega</SelectItem>
                       <SelectItem value="RETIRADA">Retirada</SelectItem>
+                      <SelectItem value="RESERVA">Reserva</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -346,14 +324,14 @@ export default function CheckoutPage() {
                   placeholder="Rua, bairro, número..."
                   value={form.address}
                   onChange={(e) => update("address", e.target.value)}
-                  disabled={form.deliveryMethod === "RETIRADA"}
+                  disabled={isAddressless}
                 />
                 <Input
                   label="Referência (opcional)"
                   placeholder="Perto do..."
                   value={form.reference}
                   onChange={(e) => update("reference", e.target.value)}
-                  disabled={form.deliveryMethod === "RETIRADA"}
+                  disabled={isAddressless}
                 />
                 <Textarea
                   label="Observações (opcional)"
@@ -388,7 +366,7 @@ export default function CheckoutPage() {
                       </button>
                     ))}
                   </div>
-                  <PaymentInfo method={form.paymentMethod} total={totalKz} />
+                  <PaymentInfo method={form.paymentMethod} />
                 </div>
 
                 {submitError && (
@@ -448,7 +426,7 @@ export default function CheckoutPage() {
                       <span className="text-muted-foreground">Subtotal</span>
                       <span className="font-display font-black">{formatCurrency(subtotalKz)}</span>
                     </div>
-                    {form.deliveryMethod === "ENTREGA" && (
+                    {form.deliveryMethod === "ENTREGA" && detailedLines.length > 0 && (
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Entrega</span>
                         <span className="font-display font-black">{formatCurrency(DELIVERY_FEE_KZ)}</span>

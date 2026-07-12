@@ -64,7 +64,7 @@ export const createOrderSchema = z.object({
   phone: z.string().min(9, 'Telefone inválido'),
   address: z.string().optional().default(''),
   status: z.string().optional().default('RECEBIDO'),
-  paymentMethod: z.enum(['DINHEIRO', 'MULTICAIXA_EXPRESS', 'REFERENCIA']).optional().default('DINHEIRO'),
+  paymentMethod: z.enum(['DINHEIRO', 'TPA']).optional().default('DINHEIRO'),
   total: z.string().or(z.number()).pipe(z.coerce.number().positive('Total deve ser positivo')),
   items: z.array(z.object({
     productId: z.string().or(z.number()).pipe(z.coerce.number().int().positive()),

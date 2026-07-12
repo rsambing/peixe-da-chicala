@@ -18,13 +18,11 @@ const ALL_FILTERS = [{ value: "ALL", label: "Todos" }, ...STATUSES];
 
 const PAYMENT_LABEL: Record<string, string> = {
   DINHEIRO: "Dinheiro",
-  MULTICAIXA_EXPRESS: "Multicaixa Express",
-  REFERENCIA: "Referência Bancária",
+  TPA:      "TPA",
 };
 const PAYMENT_COLOR: Record<string, string> = {
   DINHEIRO: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300",
-  MULTICAIXA_EXPRESS: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
-  REFERENCIA: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  TPA:      "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
 };
 
 function fmt(n: number) {
@@ -125,10 +123,10 @@ function OrderDetailPanel({ order, onClose, onStatusChange, updating }: {
               <div className="col-span-2 bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 space-y-1">
                 <div className="flex items-center gap-1.5 text-xs text-gray-400 font-semibold uppercase tracking-wide">
                   <MapPin className="size-3.5" />
-                  {order.address === "RETIRADA" ? "Método" : "Endereço"}
+                  {order.address === "RETIRADA" || order.address === "RESERVA" ? "Método" : "Endereço"}
                 </div>
                 <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                  {order.address === "RETIRADA" ? "Retirada no local" : order.address}
+                  {order.address === "RETIRADA" ? "Retirada no local" : order.address === "RESERVA" ? "Reserva no restaurante" : order.address}
                 </p>
               </div>
             )}

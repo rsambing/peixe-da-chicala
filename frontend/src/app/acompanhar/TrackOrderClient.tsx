@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { Clock, Flame, Truck, CheckCircle2, MapPin } from "lucide-react";
-import { Button, Input } from "@/components/ui";
+import { Button, Input, ImageWithFallback } from "@/components/ui";
 import { ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/menu";
 import { api } from "@/lib/api";
 import type { ApiOrder } from "@/lib/api-types";
@@ -244,13 +243,15 @@ export function TrackOrderClient() {
                   const name = item.product?.name ?? `Produto #${item.productId}`;
                   return (
                     <div key={item.id} className="flex items-center gap-3">
-                      <div className="relative size-14 shrink-0 rounded-xl overflow-hidden bg-gray-100">
-                        {img ? (
-                          <Image src={img} alt={name} fill className="object-cover" sizes="56px" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xl">🍽️</div>
-                        )}
-                      </div>
+                      <ImageWithFallback
+                        src={img}
+                        alt={name}
+                        containerClassName="relative size-14 shrink-0 rounded-xl"
+                        className="object-cover"
+                        showLabel={false}
+                        iconClassName="size-4"
+                        sizes="56px"
+                      />
                       <div className="flex-1 min-w-0">
                         <p className="font-display font-black text-gray-900 text-sm">
                           {item.quantity}× {name}

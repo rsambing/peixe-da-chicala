@@ -1,26 +1,22 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Button, Card, CardContent, Badge } from "@/components/ui";
+import { Button, Card, CardContent, Badge, ImageWithFallback } from "@/components/ui";
 import { useProducts } from "@/lib/products-context";
 import { formatCurrency } from "@/lib/mock/helpers";
 import { useCart } from "@/lib/cart-context";
 import { MenuItemCard } from "@/components/features/menu/MenuItemCard";
-
-const PLACEHOLDER = "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=800&q=80";
 
 function ImageCarousel({ images }: { images: string[] }) {
   const [active, setActive] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const next = useCallback(() => setActive((i) => (i + 1) % images.length), [images.length]);
-  const prev = useCallback(() => setActive((i) => (i - 1 + images.length) % images.length), [images.length]);
 
   // Auto-advance
   useEffect(() => {
@@ -36,7 +32,15 @@ function ImageCarousel({ images }: { images: string[] }) {
     timerRef.current = setInterval(next, 4000);
   }
 
-  if (images.length === 0) return null;
+  if (images.length === 0) {
+    return (
+      <ImageWithFallback
+        src={null}
+        alt=""
+        containerClassName="aspect-[4/3] rounded-2xl"
+      />
+    );
+  }
 
   return (
     <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 select-none">
@@ -48,10 +52,10 @@ function ImageCarousel({ images }: { images: string[] }) {
             i === active ? "opacity-100 z-10" : "opacity-0 z-0",
           ].join(" ")}
         >
-          <Image
+          <ImageWithFallback
             src={src}
             alt=""
-            fill
+            containerClassName="absolute inset-0"
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 50vw"
             priority={i === 0}
@@ -146,7 +150,7 @@ export default function MenuItemDetailPage() {
     );
   }
 
-  const images = item.images?.length ? item.images : [item.imageUrl || PLACEHOLDER];
+  const images = item.images?.length ? item.images : item.imageUrl ? [item.imageUrl] : [];
 
   return (
     <>

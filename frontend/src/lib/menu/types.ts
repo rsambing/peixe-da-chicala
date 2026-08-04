@@ -21,7 +21,7 @@ export interface MenuItem {
   description: string;
   ingredients?: string[];
   priceKz: number;
-  imageUrl: string;
+  imageUrl?: string;
   images?: string[];
   isAvailable: boolean;
   tags?: string[];

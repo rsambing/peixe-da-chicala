@@ -6,6 +6,8 @@ import { adminApi } from "@/lib/api";
 import type { ApiProduct, ApiCategory, ApiProductImage } from "@/lib/api-types";
 import { Plus, Pencil, Trash2, X, ImagePlus } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
+import { SearchInput } from "@/components/SearchInput";
+import { normalize } from "@/lib/utils";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-AO", {
@@ -60,6 +62,7 @@ export default function ProdutosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const PAGE_SIZE = 12;
 
   // Modal
@@ -209,6 +212,13 @@ export default function ProdutosPage() {
   const primaryImage = (p: ApiProduct) =>
     p.images?.[0]?.imageUrl ?? p.imageUrl ?? PLACEHOLDER;
 
+  const q = normalize(search.trim());
+  const filteredProducts = q
+    ? products.filter((p) =>
+        [p.name, p.description, p.category?.name].filter(Boolean).some((field) => normalize(field as string).includes(q))
+      )
+    : products;
+
   return (
     <div className="p-4 md:p-8 space-y-4 md:space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -224,6 +234,13 @@ export default function ProdutosPage() {
           Novo Produto
         </button>
       </div>
+
+      <SearchInput
+        value={search}
+        onChange={(v) => { setSearch(v); setPage(1); }}
+        placeholder="Pesquisar por nome, descrição ou categoria…"
+        className="max-w-md"
+      />
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
@@ -263,10 +280,14 @@ export default function ProdutosPage() {
             Criar o primeiro produto
           </button>
         </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="text-center py-16 text-gray-400">
+          <p className="text-sm">Nenhum produto encontrado para &ldquo;{search.trim()}&rdquo;.</p>
+        </div>
       ) : (
         <>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((p) => (
+          {filteredProducts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((p) => (
             <div
               key={p.id}
               className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden"
@@ -321,7 +342,7 @@ export default function ProdutosPage() {
             </div>
           ))}
         </div>
-        <Pagination page={page} total={products.length} pageSize={PAGE_SIZE} onChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
+        <Pagination page={page} total={filteredProducts.length} pageSize={PAGE_SIZE} onChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
         </>
       )}
 

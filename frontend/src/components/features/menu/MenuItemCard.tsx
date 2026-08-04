@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ShoppingCart } from "lucide-react";
@@ -9,8 +8,7 @@ import { cn } from "@/lib/utils";
 import type { MenuItem } from "@/lib/menu";
 import { formatCurrency } from "@/lib/mock/helpers";
 import { useCart } from "@/lib/cart-context";
-
-const PLACEHOLDER = "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=800&q=80";
+import { ImageWithFallback } from "@/components/ui";
 
 export function MenuItemCard({ item }: { item: MenuItem }) {
   const { addItem } = useCart();
@@ -31,10 +29,10 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
       <div className={cn("relative aspect-[4/3] rounded-2xl overflow-hidden", !item.isAvailable && "opacity-60")}>
 
         {/* Image */}
-        <Image
-          src={item.imageUrl || PLACEHOLDER}
+        <ImageWithFallback
+          src={item.imageUrl}
           alt={item.name}
-          fill
+          containerClassName="absolute inset-0"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />

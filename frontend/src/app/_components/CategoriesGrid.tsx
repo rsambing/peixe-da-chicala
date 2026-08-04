@@ -1,12 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useProducts } from "@/lib/products-context";
 import type { MenuCategory } from "@/lib/menu/types";
-
-const FALLBACK =
-  "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=900&q=80";
+import { ImageWithFallback } from "@/components/ui";
 
 const ICONS: Record<string, string> = {
   "peixes-grelhados": "🐟",
@@ -20,13 +17,12 @@ const ICONS: Record<string, string> = {
 function CategoryCard({ cat, className = "" }: { cat: MenuCategory; className?: string }) {
   return (
     <Link href={`/menu?categoria=${cat.id}`} className={`group relative rounded-2xl overflow-hidden ${className}`}>
-      <Image
-        src={cat.imageUrl || FALLBACK}
+      <ImageWithFallback
+        src={cat.imageUrl}
         alt={cat.name}
-        fill
+        containerClassName="absolute inset-0"
         className="object-cover transition-transform duration-500 group-hover:scale-105"
         sizes="(max-width: 768px) 50vw, 25vw"
-        unoptimized={cat.imageUrl?.includes("ibb.co")}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -44,13 +40,12 @@ function HeroCard({ cat }: { cat: MenuCategory }) {
       href={`/menu?categoria=${cat.id}`}
       className="group relative col-span-2 row-span-2 rounded-2xl overflow-hidden"
     >
-      <Image
-        src={cat.imageUrl || FALLBACK}
+      <ImageWithFallback
+        src={cat.imageUrl}
         alt={cat.name}
-        fill
+        containerClassName="absolute inset-0"
         className="object-cover transition-transform duration-500 group-hover:scale-105"
         sizes="(max-width: 768px) 100vw, 50vw"
-        unoptimized={cat.imageUrl?.includes("ibb.co")}
         priority
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
@@ -173,7 +168,7 @@ export function CategoriesGrid() {
           <HeroCard cat={a} />
           <CategoryCard cat={b} className="h-full" />
           <Link href={`/menu?categoria=${c.id}`} className="group relative row-span-2 rounded-2xl overflow-hidden">
-            <Image src={c.imageUrl || FALLBACK} alt={c.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="25vw" unoptimized={c.imageUrl?.includes("ibb.co")} />
+            <ImageWithFallback src={c.imageUrl} alt={c.name} containerClassName="absolute inset-0" className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="25vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 p-4 space-y-1">
               <p className="text-lg mb-0.5">{ICONS[c.id] ?? "🍽️"}</p>
@@ -183,7 +178,7 @@ export function CategoriesGrid() {
           <CategoryCard cat={d} className="h-full" />
           <CategoryCard cat={e} className="h-full" />
           <Link href={`/menu?categoria=${f.id}`} className="group relative col-span-3 rounded-2xl overflow-hidden">
-            <Image src={f.imageUrl || FALLBACK} alt={f.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="75vw" unoptimized={f.imageUrl?.includes("ibb.co")} />
+            <ImageWithFallback src={f.imageUrl} alt={f.name} containerClassName="absolute inset-0" className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="75vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 p-4 md:p-5">
               <p className="text-lg mb-0.5">{ICONS[f.id] ?? "🍽️"}</p>

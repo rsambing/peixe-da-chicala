@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { api } from "@/lib/api";
 import type { ApiTestimonial } from "@/lib/api-types";
-
-const PLACEHOLDER_AVATAR = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face";
+import { ImageWithFallback } from "@/components/ui";
 
 export function TestimonialsSection() {
   const [testimonials, setTestimonials] = useState<ApiTestimonial[]>([]);
@@ -38,13 +36,15 @@ export function TestimonialsSection() {
 
         {/* Author */}
         <div className="flex flex-col items-center gap-3">
-          <Image
-            src={current.avatarUrl ?? PLACEHOLDER_AVATAR}
+          <ImageWithFallback
+            src={current.avatarUrl}
             alt={current.name}
-            width={64}
-            height={64}
-            className="size-16 rounded-full object-cover border-2 border-white/20"
-            unoptimized={!!(current.avatarUrl?.includes("ibb.co"))}
+            containerClassName="relative size-16 rounded-full border-2 border-white/20 bg-white/10"
+            className="object-cover"
+            showLabel={false}
+            iconClassName="size-5"
+            fallbackClassName="text-white/50"
+            sizes="64px"
           />
           <div>
             <p className="font-display font-bold text-white text-sm">{current.name}</p>

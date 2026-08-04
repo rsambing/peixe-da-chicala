@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui";
+import { Button, ImageWithFallback } from "@/components/ui";
 import { api } from "@/lib/api";
 import type { ApiProduct } from "@/lib/api-types";
 
@@ -15,24 +14,20 @@ function fmt(n: number) {
   }).format(n);
 }
 
-const PLACEHOLDER =
-  "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=800&q=80";
-
 function FeaturedCard({ product }: { product: ApiProduct }) {
-  const imgUrl = product.images?.[0]?.imageUrl ?? product.imageUrl ?? PLACEHOLDER;
+  const imgUrl = product.images?.[0]?.imageUrl ?? product.imageUrl;
 
   return (
     <Link
       href={`/menu/${product.id}`}
       className="group relative h-[300px] md:h-[380px] rounded-2xl overflow-hidden block"
     >
-      <Image
+      <ImageWithFallback
         src={imgUrl}
         alt={product.name}
-        fill
+        containerClassName="absolute inset-0"
         className="object-cover transition-transform duration-500 group-hover:scale-105"
         sizes="(max-width: 768px) 100vw, 50vw"
-        unoptimized={imgUrl.includes("ibb.co")}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
 

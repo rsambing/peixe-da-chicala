@@ -1,12 +1,12 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import type { MenuItem } from "@/lib/menu";
 import { formatCurrency } from "@/lib/mock/helpers";
 import { useCart } from "@/lib/cart-context";
+import { ImageWithFallback } from "@/components/ui";
 
 export function PopularCard({ item }: { item: MenuItem }) {
   const { addItem } = useCart();
@@ -25,10 +25,10 @@ export function PopularCard({ item }: { item: MenuItem }) {
     <Link href={`/menu/${item.id}`} className="block shrink-0 w-52 group">
       <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
         {/* Image */}
-        <Image
+        <ImageWithFallback
           src={item.imageUrl}
           alt={item.name}
-          fill
+          containerClassName="absolute inset-0"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           sizes="176px"
         />

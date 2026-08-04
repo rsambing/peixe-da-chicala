@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Button } from "@/components/ui";
+import { Button, ImageWithFallback } from "@/components/ui";
 import { useCart } from "@/lib/cart-context";
 import { formatCurrency } from "@/lib/mock/helpers";
 
@@ -60,15 +59,15 @@ export default function CartPage() {
               <div className="space-y-3">
                 {lines.map((line) => (
                   <div key={line.itemId} className="flex gap-3 md:gap-4 items-center py-4 border-b border-gray-100 last:border-0">
-                    <div className="relative size-20 shrink-0 rounded-xl overflow-hidden bg-gray-100">
-                      <Image
-                        src={line.item.imageUrl}
-                        alt={line.item.name}
-                        fill
-                        className="object-cover"
-                        sizes="80px"
-                      />
-                    </div>
+                    <ImageWithFallback
+                      src={line.item.imageUrl}
+                      alt={line.item.name}
+                      containerClassName="relative size-20 shrink-0 rounded-xl"
+                      className="object-cover"
+                      showLabel={false}
+                      iconClassName="size-5"
+                      sizes="80px"
+                    />
 
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <p className="font-display font-black text-gray-900 truncate">{line.item.name}</p>

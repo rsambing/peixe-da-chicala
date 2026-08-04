@@ -1,21 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Flame, CheckCircle2, Star } from "lucide-react";
-import { Button } from "@/components/ui";
+import { Button, ImageWithFallback } from "@/components/ui";
 import { api } from "@/lib/api";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80";
-
 export function SobreSection() {
-  const [imageUrl, setImageUrl] = useState(DEFAULT_IMAGE);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const leftRef    = useRef<HTMLDivElement>(null);
   const imageRef   = useRef<HTMLDivElement>(null);
@@ -110,10 +107,10 @@ export function SobreSection() {
             ref={imageRef}
             className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl"
           >
-            <Image
+            <ImageWithFallback
               src={imageUrl}
               alt="Peixe grelhado na brasa"
-              fill
+              containerClassName="absolute inset-0"
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
             />

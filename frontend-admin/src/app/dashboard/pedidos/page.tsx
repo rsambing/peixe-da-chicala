@@ -6,7 +6,9 @@ import { adminApi } from "@/lib/api";
 import type { ApiOrder } from "@/lib/api-types";
 import { ChevronDown, Trash2, X, MapPin, Phone, User, Clock, CreditCard } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
+import { SearchInput } from "@/components/SearchInput";
 import { useNewOrders } from "@/lib/new-orders-context";
+import { normalize } from "@/lib/utils";
 
 const STATUSES = [
   { value: "RECEBIDO",          label: "Recebido",      color: "bg-amber-100 text-amber-800"   },
@@ -227,6 +229,7 @@ export default function PedidosPage() {
   const [orders, setOrders] = useState<ApiOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("ALL");
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 15;
   const [updating, setUpdating] = useState<number | null>(null);
@@ -331,7 +334,15 @@ export default function PedidosPage() {
     });
   }
 
-  const filtered = filter === "ALL" ? orders : orders.filter((o) => o.status === filter);
+  const q = normalize(search.trim());
+  const searched = q
+    ? orders.filter((o) =>
+        [o.trackingCode, o.customerName, o.phone, o.address, String(o.id)]
+          .filter(Boolean)
+          .some((field) => normalize(field).includes(q))
+      )
+    : orders;
+  const filtered = filter === "ALL" ? searched : searched.filter((o) => o.status === filter);
   const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const newCount = newOrderIds.size;
 
@@ -361,6 +372,14 @@ export default function PedidosPage() {
         <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
+      {/* Pesquisa */}
+      <SearchInput
+        value={search}
+        onChange={(v) => { setSearch(v); setPage(1); }}
+        placeholder="Pesquisar por nome, telefone, código ou nº do pedido…"
+        className="max-w-md"
+      />
+
       {/* Filter tabs */}
       <div className="flex gap-2 flex-wrap">
         {ALL_FILTERS.map((f) => (
@@ -377,7 +396,7 @@ export default function PedidosPage() {
             {f.label}
             {f.value !== "ALL" && (
               <span className="ml-1.5 text-xs opacity-70">
-                ({orders.filter((o) => o.status === f.value).length})
+                ({searched.filter((o) => o.status === f.value).length})
               </span>
             )}
           </button>
@@ -394,7 +413,7 @@ export default function PedidosPage() {
 
       {!loading && visible.length === 0 && (
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-8 text-center text-sm text-gray-400">
-          Nenhum pedido encontrado.
+          {q ? `Nenhum pedido encontrado para "${search.trim()}".` : "Nenhum pedido encontrado."}
         </div>
       )}
 

@@ -18,9 +18,6 @@ const ProductsContext = createContext<ProductsContextValue>({
   error: null,
 });
 
-const PLACEHOLDER_IMAGE =
-  "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=800&q=80";
-
 function slugify(str: string): string {
   return str
     .toLowerCase()
@@ -59,7 +56,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
               ? p.images.map((img) => img.imageUrl)
               : p.imageUrl
               ? [p.imageUrl]
-              : [PLACEHOLDER_IMAGE];
+              : [];
 
             return {
               id: String(p.id),

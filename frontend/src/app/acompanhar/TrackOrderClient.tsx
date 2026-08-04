@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
-import { Clock, Flame, Truck, CheckCircle2, MapPin } from "lucide-react";
+import { Clock, Flame, Truck, CheckCircle2, MapPin, Trash2 } from "lucide-react";
 import { Button, Input, ImageWithFallback } from "@/components/ui";
 import { ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/menu";
 import { api } from "@/lib/api";
 import type { ApiOrder } from "@/lib/api-types";
+import { getLocalOrders, removeLocalOrder, clearLocalOrders, type LocalOrderEntry } from "@/lib/order-history";
 
 const ORDER_FLOW: OrderStatus[] = [
   "RECEBIDO",
@@ -63,6 +64,39 @@ export function TrackOrderClient() {
   const [order, setOrder] = useState<ApiOrder | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [localOrders, setLocalOrders] = useState<LocalOrderEntry[]>(() =>
+    typeof window === "undefined" ? [] : getLocalOrders()
+  );
+
+  async function fetchOrder(trackingCode: string) {
+    setIsLoading(true);
+    setError(null);
+    setOrder(null);
+    try {
+      setOrder(await api.getOrderByTrackingCode(trackingCode));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Pedido não encontrado.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  function selectLocalOrder(entry: LocalOrderEntry) {
+    setCode(entry.trackingCode);
+    fetchOrder(entry.trackingCode);
+  }
+
+  function removeFromLocalOrders(trackingCode: string) {
+    if (!confirm("Remover este pedido da lista deste dispositivo?")) return;
+    removeLocalOrder(trackingCode);
+    setLocalOrders(getLocalOrders());
+  }
+
+  function clearAllLocalOrders() {
+    if (!confirm("Limpar toda a lista de pedidos deste dispositivo? Esta ação não pode ser desfeita.")) return;
+    clearLocalOrders();
+    setLocalOrders([]);
+  }
 
   const status = order ? mapStatus(order.status) : null;
   const stepIndex = status ? ORDER_FLOW.indexOf(status) : -1;
@@ -102,19 +136,6 @@ export function TrackOrderClient() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function fetchOrder(trackingCode: string) {
-    setIsLoading(true);
-    setError(null);
-    setOrder(null);
-    try {
-      setOrder(await api.getOrderByTrackingCode(trackingCode));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Pedido não encontrado.");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   const meta = status ? STEP_META[status] : null;
   const estimate = status ? estimateFromStatus(status) : null;
 
@@ -148,6 +169,51 @@ export function TrackOrderClient() {
           <Button variant="outline" size="lg" className="w-full">Fazer novo pedido</Button>
         </Link>
       </div>
+
+      {/* Pedidos deste dispositivo */}
+      {!order && localOrders.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+              Pedidos neste dispositivo
+            </p>
+            <button
+              onClick={clearAllLocalOrders}
+              className="text-xs text-red-500 hover:text-red-700 underline underline-offset-2 transition-colors shrink-0"
+            >
+              Limpar lista
+            </button>
+          </div>
+          <div className="space-y-2">
+            {localOrders.map((entry) => (
+              <div
+                key={entry.trackingCode}
+                className="flex items-center justify-between gap-3 bg-gray-50 rounded-xl px-4 py-3"
+              >
+                <button
+                  onClick={() => selectLocalOrder(entry)}
+                  className="text-left flex-1 min-w-0"
+                >
+                  <p className="font-mono font-bold text-sm text-gray-900">{entry.trackingCode}</p>
+                  <p className="text-xs text-gray-400">
+                    {entry.customerName} ·{" "}
+                    {new Date(entry.createdAt).toLocaleString("pt-AO", {
+                      day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+                    })}
+                  </p>
+                </button>
+                <button
+                  onClick={() => removeFromLocalOrders(entry.trackingCode)}
+                  aria-label="Remover pedido da lista"
+                  className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+                >
+                  <Trash2 className="size-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Error */}
       {error && (

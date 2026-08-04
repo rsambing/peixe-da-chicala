@@ -170,6 +170,10 @@ export default function ProdutosPage() {
       setFormError("Preencha todos os campos obrigatórios.");
       return;
     }
+    if (!(Number(form.price) > 0)) {
+      setFormError("O preço deve ser maior que 0.");
+      return;
+    }
 
     setSaving(true);
     setFormError(null);

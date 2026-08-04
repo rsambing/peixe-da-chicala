@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { adminApi } from "@/lib/api";
 import type { ApiOrder, ApiProduct } from "@/lib/api-types";
 import { ShoppingBag, Package, TrendingUp, Clock } from "lucide-react";
+import { formatDateTime } from "@/lib/utils";
 
 const STATUS_LABEL: Record<string, string> = {
   RECEBIDO: "Recebido",
@@ -176,7 +177,7 @@ export default function DashboardPage() {
                       </span>
                     </td>
                     <td className="px-6 py-3 text-gray-500">
-                      {new Date(order.createdAt).toLocaleDateString("pt-AO")}
+                      {formatDateTime(order.createdAt)}
                     </td>
                   </tr>
                 ))}

@@ -9,8 +9,6 @@ import { Button, ImageWithFallback } from "@/components/ui";
 import { useCart } from "@/lib/cart-context";
 import { formatCurrency } from "@/lib/mock/helpers";
 
-const DELIVERY_FEE_KZ = 1000;
-
 export default function CartPage() {
   const [mounted, setMounted] = useState(false);
   const { detailedLines, subtotalKz, setQuantity, removeItem, itemsCount } = useCart();
@@ -18,7 +16,6 @@ export default function CartPage() {
   useEffect(() => { setMounted(true); }, []);
 
   const lines = mounted ? detailedLines : [];
-  const total = mounted ? subtotalKz + (lines.length ? DELIVERY_FEE_KZ : 0) : 0;
   const count = mounted ? itemsCount : 0;
 
   return (
@@ -126,15 +123,13 @@ export default function CartPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-500">Taxa de entrega</span>
-                  <span className="font-display font-black">
-                    {formatCurrency(lines.length ? DELIVERY_FEE_KZ : 0)}
-                  </span>
+                  <span className="text-xs text-gray-400 italic">Calculada no checkout</span>
                 </div>
                 <div className="h-px bg-gray-200 my-1" />
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Total</span>
+                  <span className="text-gray-500">Total (sem entrega)</span>
                   <span className="text-primary font-display font-black text-lg">
-                    {formatCurrency(total)}
+                    {formatCurrency(mounted ? subtotalKz : 0)}
                   </span>
                 </div>
               </div>

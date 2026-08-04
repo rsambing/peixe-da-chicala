@@ -8,7 +8,7 @@ import { ChevronDown, Trash2, X, MapPin, Phone, User, Clock, CreditCard } from "
 import { Pagination } from "@/components/Pagination";
 import { SearchInput } from "@/components/SearchInput";
 import { useNewOrders } from "@/lib/new-orders-context";
-import { normalize } from "@/lib/utils";
+import { normalize, formatDateTime } from "@/lib/utils";
 
 const STATUSES = [
   { value: "RECEBIDO",          label: "Recebido",      color: "bg-amber-100 text-amber-800"   },
@@ -493,7 +493,7 @@ export default function PedidosPage() {
                     <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{fmt(order.total)}</td>
                     <td className="px-4 py-3"><StatusBadge status={order.status} /></td>
                     <td className="px-4 py-3 text-gray-400 text-xs">
-                      {new Date(order.createdAt).toLocaleDateString("pt-AO")}
+                      {formatDateTime(order.createdAt)}
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <button

@@ -41,6 +41,7 @@ export {
 } from "./Select";
 export { Skeleton, EmptyState, Pagination } from "./Skeleton";
 export { ImageWithFallback } from "./ImageWithFallback";
+export { Combobox, type ComboboxOption } from "./Combobox";
 export { Toaster } from "./Toaster";
 export { RevealOnScroll } from "./RevealOnScroll";
 export { FloatingCart } from "./FloatingCart";

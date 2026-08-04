@@ -6,19 +6,31 @@ import gsap from "gsap";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import {
-  Button, Input, Textarea,
+  Button, Input, Textarea, Combobox,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui";
 import { useCart } from "@/lib/cart-context";
 import { formatCurrency } from "@/lib/mock/helpers";
 import { api } from "@/lib/api";
+import { isValidAngolanPhone } from "@/lib/utils";
+import { DELIVERY_ZONES, findDeliveryZone } from "@/lib/delivery-zones";
+import { addLocalOrder } from "@/lib/order-history";
 
-const DELIVERY_FEE_KZ = 1000;
 const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", "#ffdd00"];
 const PROFILE_KEY = "peixe-da-chicala.profile.v1";
 
+const DELIVERY_ZONE_OPTIONS = DELIVERY_ZONES.map((z) => ({
+  value: z.name,
+  label: z.name,
+  hint: formatFeeHint(z.feeKz),
+}));
+
+function formatFeeHint(feeKz: number) {
+  return `${feeKz.toLocaleString("pt-AO")} Kz`;
+}
+
 type PaymentMethod = "DINHEIRO" | "TPA";
-type Profile = { name: string; phone: string; address: string; reference: string; deliveryMethod: "ENTREGA" | "RETIRADA" };
+type Profile = { name: string; phone: string; address: string; reference: string; region: string; deliveryMethod: "ENTREGA" | "RETIRADA" };
 
 function loadProfile(): Profile | null {
   try {
@@ -53,10 +65,12 @@ export default function CheckoutPage() {
     phone: "",
     address: "",
     reference: "",
+    region: "",
     note: "",
     deliveryMethod: "ENTREGA" as "ENTREGA" | "RETIRADA",
     paymentMethod: "DINHEIRO" as PaymentMethod,
   });
+  const [phoneTouched, setPhoneTouched] = useState(false);
 
   // Pre-fill from saved profile on mount
   useEffect(() => {
@@ -67,12 +81,19 @@ export default function CheckoutPage() {
     }
   }, []);
 
+  const isAddressless = form.deliveryMethod === "RETIRADA";
+  const selectedZone = findDeliveryZone(form.region);
+  const deliveryFeeKz = isAddressless ? 0 : selectedZone?.feeKz ?? 0;
+
   const totalKz = useMemo(
-    () => subtotalKz + (detailedLines.length && form.deliveryMethod === "ENTREGA" ? DELIVERY_FEE_KZ : 0),
-    [subtotalKz, detailedLines.length, form.deliveryMethod]
+    () => subtotalKz + (detailedLines.length ? deliveryFeeKz : 0),
+    [subtotalKz, detailedLines.length, deliveryFeeKz]
   );
 
-  const isAddressless = form.deliveryMethod === "RETIRADA";
+  const phoneError =
+    (phoneTouched || form.phone.length > 0) && form.phone.trim().length > 0 && !isValidAngolanPhone(form.phone)
+      ? "Número inválido. Use o formato 9XX XXX XXX."
+      : null;
 
   const confirmCardRef = useRef<HTMLDivElement>(null);
   const codeBadgeRef = useRef<HTMLDivElement>(null);
@@ -140,8 +161,8 @@ export default function CheckoutPage() {
 
   async function submit() {
     if (!detailedLines.length) return;
-    if (!form.name.trim() || !form.phone.trim()) return;
-    if (form.deliveryMethod === "ENTREGA" && !form.address.trim()) return;
+    if (!form.name.trim() || !isValidAngolanPhone(form.phone)) return;
+    if (form.deliveryMethod === "ENTREGA" && (!form.region || !form.address.trim())) return;
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -149,7 +170,7 @@ export default function CheckoutPage() {
     const trackingCode = generateOrderCode();
     const addressValue = form.deliveryMethod === "RETIRADA"
       ? "RETIRADA"
-      : [form.address.trim(), form.reference.trim()].filter(Boolean).join(" - ");
+      : [form.region, form.address.trim(), form.reference.trim()].filter(Boolean).join(" - ");
 
     try {
       const order = await api.createOrder({
@@ -173,7 +194,13 @@ export default function CheckoutPage() {
         phone: form.phone.trim(),
         address: isAddressless ? "" : form.address.trim(),
         reference: isAddressless ? "" : form.reference.trim(),
+        region: isAddressless ? "" : form.region,
         deliveryMethod: form.deliveryMethod,
+      });
+      addLocalOrder({
+        trackingCode: order.trackingCode,
+        customerName: form.name.trim(),
+        createdAt: new Date().toISOString(),
       });
       setHasProfile(true);
       setSubmittedCode(order.trackingCode);
@@ -191,8 +218,8 @@ export default function CheckoutPage() {
     !isSubmitting &&
     detailedLines.length > 0 &&
     form.name.trim().length > 0 &&
-    form.phone.trim().length > 0 &&
-    (isAddressless || form.address.trim().length > 0);
+    isValidAngolanPhone(form.phone) &&
+    (isAddressless || (form.address.trim().length > 0 && !!form.region));
 
   return (
     <>
@@ -258,7 +285,7 @@ export default function CheckoutPage() {
                       onClick={() => {
                         clearProfile();
                         setHasProfile(false);
-                        setForm({ name: "", phone: "", address: "", reference: "", note: "", deliveryMethod: "ENTREGA", paymentMethod: "DINHEIRO" });
+                        setForm({ name: "", phone: "", address: "", reference: "", region: "", note: "", deliveryMethod: "ENTREGA", paymentMethod: "DINHEIRO" });
                       }}
                       className="text-xs text-green-600 hover:text-green-800 underline underline-offset-2 transition-colors shrink-0"
                     >
@@ -278,7 +305,13 @@ export default function CheckoutPage() {
                   placeholder="9XX XXX XXX"
                   value={form.phone}
                   onChange={(e) => update("phone", e.target.value)}
+                  onBlur={() => setPhoneTouched(true)}
+                  error={phoneError ?? undefined}
+                  inputMode="tel"
                 />
+                <p className="-mt-2.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                  ⚠️ Confirme bem o número. Depois de o pedido ser feito não é possível alterá-lo.
+                </p>
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-medium text-foreground">
@@ -298,6 +331,18 @@ export default function CheckoutPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {!isAddressless && (
+                  <Combobox
+                    label="Bairro / Região"
+                    placeholder="Pesquise o seu bairro…"
+                    searchPlaceholder="Ex.: Kilamba, Talatona…"
+                    emptyText="Bairro não encontrado."
+                    options={DELIVERY_ZONE_OPTIONS}
+                    value={form.region}
+                    onChange={(v) => update("region", v)}
+                  />
+                )}
 
                 <Input
                   label="Endereço"
@@ -397,8 +442,10 @@ export default function CheckoutPage() {
                     </div>
                     {form.deliveryMethod === "ENTREGA" && detailedLines.length > 0 && (
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Entrega</span>
-                        <span className="font-display font-black">{formatCurrency(DELIVERY_FEE_KZ)}</span>
+                        <span className="text-muted-foreground">Entrega{selectedZone ? ` (${selectedZone.name})` : ""}</span>
+                        <span className="font-display font-black">
+                          {selectedZone ? formatCurrency(deliveryFeeKz) : "Selecione o bairro"}
+                        </span>
                       </div>
                     )}
                     <div className="flex items-center justify-between">

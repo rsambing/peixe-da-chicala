@@ -3,24 +3,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import gsap from "gsap";
-import { toast } from "sonner";
-import { Copy, MessageCircle } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import {
   Button, Input, Textarea, Combobox,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui";
+import { PaymentInstructions } from "@/components/PaymentInstructions";
 import { useCart } from "@/lib/cart-context";
 import { formatCurrency } from "@/lib/mock/helpers";
 import { api } from "@/lib/api";
 import { isValidAngolanPhone } from "@/lib/utils";
 import { DELIVERY_ZONES, findDeliveryZone } from "@/lib/delivery-zones";
 import { addLocalOrder } from "@/lib/order-history";
-
-const IBAN_DISPLAY = "AO06 0006 0000 3361 4373 3018 2";
-const IBAN_COPY = "0006 0000 3361 4373 3018 2";
-const IBAN_HOLDER = "BONET- COMÉRCIO E SERVIÇOS SU, LDA";
 
 const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", "#ffdd00"];
 const PROFILE_KEY = "peixe-da-chicala.profile.v1";
@@ -175,28 +170,6 @@ export default function CheckoutPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function copyIban() {
-    navigator.clipboard.writeText(IBAN_COPY)
-      .then(() => toast.success("IBAN copiado!"))
-      .catch(() => toast.error("Não foi possível copiar. Copie manualmente."));
-  }
-
-  function openWhatsapp() {
-    if (!confirmedOrder) return;
-    const lines = [
-      `Novo comprovativo — Pedido ${confirmedOrder.trackingCode}`,
-      `Nome: ${confirmedOrder.customerName}`,
-      `Total: ${formatCurrency(confirmedOrder.total)}`,
-      `Hora do pedido: ${confirmedOrder.createdAt.toLocaleString("pt-AO", { dateStyle: "short", timeStyle: "short" })}`,
-      confirmedOrder.deliveryLabel,
-      "",
-      "Segue em anexo o comprovativo da transferência.",
-    ];
-    const text = encodeURIComponent(lines.join("\n"));
-    const number = whatsappNumber || "244900000000";
-    window.open(`https://wa.me/${number}?text=${text}`, "_blank");
-  }
-
   async function submit() {
     if (!detailedLines.length) return;
     if (!form.name.trim() || !isValidAngolanPhone(form.phone)) return;
@@ -308,46 +281,16 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-5 space-y-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="font-display font-black text-foreground">Como pagar</h3>
-                    <div className="text-right shrink-0">
-                      <p className="text-[11px] text-muted-foreground leading-none">Total a pagar</p>
-                      <p className="font-display font-black text-primary text-lg leading-tight">
-                        {confirmedOrder ? formatCurrency(confirmedOrder.total) : ""}
-                      </p>
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-muted-foreground">
-                    Transfira o valor acima para o IBAN abaixo. Depois, anexe o comprovativo da transferência no WhatsApp.
-                  </p>
-
-                  <div className="bg-white rounded-xl px-4 py-3 border border-gray-100 space-y-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <span className="font-mono text-xs sm:text-sm text-foreground break-all">{IBAN_DISPLAY}</span>
-                      <Button variant="outline" size="sm" className="w-full sm:w-auto shrink-0" onClick={copyIban}>
-                        <Copy className="size-3.5 mr-1.5" />
-                        Copiar
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground border-t border-gray-100 pt-2">{IBAN_HOLDER}</p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Button
-                      size="lg"
-                      className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white"
-                      onClick={openWhatsapp}
-                    >
-                      <MessageCircle className="size-4 mr-2" />
-                      Continuar no WhatsApp
-                    </Button>
-                    <p className="text-xs text-muted-foreground text-center">
-                      Vamos abrir o WhatsApp com os detalhes do pedido preenchidos — anexe lá o comprovativo e envie.
-                    </p>
-                  </div>
-                </div>
+                {confirmedOrder && (
+                  <PaymentInstructions
+                    trackingCode={confirmedOrder.trackingCode}
+                    customerName={confirmedOrder.customerName}
+                    total={confirmedOrder.total}
+                    deliveryLabel={confirmedOrder.deliveryLabel}
+                    createdAt={confirmedOrder.createdAt}
+                    whatsappNumber={whatsappNumber}
+                  />
+                )}
 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link

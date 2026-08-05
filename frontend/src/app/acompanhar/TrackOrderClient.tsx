@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { Clock, Flame, Truck, CheckCircle2, MapPin, Trash2 } from "lucide-react";
 import { Button, Input, ImageWithFallback } from "@/components/ui";
+import { PaymentInstructions } from "@/components/PaymentInstructions";
 import { ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/menu";
 import { api } from "@/lib/api";
 import type { ApiOrder } from "@/lib/api-types";
@@ -67,11 +68,18 @@ export function TrackOrderClient() {
   const [localOrders, setLocalOrders] = useState<LocalOrderEntry[]>(() =>
     typeof window === "undefined" ? [] : getLocalOrders()
   );
+  const [showPayment, setShowPayment] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+
+  useEffect(() => {
+    api.getSettings().then((s) => setWhatsappNumber(s.contactWhatsapp)).catch(() => {});
+  }, []);
 
   async function fetchOrder(trackingCode: string) {
     setIsLoading(true);
     setError(null);
     setOrder(null);
+    setShowPayment(false);
     try {
       setOrder(await api.getOrderByTrackingCode(trackingCode));
     } catch (err) {
@@ -296,6 +304,28 @@ export function TrackOrderClient() {
             )}
             {order.address === "RETIRADA" && (
               <p className="text-sm text-gray-500">Retirada no local</p>
+            )}
+          </div>
+
+          {/* Payment instructions */}
+          <div className="space-y-3">
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full"
+              onClick={() => setShowPayment((v) => !v)}
+            >
+              {showPayment ? "Ocultar dados de pagamento" : "Ver dados de pagamento"}
+            </Button>
+            {showPayment && (
+              <PaymentInstructions
+                trackingCode={order.trackingCode}
+                customerName={order.customerName}
+                total={order.total}
+                deliveryLabel={order.address === "RETIRADA" ? "Retirada no local" : order.address}
+                createdAt={new Date(order.createdAt)}
+                whatsappNumber={whatsappNumber}
+              />
             )}
           </div>
 

@@ -19,11 +19,15 @@ const STATUSES = [
 
 const ALL_FILTERS = [{ value: "ALL", label: "Todos" }, ...STATUSES];
 
+const READY_STATUSES = ["SAIU_PARA_ENTREGA", "ENTREGUE"];
+
 const PAYMENT_LABEL: Record<string, string> = {
+  TRANSFERENCIA: "Transferência",
   DINHEIRO: "Dinheiro",
   TPA:      "TPA",
 };
 const PAYMENT_COLOR: Record<string, string> = {
+  TRANSFERENCIA: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
   DINHEIRO: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300",
   TPA:      "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
 };
@@ -131,6 +135,9 @@ function OrderDetailPanel({ order, onClose, onStatusChange, updating }: {
                 <p className="font-semibold text-gray-900 dark:text-white text-sm">
                   {order.address === "RETIRADA" ? "Retirada no local" : order.address === "RESERVA" ? "Reserva no restaurante" : order.address}
                 </p>
+                {order.region && (
+                  <p className="text-xs text-gray-400 mt-1">Região: {order.region}</p>
+                )}
               </div>
             )}
             <div className="col-span-2 bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 space-y-1">
@@ -138,7 +145,7 @@ function OrderDetailPanel({ order, onClose, onStatusChange, updating }: {
                 <CreditCard className="size-3.5" /> Pagamento
               </div>
               <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                {PAYMENT_LABEL[order.paymentMethod] ?? order.paymentMethod ?? "Dinheiro"}
+                {PAYMENT_LABEL[order.paymentMethod] ?? order.paymentMethod ?? "Transferência"}
               </p>
             </div>
             <div className="col-span-2 bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 space-y-1">
@@ -299,6 +306,17 @@ export default function PedidosPage() {
   }
 
   async function changeStatus(id: number, status: string) {
+    const order = orders.find((o) => o.id === id) ?? (selected?.id === id ? selected : undefined);
+    if (order && status === order.status) return;
+    if (
+      order &&
+      READY_STATUSES.includes(status) &&
+      !order.readySmsSentAt &&
+      !confirm("Esta alteração de estado vai enviar um SMS pago ao cliente. Confirma que pretende continuar?")
+    ) {
+      return;
+    }
+
     setUpdating(id);
     try {
       const updated = await adminApi.updateOrderStatus(id, status);

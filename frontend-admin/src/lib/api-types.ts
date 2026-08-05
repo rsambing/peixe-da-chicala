@@ -44,11 +44,27 @@ export interface ApiOrder {
   customerName: string;
   phone: string;
   address: string;
+  region: string | null;
   status: string;
   paymentMethod: string;
   total: number;
   createdAt: string;
   items: ApiOrderItem[];
+  confirmSmsSentAt: string | null;
+  readySmsSentAt: string | null;
+}
+
+export interface ApiSmsCampaign {
+  id: number;
+  name: string;
+  message: string;
+  audienceType: "ALL" | "REGION";
+  region: string | null;
+  recipientCount: number;
+  status: string;
+  zexaCampaignId: string | null;
+  createdAt: string;
+  createdBy: { id: number; name: string } | null;
 }
 
 export interface SiteSettings {

@@ -1,4 +1,4 @@
-﻿import type { ApiProduct, ApiCategory, ApiOrder, SiteSettings, ApiTestimonial, ApiUser } from "./api-types";
+﻿import type { ApiProduct, ApiCategory, ApiOrder, SiteSettings, ApiTestimonial, ApiUser, ApiSmsCampaign } from "./api-types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -91,6 +91,21 @@ export const adminApi = {
 
   deleteOrder: (id: number) =>
     request<void>(`/orders/${id}`, { method: "DELETE" }),
+
+  // SMS campaigns
+  getSmsRegions: () => request<string[]>("/sms-campaigns/regions"),
+
+  previewSmsAudience: (params: { audienceType: "ALL" | "REGION"; region?: string }) => {
+    const qs = new URLSearchParams(
+      Object.fromEntries(Object.entries(params).filter(([, v]) => v !== undefined)) as Record<string, string>
+    ).toString();
+    return request<{ count: number }>(`/sms-campaigns/preview?${qs}`);
+  },
+
+  createSmsCampaign: (data: { name: string; message: string; audienceType: "ALL" | "REGION"; region?: string }) =>
+    request<ApiSmsCampaign>("/sms-campaigns", { method: "POST", body: JSON.stringify(data) }),
+
+  getSmsCampaigns: () => request<ApiSmsCampaign[]>("/sms-campaigns"),
 
   // Testimonials
   getTestimonials: () => request<ApiTestimonial[]>("/testimonials"),

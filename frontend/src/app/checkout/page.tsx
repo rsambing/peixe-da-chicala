@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import gsap from "gsap";
+import { toast } from "sonner";
+import { Copy, MessageCircle } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import {
@@ -15,6 +17,9 @@ import { api } from "@/lib/api";
 import { isValidAngolanPhone } from "@/lib/utils";
 import { DELIVERY_ZONES, findDeliveryZone } from "@/lib/delivery-zones";
 import { addLocalOrder } from "@/lib/order-history";
+
+const IBAN_DISPLAY = "AO06 0005 0000 1717 1733 1011 5";
+const IBAN_COPY = "0005 0000 1717 1733 1011 5";
 
 const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", "#ffdd00"];
 const PROFILE_KEY = "peixe-da-chicala.profile.v1";
@@ -29,7 +34,6 @@ function formatFeeHint(feeKz: number) {
   return `${feeKz.toLocaleString("pt-AO")} Kz`;
 }
 
-type PaymentMethod = "DINHEIRO" | "TPA";
 type Profile = { name: string; phone: string; address: string; reference: string; region: string; deliveryMethod: "ENTREGA" | "RETIRADA" };
 
 function loadProfile(): Profile | null {
@@ -59,6 +63,13 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [hasProfile, setHasProfile] = useState(false);
+  const [confirmedOrder, setConfirmedOrder] = useState<{
+    trackingCode: string;
+    customerName: string;
+    total: number;
+    deliveryLabel: string;
+    createdAt: Date;
+  } | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -68,9 +79,9 @@ export default function CheckoutPage() {
     region: "",
     note: "",
     deliveryMethod: "ENTREGA" as "ENTREGA" | "RETIRADA",
-    paymentMethod: "DINHEIRO" as PaymentMethod,
   });
   const [phoneTouched, setPhoneTouched] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState("");
 
   // Pre-fill from saved profile on mount
   useEffect(() => {
@@ -79,6 +90,10 @@ export default function CheckoutPage() {
       setForm((prev) => ({ ...prev, ...saved, note: "" }));
       setHasProfile(true);
     }
+  }, []);
+
+  useEffect(() => {
+    api.getSettings().then((s) => setWhatsappNumber(s.contactWhatsapp)).catch(() => {});
   }, []);
 
   const isAddressless = form.deliveryMethod === "RETIRADA";
@@ -159,6 +174,28 @@ export default function CheckoutPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  function copyIban() {
+    navigator.clipboard.writeText(IBAN_COPY)
+      .then(() => toast.success("IBAN copiado!"))
+      .catch(() => toast.error("Não foi possível copiar. Copie manualmente."));
+  }
+
+  function openWhatsapp() {
+    if (!confirmedOrder) return;
+    const lines = [
+      `Novo comprovativo — Pedido ${confirmedOrder.trackingCode}`,
+      `Nome: ${confirmedOrder.customerName}`,
+      `Total: ${formatCurrency(confirmedOrder.total)}`,
+      `Hora do pedido: ${confirmedOrder.createdAt.toLocaleString("pt-AO", { dateStyle: "short", timeStyle: "short" })}`,
+      confirmedOrder.deliveryLabel,
+      "",
+      "Segue em anexo o comprovativo da transferência.",
+    ];
+    const text = encodeURIComponent(lines.join("\n"));
+    const number = whatsappNumber || "244900000000";
+    window.open(`https://wa.me/${number}?text=${text}`, "_blank");
+  }
+
   async function submit() {
     if (!detailedLines.length) return;
     if (!form.name.trim() || !isValidAngolanPhone(form.phone)) return;
@@ -178,8 +215,8 @@ export default function CheckoutPage() {
         customerName: form.name.trim(),
         phone: form.phone.trim(),
         address: addressValue,
+        region: isAddressless ? undefined : form.region,
         status: "RECEBIDO",
-        paymentMethod: form.paymentMethod,
         total: totalKz,
         items: detailedLines.map((line) => ({
           productId: Number(line.itemId),
@@ -187,6 +224,16 @@ export default function CheckoutPage() {
           price: line.item.priceKz,
           note: line.note || undefined,
         })),
+      });
+
+      setConfirmedOrder({
+        trackingCode: order.trackingCode,
+        customerName: form.name.trim(),
+        total: totalKz,
+        deliveryLabel: isAddressless
+          ? "Retirada no local"
+          : `Entrega em ${form.region} — ${form.address.trim()}`,
+        createdAt: new Date(),
       });
 
       saveProfile({
@@ -260,6 +307,24 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
+                <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 space-y-3">
+                  <h3 className="font-display font-black text-foreground">Como pagar</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Transfira o valor total para o IBAN abaixo e depois envie o comprovativo pelo WhatsApp.
+                  </p>
+                  <div className="flex items-center justify-between gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100">
+                    <span className="font-mono text-sm text-foreground">{IBAN_DISPLAY}</span>
+                    <Button variant="outline" size="sm" onClick={copyIban}>
+                      <Copy className="size-3.5 mr-1.5" />
+                      Copiar
+                    </Button>
+                  </div>
+                  <Button variant="accent" size="lg" className="w-full" onClick={openWhatsapp}>
+                    <MessageCircle className="size-4 mr-2" />
+                    Enviar comprovativo no WhatsApp
+                  </Button>
+                </div>
+
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
                     href={`/acompanhar?codigo=${encodeURIComponent(submittedCode)}`}
@@ -285,7 +350,7 @@ export default function CheckoutPage() {
                       onClick={() => {
                         clearProfile();
                         setHasProfile(false);
-                        setForm({ name: "", phone: "", address: "", reference: "", region: "", note: "", deliveryMethod: "ENTREGA", paymentMethod: "DINHEIRO" });
+                        setForm({ name: "", phone: "", address: "", reference: "", region: "", note: "", deliveryMethod: "ENTREGA" });
                       }}
                       className="text-xs text-green-600 hover:text-green-800 underline underline-offset-2 transition-colors shrink-0"
                     >
@@ -365,22 +430,8 @@ export default function CheckoutPage() {
                   onChange={(e) => update("note", e.target.value)}
                 />
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-foreground">
-                    Método de pagamento
-                  </label>
-                  <Select
-                    value={form.paymentMethod}
-                    onValueChange={(v) => update("paymentMethod", v)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DINHEIRO">💵 Dinheiro</SelectItem>
-                      <SelectItem value="TPA">💳 TPA</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm text-blue-800">
+                  💳 Pagamento por transferência bancária. Os dados do IBAN aparecem depois de confirmar o pedido.
                 </div>
 
                 {submitError && (

@@ -63,8 +63,9 @@ export const createOrderSchema = z.object({
   customerName: z.string().min(2, 'Nome do cliente deve ter pelo menos 2 caracteres'),
   phone: z.string().min(9, 'Telefone inválido'),
   address: z.string().optional().default(''),
+  region: z.string().optional(),
   status: z.string().optional().default('RECEBIDO'),
-  paymentMethod: z.enum(['DINHEIRO', 'TPA']).optional().default('DINHEIRO'),
+  paymentMethod: z.enum(['TRANSFERENCIA']).optional().default('TRANSFERENCIA'),
   total: z.string().or(z.number()).pipe(z.coerce.number().positive('Total deve ser positivo')),
   items: z.array(z.object({
     productId: z.string().or(z.number()).pipe(z.coerce.number().int().positive()),
@@ -82,6 +83,17 @@ export const updateOrderSchema = z.object({
   status: z.string().optional(),
   total: z.string().or(z.number()).pipe(z.coerce.number().positive('Total deve ser positivo')).optional()
 }).strict();
+
+// SMS CAMPAIGN SCHEMAS
+export const createSmsCampaignSchema = z.object({
+  name: z.string().min(2, 'Nome da campanha deve ter pelo menos 2 caracteres'),
+  message: z.string().min(3, 'Mensagem muito curta').max(1600, 'Mensagem excede o limite de 1600 caracteres'),
+  audienceType: z.enum(['ALL', 'REGION']),
+  region: z.string().optional(),
+}).refine((data) => data.audienceType !== 'REGION' || !!data.region, {
+  message: 'region é obrigatório quando audienceType é REGION',
+  path: ['region'],
+});
 
 // ORDER ITEM SCHEMAS
 export const createOrderItemSchema = z.object({

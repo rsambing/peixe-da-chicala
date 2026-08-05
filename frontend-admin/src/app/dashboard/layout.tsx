@@ -7,13 +7,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useNewOrders } from "@/lib/new-orders-context";
 import { BackendLoader } from "@/components/BackendLoader";
-import { LayoutDashboard, ShoppingBag, Package, Tag, Settings, LogOut, Menu, X, MessageSquare, Users } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Package, Tag, Settings, LogOut, Menu, X, MessageSquare, Users, Megaphone } from "lucide-react";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true, roles: null },
   { href: "/dashboard/pedidos", label: "Pedidos", icon: ShoppingBag, exact: false, roles: ["ADMIN", "ATENDENTE"] },
   { href: "/dashboard/produtos", label: "Produtos", icon: Package, exact: false, roles: ["ADMIN", "GESTOR"] },
   { href: "/dashboard/categorias", label: "Categorias", icon: Tag, exact: false, roles: ["ADMIN", "GESTOR"] },
+  { href: "/dashboard/mensagens", label: "Mensagens", icon: Megaphone, exact: false, roles: ["ADMIN"] },
   { href: "/dashboard/testemunhos", label: "Testemunhos", icon: MessageSquare, exact: false, roles: ["ADMIN", "GESTOR"] },
   { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings, exact: false, roles: ["ADMIN", "GESTOR"] },
   { href: "/dashboard/utilizadores", label: "Utilizadores", icon: Users, exact: false, roles: ["ADMIN"] },

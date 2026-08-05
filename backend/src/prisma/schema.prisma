@@ -19,6 +19,8 @@ model User {
   password  String
   role      Role     @default(ATENDENTE)
 
+  smsCampaigns SmsCampaign[]
+
   createdAt DateTime @default(now())
 }
 
@@ -61,17 +63,21 @@ model Category {
 }
 
 model Order {
-  id            Int         @id @default(autoincrement())
-  trackingCode  String      @unique
-  customerName  String
-  phone         String
-  address       String
-  status        String      @default("pending")
-  paymentMethod String      @default("DINHEIRO")
-  total         Float
-  items         OrderItem[]
+  id               Int         @id @default(autoincrement())
+  trackingCode     String      @unique
+  customerName     String
+  phone            String
+  address          String
+  region           String?
+  status           String      @default("pending")
+  paymentMethod    String      @default("TRANSFERENCIA")
+  total            Float
+  items            OrderItem[]
 
-  createdAt     DateTime    @default(now())
+  confirmSmsSentAt DateTime?
+  readySmsSentAt   DateTime?
+
+  createdAt        DateTime    @default(now())
 }
 
 model OrderItem {
@@ -86,6 +92,22 @@ model OrderItem {
 
   order       Order    @relation(fields: [orderId], references: [id])
   product     Product  @relation(fields: [productId], references: [id])
+}
+
+model SmsCampaign {
+  id             Int      @id @default(autoincrement())
+  name           String
+  message        String
+  audienceType   String
+  region         String?
+  recipientCount Int
+  status         String
+  zexaCampaignId String?
+
+  createdById    Int?
+  createdBy      User?    @relation(fields: [createdById], references: [id])
+
+  createdAt      DateTime @default(now())
 }
 
 model SiteSetting {

@@ -1,32 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Button } from "@/components/ui";
-import { api } from "@/lib/api";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const EMBER_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800"];
 
 export function HeroSection() {
-  const [bgUrl, setBgUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    api
-      .getSettings()
-      .then((s) => { if (s.heroImageUrl) setBgUrl(s.heroImageUrl); })
-      .catch(() => {});
-  }, []);
-
   const sectionRef = useRef<HTMLElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const embersRef = useRef<HTMLDivElement>(null);
-  const badgeRef = useRef<HTMLDivElement>(null);
   const line1Ref = useRef<HTMLSpanElement>(null);
   const line2Ref = useRef<HTMLSpanElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
@@ -34,7 +23,6 @@ export function HeroSection() {
 
   useGSAP(() => {
     // ── Initial states ─────────────────────────────────────────────
-    gsap.set(badgeRef.current, { autoAlpha: 0, y: 24 });
     gsap.set([line1Ref.current, line2Ref.current], { autoAlpha: 0, y: 80 });
     gsap.set(subtitleRef.current, { autoAlpha: 0, y: 24 });
     if (ctaRef.current) {
@@ -44,17 +32,16 @@ export function HeroSection() {
     // ── Entrance timeline ──────────────────────────────────────────
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    tl.to(badgeRef.current, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.3)
-      .to(line1Ref.current, { autoAlpha: 1, y: 0, duration: 1.0 }, 0.6)
-      .to(line2Ref.current, { autoAlpha: 1, y: 0, duration: 1.0 }, 0.85)
-      .to(subtitleRef.current, { autoAlpha: 1, y: 0, duration: 0.7 }, 1.15)
+    tl.to(line1Ref.current, { autoAlpha: 1, y: 0, duration: 1.0 }, 0.3)
+      .to(line2Ref.current, { autoAlpha: 1, y: 0, duration: 1.0 }, 0.55)
+      .to(subtitleRef.current, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.85)
       .to(Array.from(ctaRef.current?.children ?? []), {
         autoAlpha: 1,
         y: 0,
         scale: 1,
         duration: 0.55,
         stagger: 0.12,
-      }, 1.4);
+      }, 1.1);
 
     // ── Parallax on scroll ─────────────────────────────────────────
     gsap.to(bgRef.current, {
@@ -117,19 +104,14 @@ export function HeroSection() {
         className="absolute inset-x-0 top-0"
         style={{ bottom: "-28%" }}
       >
-        {bgUrl ? (
-          <Image
-            src={bgUrl}
-            alt="Peixe grelhado na brasa"
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-            unoptimized={bgUrl.includes("ibb.co")}
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-black" />
-        )}
+        <Image
+          src="/images/hero-bg.jpg"
+          alt="Peixe grelhado na brasa"
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
+        />
         <div className="absolute inset-0 bg-black/55" />
       </div>
 
@@ -142,14 +124,6 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-5xl px-6 pt-28 pb-20 text-center">
-        <div
-          ref={badgeRef}
-          className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-4 py-2 border border-white/20 text-sm text-white mb-8"
-        >
-          <span className="inline-block size-2 rounded-full bg-primary animate-pulse" />
-          Peixe grelhado · sabor de Luanda
-        </div>
-
         <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.05] tracking-tight">
           <span ref={line1Ref} className="block">Peixe na brasa,</span>
           <span ref={line2Ref} className="block text-primary">pronto para pedir</span>

@@ -18,8 +18,9 @@ import { isValidAngolanPhone } from "@/lib/utils";
 import { DELIVERY_ZONES, findDeliveryZone } from "@/lib/delivery-zones";
 import { addLocalOrder } from "@/lib/order-history";
 
-const IBAN_DISPLAY = "AO06 0005 0000 1717 1733 1011 5";
-const IBAN_COPY = "0005 0000 1717 1733 1011 5";
+const IBAN_DISPLAY = "AO06 0006 0000 3361 4373 3018 2";
+const IBAN_COPY = "0006 0000 3361 4373 3018 2";
+const IBAN_HOLDER = "BONET- COMÉRCIO E SERVIÇOS SU, LDA";
 
 const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", "#ffdd00"];
 const PROFILE_KEY = "peixe-da-chicala.profile.v1";
@@ -307,22 +308,45 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 space-y-3">
-                  <h3 className="font-display font-black text-foreground">Como pagar</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Transfira o valor total para o IBAN abaixo e depois envie o comprovativo pelo WhatsApp.
-                  </p>
-                  <div className="flex items-center justify-between gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100">
-                    <span className="font-mono text-sm text-foreground">{IBAN_DISPLAY}</span>
-                    <Button variant="outline" size="sm" onClick={copyIban}>
-                      <Copy className="size-3.5 mr-1.5" />
-                      Copiar
-                    </Button>
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-5 space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="font-display font-black text-foreground">Como pagar</h3>
+                    <div className="text-right shrink-0">
+                      <p className="text-[11px] text-muted-foreground leading-none">Total a pagar</p>
+                      <p className="font-display font-black text-primary text-lg leading-tight">
+                        {confirmedOrder ? formatCurrency(confirmedOrder.total) : ""}
+                      </p>
+                    </div>
                   </div>
-                  <Button variant="accent" size="lg" className="w-full" onClick={openWhatsapp}>
-                    <MessageCircle className="size-4 mr-2" />
-                    Enviar comprovativo no WhatsApp
-                  </Button>
+
+                  <p className="text-sm text-muted-foreground">
+                    Transfira o valor acima para o IBAN abaixo. Depois, anexe o comprovativo da transferência no WhatsApp.
+                  </p>
+
+                  <div className="bg-white rounded-xl px-4 py-3 border border-gray-100 space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <span className="font-mono text-xs sm:text-sm text-foreground break-all">{IBAN_DISPLAY}</span>
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto shrink-0" onClick={copyIban}>
+                        <Copy className="size-3.5 mr-1.5" />
+                        Copiar
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground border-t border-gray-100 pt-2">{IBAN_HOLDER}</p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Button
+                      size="lg"
+                      className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white"
+                      onClick={openWhatsapp}
+                    >
+                      <MessageCircle className="size-4 mr-2" />
+                      Continuar no WhatsApp
+                    </Button>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Vamos abrir o WhatsApp com os detalhes do pedido preenchidos — anexe lá o comprovativo e envie.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">

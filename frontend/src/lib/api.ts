@@ -1,4 +1,4 @@
-import type { ApiProduct, ApiCategory, ApiOrder, CreateOrderPayload, SiteSettings, ApiTestimonial } from "./api-types";
+import type { ApiProduct, ApiCategory, ApiOrder, CreateOrderPayload, SiteSettings, ApiTestimonial, ApiDeliveryZone } from "./api-types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -22,6 +22,8 @@ export const api = {
   getProductById: (id: number) => request<ApiProduct>(`/products/${id}`),
 
   getCategories: () => request<ApiCategory[]>("/categories"),
+
+  getDeliveryZones: () => request<ApiDeliveryZone[]>("/delivery-zones"),
 
   createOrder: (data: CreateOrderPayload) =>
     request<ApiOrder>("/orders", {

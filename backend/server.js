@@ -13,6 +13,7 @@ import orderItemRouter from './src/routes/orderItem.route.js';
 import settingRouter from './src/routes/setting.route.js';
 import testimonialRouter from './src/routes/testimonial.route.js';
 import smsCampaignRouter from './src/routes/smsCampaign.route.js';
+import deliveryZoneRouter from './src/routes/deliveryZone.route.js';
 // device routes removed (FCM)
 
 const app = express();
@@ -37,6 +38,7 @@ app.use(orderItemRouter);
 app.use(settingRouter);
 app.use(testimonialRouter);
 app.use(smsCampaignRouter);
+app.use(deliveryZoneRouter);
 // device routes removed (FCM)
 
 app.get('/', (req, res) => {

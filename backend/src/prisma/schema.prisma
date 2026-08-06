@@ -110,6 +110,13 @@ model SmsCampaign {
   createdAt      DateTime @default(now())
 }
 
+model DeliveryZone {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  feeKz     Float
+  createdAt DateTime @default(now())
+}
+
 model SiteSetting {
   key   String @id
   value String

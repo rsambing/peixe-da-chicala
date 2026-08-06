@@ -1,9 +1,9 @@
-export interface DeliveryZone {
-  name: string;
-  feeKz: number;
-}
+// Migra a lista estática de zonas de entrega (antes hardcoded no frontend) para a BD.
+// Uso: node src/scripts/seed-delivery-zones.js
+import 'dotenv/config';
+import prisma from '../lib/prisma.js';
 
-const RAW_ZONES: DeliveryZone[] = [
+const ZONES = [
   { name: "Coreia", feeKz: 500 },
   { name: "Zamba 2", feeKz: 1000 },
   { name: "Chicala", feeKz: 1500 },
@@ -77,10 +77,18 @@ const RAW_ZONES: DeliveryZone[] = [
   { name: "Zango 3", feeKz: 10000 },
 ];
 
-export const DELIVERY_ZONES: DeliveryZone[] = [...RAW_ZONES].sort((a, b) =>
-  a.name.localeCompare(b.name, "pt")
-);
-
-export function findDeliveryZone(name: string): DeliveryZone | undefined {
-  return DELIVERY_ZONES.find((z) => z.name === name);
+async function main() {
+  let created = 0;
+  let skipped = 0;
+  for (const zone of ZONES) {
+    const existing = await prisma.deliveryZone.findUnique({ where: { name: zone.name } });
+    if (existing) { skipped++; continue; }
+    await prisma.deliveryZone.create({ data: zone });
+    created++;
+  }
+  console.log(`Zonas criadas: ${created}, já existentes (ignoradas): ${skipped}`);
 }
+
+main()
+  .catch((e) => { console.error(e); process.exit(1); })
+  .finally(() => prisma.$disconnect());

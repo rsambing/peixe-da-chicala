@@ -14,17 +14,11 @@ import { useCart } from "@/lib/cart-context";
 import { formatCurrency } from "@/lib/mock/helpers";
 import { api } from "@/lib/api";
 import { isValidAngolanPhone } from "@/lib/utils";
-import { DELIVERY_ZONES, findDeliveryZone } from "@/lib/delivery-zones";
+import type { ApiDeliveryZone } from "@/lib/api-types";
 import { addLocalOrder } from "@/lib/order-history";
 
 const PARTICLE_COLORS = ["#ff4400", "#ffaa00", "#ff6600", "#ffcc00", "#ff8800", "#ffdd00"];
 const PROFILE_KEY = "peixe-da-chicala.profile.v1";
-
-const DELIVERY_ZONE_OPTIONS = DELIVERY_ZONES.map((z) => ({
-  value: z.name,
-  label: z.name,
-  hint: formatFeeHint(z.feeKz),
-}));
 
 function formatFeeHint(feeKz: number) {
   return `${feeKz.toLocaleString("pt-AO")} Kz`;
@@ -78,6 +72,8 @@ export default function CheckoutPage() {
   });
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [zones, setZones] = useState<ApiDeliveryZone[]>([]);
+  const [zonesLoading, setZonesLoading] = useState(true);
 
   // Pre-fill from saved profile on mount
   useEffect(() => {
@@ -92,8 +88,20 @@ export default function CheckoutPage() {
     api.getSettings().then((s) => setWhatsappNumber(s.contactWhatsapp)).catch(() => {});
   }, []);
 
+  useEffect(() => {
+    api.getDeliveryZones()
+      .then(setZones)
+      .catch(() => {})
+      .finally(() => setZonesLoading(false));
+  }, []);
+
+  const deliveryZoneOptions = useMemo(
+    () => zones.map((z) => ({ value: z.name, label: z.name, hint: formatFeeHint(z.feeKz) })),
+    [zones]
+  );
+
   const isAddressless = form.deliveryMethod === "RETIRADA";
-  const selectedZone = findDeliveryZone(form.region);
+  const selectedZone = zones.find((z) => z.name === form.region);
   const deliveryFeeKz = isAddressless ? 0 : selectedZone?.feeKz ?? 0;
 
   const totalKz = useMemo(
@@ -365,15 +373,20 @@ export default function CheckoutPage() {
                 </div>
 
                 {!isAddressless && (
-                  <Combobox
-                    label="Bairro / Região"
-                    placeholder="Pesquise o seu bairro…"
-                    searchPlaceholder="Ex.: Kilamba, Talatona…"
-                    emptyText="Bairro não encontrado."
-                    options={DELIVERY_ZONE_OPTIONS}
-                    value={form.region}
-                    onChange={(v) => update("region", v)}
-                  />
+                  <div className="space-y-1.5">
+                    <Combobox
+                      label="Bairro / Região"
+                      placeholder={zonesLoading ? "A carregar bairros…" : "Pesquise o seu bairro…"}
+                      searchPlaceholder="Ex.: Kilamba, Talatona…"
+                      emptyText="Bairro não encontrado."
+                      options={deliveryZoneOptions}
+                      value={form.region}
+                      onChange={(v) => update("region", v)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Não encontra o seu bairro na lista? Escolha o mais próximo da sua localização.
+                    </p>
+                  </div>
                 )}
 
                 <Input

@@ -1,4 +1,4 @@
-﻿import type { ApiProduct, ApiCategory, ApiOrder, SiteSettings, ApiTestimonial, ApiUser, ApiSmsCampaign } from "./api-types";
+﻿import type { ApiProduct, ApiCategory, ApiOrder, SiteSettings, ApiTestimonial, ApiUser, ApiSmsCampaign, ApiDeliveryZone } from "./api-types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -130,6 +130,18 @@ export const adminApi = {
 
   deleteUser: (id: number) =>
     request<void>(`/users/${id}`, { method: "DELETE" }),
+
+  // Delivery zones
+  getDeliveryZones: () => request<ApiDeliveryZone[]>("/delivery-zones"),
+
+  createDeliveryZone: (data: { name: string; feeKz: number }) =>
+    request<ApiDeliveryZone>("/delivery-zones", { method: "POST", body: JSON.stringify(data) }),
+
+  updateDeliveryZone: (id: number, data: { name?: string; feeKz?: number }) =>
+    request<ApiDeliveryZone>(`/delivery-zones/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+
+  deleteDeliveryZone: (id: number) =>
+    request<void>(`/delivery-zones/${id}`, { method: "DELETE" }),
 
   // Site settings
   getSettings: () => request<SiteSettings>("/settings"),

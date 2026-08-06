@@ -103,3 +103,10 @@ export interface ApiUser {
   role: "ADMIN" | "GESTOR" | "ATENDENTE";
   createdAt: string;
 }
+
+export interface ApiDeliveryZone {
+  id: number;
+  name: string;
+  feeKz: number;
+  createdAt: string;
+}

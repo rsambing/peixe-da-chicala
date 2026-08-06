@@ -79,6 +79,13 @@ export interface ApiTestimonial {
   createdAt: string;
 }
 
+export interface ApiDeliveryZone {
+  id: number;
+  name: string;
+  feeKz: number;
+  createdAt: string;
+}
+
 export interface CreateOrderPayload {
   trackingCode: string;
   customerName: string;

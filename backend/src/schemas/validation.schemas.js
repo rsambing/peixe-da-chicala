@@ -32,6 +32,17 @@ export const updateCategorySchema = z.object({
   name: z.string().min(2, 'Nome da categoria deve ter pelo menos 2 caracteres').optional()
 }).strict();
 
+// DELIVERY ZONE SCHEMAS
+export const createDeliveryZoneSchema = z.object({
+  name: z.string().min(2, 'Nome da zona deve ter pelo menos 2 caracteres'),
+  feeKz: z.string().or(z.number()).pipe(z.coerce.number().min(0, 'Preço não pode ser negativo')),
+});
+
+export const updateDeliveryZoneSchema = z.object({
+  name: z.string().min(2, 'Nome da zona deve ter pelo menos 2 caracteres').optional(),
+  feeKz: z.string().or(z.number()).pipe(z.coerce.number().min(0, 'Preço não pode ser negativo')).optional(),
+}).strict();
+
 // Coerce string "true"/"false" from FormData to real boolean
 const booleanField = z.preprocess(
   (v) => (v === 'true' || v === true ? true : v === 'false' || v === false ? false : v),

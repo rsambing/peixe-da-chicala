@@ -57,8 +57,31 @@ export function Header() {
       )}
     >
       <div className="mx-auto relative flex max-w-7xl items-center justify-between px-6 py-3">
-        {/* Logo */}
-        <Link href="/" className="flex items-center group">
+        {/* Mobile menu button (left on mobile, hidden from md up) */}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className={cn(
+            "md:hidden p-2 -ml-2 rounded-lg transition-colors",
+            useSolidStyle ? "hover:bg-muted" : "text-white hover:bg-white/10"
+          )}
+          aria-label="Menu"
+        >
+          {mobileOpen ? (
+            <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          ) : (
+            <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
+            </svg>
+          )}
+        </button>
+
+        {/* Logo — centered on mobile, back in normal flow (left) from md up */}
+        <Link
+          href="/"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:static md:left-auto md:top-auto md:translate-x-0 md:translate-y-0 flex items-center group"
+        >
           <Image
             src="/images/logo.png"
             alt="Peixe da Chicala"
@@ -109,26 +132,6 @@ export function Header() {
               Acompanhar
             </Button>
           </Link>
-
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className={cn(
-              "md:hidden p-2 rounded-lg transition-colors",
-              useSolidStyle ? "hover:bg-muted" : "text-white hover:bg-white/10"
-            )}
-            aria-label="Menu"
-          >
-            {mobileOpen ? (
-              <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            ) : (
-              <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
-              </svg>
-            )}
-          </button>
         </div>
       </div>
 

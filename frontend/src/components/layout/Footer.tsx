@@ -23,9 +23,9 @@ export function Footer() {
     <footer className="bg-card text-card-foreground border-t">
       <div className="mx-auto max-w-7xl px-6 pt-16 pb-8">
         {/* Top */}
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-4 mb-12">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-4 md:gap-12 mb-12 text-center md:text-left">
           {/* Brand */}
-          <div>
+          <div className="flex flex-col items-center md:items-start">
             <div className="flex items-center gap-2 mb-4">
               <Image
                 src="/images/logo.png"
@@ -42,7 +42,7 @@ export function Footer() {
 
           {/* Link Columns */}
           {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-            <div key={title}>
+            <div key={title} className="flex flex-col items-center md:items-start">
               <h4 className="text-sm font-display font-bold uppercase tracking-wider mb-4 opacity-60">
                 {title}
               </h4>
